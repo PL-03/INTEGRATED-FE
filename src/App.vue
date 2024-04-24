@@ -1,8 +1,10 @@
-<script setup></script>
+<script setup>
+import Table from './components/Table.vue';
+</script>
 
 <template>
-  <div>
-    <h1 class="text-3xl font-bold underline">Hello world!</h1>
+  <div class="text-center ">
+    <RouterView />
   </div>
 </template>
 
