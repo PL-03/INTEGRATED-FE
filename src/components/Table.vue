@@ -1,4 +1,8 @@
 <script setup>
+const props = defineProps({
+  item: Object,
+  listName: String
+})
 const fetchData = async () => {
   isLoading.value = true
   const result = await fetch(`http://localhost:8080/itb-kk/v1/tasks/`)
@@ -29,16 +33,16 @@ const fetchData = async () => {
             <tr class="bg-gray-100 border-b">
                 <tr class="bg-gray-100 border-b">
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-r">
-
+                      {{ item.id }}
                     </td>
                     <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap border-r">
-
+                      {{ item.title }}
                     </td>
                     <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap border-r">
-
+                      {{item.description}}
                     </td>
                     <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap border-r">
-                        <button class="">...</button>
+                        <button class="">{{item.status}}</button>
                     </td>
                   </tr>
             </tr>
