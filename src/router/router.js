@@ -3,7 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 const routes = [
     { path: '/v1/task',
     name:"tasklist" ,
-    component: () => import('../components/Table.vue') 
+    component: () => import('../components/TaskManager.vue') 
     },
     { path: '/', 
     name:"homepage",
