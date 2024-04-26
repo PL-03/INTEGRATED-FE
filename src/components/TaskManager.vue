@@ -1,15 +1,25 @@
 <script setup>
-import { onMounted } from 'vue';
-import {getTask} from './Utils/fetchUtil.js'
-import TaskTable from './TaskTable.vue'
+import { ref, onMounted } from 'vue';
+import TaskTable from "./TaskTable.vue";
+import { getTask } from './Utils/fetchUtil';
+
+const tasks = ref([]);
+
+// onMounted(async () => {
+// tasks.value = getTask(`${import.meta.env.VITE_BASE_URL}/itb-kk/v1/tasks`)
+// console.log(tasks);
+// })
 
 onMounted(async () => {
-//   const items = await getTask(`${import.meta.env.VITE_BASE_URL}/itb-kk/v1/tasks`)
+  const response = await fetch('http://localhost:8080/itb-kk/v1/tasks');
+  const data = await response.json();
+  tasks.value = data;
 })
+
 </script>
 
 <template>
-<TaskTable />
+  <TaskTable :tasks="tasks" />
 </template>
 
 <style scoped></style>

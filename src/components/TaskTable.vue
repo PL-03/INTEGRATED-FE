@@ -1,56 +1,59 @@
 <script setup>
+import { defineProps } from 'vue';
 
 const props = defineProps({
-  item: Object,
-  listName: String
+  tasks: {
+    type: Array,
+    // required: true
+  }
 })
+console.log(props)
 
 </script>
 
 <template>
-    <div><h1 class="text-5xl font-bold" >IT-Bangmod Kradan Kanban</h1></div>
-    <div class="mt-4"><button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">+ Add Task</button></div>
+  <div>
+    <h1 class="text-5xl font-bold">IT-Bangmod Kradan Kanban</h1>
+  </div>
+  <div class="mt-4"><button class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">+ Add
+      Task</button></div>
   <div class="flex justify-center items-center mt-4">
     <table class="table-auto w-full">
-        <thead class="bg-white border-b">
-            <tr>
-              <th scope="col" class="text-lg font-medium text-gray-900 px-6 py-2 text-left border-r">
-                #
-              </th>
-              <th scope="col" class="text-lg font-medium text-gray-900 px-6 py-2 text-left border-r">
-                Title</th>
-              <th scope="col" class="text-lg font-medium text-gray-900 px-6 py-2 text-left border-r">
-                Assignees</th>
-              <th scope="col" class="text-lg font-medium text-gray-900 px-6 py-2 text-left">
-                Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr class="bg-gray-100 border-b">
-                <tr class="bg-gray-100 border-b">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-r">
-                      <!-- {{ item.id }} -->
-                    </td>
-                    <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap border-r">
-                      <!-- {{ item.tasktTitle }} -->
-                    </td>
-                    <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap border-r">
-                      <!-- {{ item.taskAssignees }} -->
-                    </td>
-                    <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap border-r">
-                        <!--{{ item.taskStatus }} -->
-                    </td>
-                  </tr>
-            </tr>
-
-        </tbody>
+      <thead class="bg-white border-b">
+        <tr>
+          <th scope="col" class="text-lg font-medium text-gray-900 px-6 py-2 text-left border-r">
+            #
+          </th>
+          <th scope="col" class="text-lg font-medium text-gray-900 px-6 py-2 text-left border-r">
+            Title</th>
+          <th scope="col" class="text-lg font-medium text-gray-900 px-6 py-2 text-left border-r">
+            Assignees</th>
+          <th scope="col" class="text-lg font-medium text-gray-900 px-6 py-2 text-left">
+            Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="bg-gray-100 border-b" v-for="task in tasks" :key="task.id">
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-r">
+            {{ task.id }}
+          </td>
+          <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap border-r">
+            {{ task.taskTitle }}
+          </td>
+          <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap border-r">
+            {{ task.taskAssignees }}
+          </td>
+          <td class="text-sm text-gray-900 font-light px-6 py-4 whitespace-nowrap border-r">
+            {{ task.taskStatus }}
+          </td>
+        </tr>
+      </tbody>
     </table>
   </div>
 </template>
 
 <style scoped>
-
 border-r {
-    border-right: 1px solid #e2e8f0;
-  }
+  border-right: 1px solid #e2e8f0;
+}
 </style>

@@ -1,9 +1,11 @@
+import TaskManager from '@/components/TaskManager.vue'
+
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
     { path: '/v1/task',
     name:"tasklist" ,
-    component: () => import('../components/TaskManager.vue') 
+    component: TaskManager
     },
     { path: '/', 
     name:"homepage",
