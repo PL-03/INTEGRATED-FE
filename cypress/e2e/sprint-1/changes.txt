@@ -1,0 +1,3 @@
+v1.0 -- initial
+v1.1 -- tc-pbi-view-task-table-view-2 and tc-pbi2-view-task-deatil-2
+         .itbkk-assignees change should to contains("unassigned") and should('have.css)

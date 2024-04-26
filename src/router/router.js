@@ -3,7 +3,7 @@ import TaskManager from '@/components/TaskManager.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 
 const routes = [
-    { path: '/v1/task',
+    { path: '/task',
     name:"tasklist" ,
     component: TaskManager
     },

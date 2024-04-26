@@ -11,7 +11,7 @@ const tasks = ref([]);
 // })
 
 onMounted(async () => {
-  const response = await fetch('http://localhost:8080/itb-kk/v1/tasks');
+  const response = await fetch(`${import.meta.env.VITE_BASE_URL}/itb-kk/v1/tasks`);
   const data = await response.json();
   tasks.value = data;
 })
