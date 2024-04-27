@@ -1,3 +1,4 @@
+import PopupModalVue from '@/components/PopupModal.vue'
 import TaskManagerVue from '@/TaskManager.vue'
 
 import { createRouter, createWebHistory } from 'vue-router'
@@ -9,7 +10,11 @@ const routes = [
     },
     { path: '/', 
     name:"homepage",
-    component: () => import('../components/HomePage.vue') }
+    component: () => import('../components/HomePage.vue') },
+    // { path: '/form',
+    // name:"taskdetails" ,
+    // component: TaskManagerVue
+    // }
 ]
 const router = createRouter({
     history: createWebHistory(),

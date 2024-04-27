@@ -1,7 +1,9 @@
 <script setup>
 import router from "@/router/router"
-import { defineProps, ref, watch } from "vue"
+import { defineEmits,ref, watch } from "vue"
+import PopupModal from "./PopupModal.vue";
 
+const showPopup = ref(false)
 const props = defineProps({
   tasks: {
     type: Array,
@@ -15,7 +17,7 @@ const statusColors = {
   Doing: "#007bff", // Blue for in-progress tasks
   Done: "#28a745", // Green for completed tasks
 }
-console.log(props)
+
 </script>
 
 <template>
@@ -64,6 +66,8 @@ console.log(props)
           class="font-mono bg-gray-100 border-b itbkk-item"
           v-for="task in tasks"
           :key="task.id"
+          @click="$emit('task-clicked', task.id)"
+          data-task-id="{{ task.id }}"
         >
           <td
             class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-r"
@@ -73,7 +77,7 @@ console.log(props)
           <td
             class="text-m text-gray-900 font-light px-6 py-4 whitespace-nowrap border-r itbkk-title"
           >
-            {{ task.taskTitle }}
+           <button >{{ task.taskTitle }}</button> 
           </td>
           <td>
             <span
