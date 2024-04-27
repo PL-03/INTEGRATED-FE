@@ -1,8 +1,10 @@
 <script setup>
 import router from '@/router/router';
-import { defineProps, ref, watch } from 'vue';
-
-
+import { ref, watch } from 'vue';
+import { createRouter, createWebHistory } from 'vue-router'
+// const router = createRouter({
+//   routes: [{path:`/:c`}
+// })
 const props = defineProps({
   tasks: {
     type: Array,
@@ -56,7 +58,7 @@ console.log(props)
             {{ task.id }}
           </td>
           <td class="text-m text-gray-900 font-light px-6 py-4 whitespace-nowrap border-r itbkk-title" >
-            {{ task.taskTitle }}
+            <router-link :to="{ path:`/task/${task.id}` }" class="text-cyan-500 hover:text-cyan-700">{{ task.taskTitle }}</router-link>
           </td>
           <td class="text-m text-gray-900 font-light px-6 py-4 whitespace-nowrap border-r itbkk-assignees">
             {{ task.taskAssignees }}
@@ -75,4 +77,4 @@ border-r {
   border-right: 1px solid #e2e8f0;
 }
 </style>
-<!-- <router-link :to="{ path:`/v1/task/${task.id}` }" class="text-cyan-500 hover:text-cyan-700"></router-link> -->
+<!-- </router-link> -->

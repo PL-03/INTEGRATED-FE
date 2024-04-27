@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue';
 import TaskTable from "./TaskTable.vue";
 import { getTask } from './Utils/fetchUtil';
+import TaskDetail from './TaskDetail.vue';
 
 const tasks = ref([]);
 
@@ -20,6 +21,8 @@ onMounted(async () => {
 
 <template>
   <TaskTable :tasks="tasks" />
+
+  <TaskDetails :tasks="tasks" />
 </template>
 
 <style scoped></style>
