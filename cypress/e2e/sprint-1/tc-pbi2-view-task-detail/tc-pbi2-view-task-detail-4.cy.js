@@ -27,14 +27,11 @@ describe(`TC-PBI2-VIEW-TASK-TABLE-VIEW-4\n
   })
 
   it('Open task detail for "_Infrastructure_"',()=>{
-    cy.get('.itbkk-item').eq(3).as('item')
-    cy.get('@item').contains('.itbkk-title',"_Infrastructure_").click() 
+    cy.get('.itbkk-item').contains("_Infrastructure_").click() 
   })
 
   it('Open task detail for "_Infrastructure_"',()=>{
-    cy.get('.itbkk-item').eq(3).as('item')
-    cy.get('@item').contains('.itbkk-title',"_Infrastructure_").click() 
-    cy.visit('/task/4') ;
+    cy.get('.itbkk-item').contains("_Infrastructure_").click() 
 
     cy.wait(200)
     cy.get('.itbkk-title').contains("_Infrastructure_")

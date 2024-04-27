@@ -27,13 +27,11 @@ describe(`TC-PBI2-VIEW-TASK-TABLE-VIEW-1\n
   })
 
   it('Open task detail for "TaskTitle1TaskTitle2TaskTitle3TaskTitle4TaskTitle5TaskTitle6TaskTitle7TaskTitle8TaskTitle9TaskTitle0"',()=>{
-    cy.get('.itbkk-item').eq(0).as('item')
-    cy.get('@item').contains('.itbkk-title',"TaskTitle1TaskTitle2TaskTitle3TaskTitle4TaskTitle5TaskTitle6TaskTitle7TaskTitle8TaskTitle9TaskTitle0").click() 
+    cy.get('.itbkk-item').contains('.itbkk-title',"TaskTitle1TaskTitle2TaskTitle3TaskTitle4TaskTitle5TaskTitle6TaskTitle7TaskTitle8TaskTitle9TaskTitle0").click() 
   })
 
   it('Open task detail for "TaskTitle1TaskTitle2TaskTitle3TaskTitle4TaskTitle5TaskTitle6TaskTitle7TaskTitle8TaskTitle9TaskTitle0"',()=>{
-    cy.get('.itbkk-item').eq(0).as('item')
-    cy.get('@item').contains('.itbkk-title',"TaskTitle1TaskTitle2TaskTitle3TaskTitle4TaskTitle5TaskTitle6TaskTitle7TaskTitle8TaskTitle9TaskTitle0").click() 
+    cy.get('.itbkk-item').contains('.itbkk-title',"TaskTitle1TaskTitle2TaskTitle3TaskTitle4TaskTitle5TaskTitle6TaskTitle7TaskTitle8TaskTitle9TaskTitle0").click() 
 
     cy.wait(200)
     cy.get('.itbkk-title').contains("TaskTitle1TaskTitle2TaskTitle3TaskTitle4TaskTitle5TaskTitle6TaskTitle7TaskTitle8TaskTitle9TaskTitle0")

@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import TaskTable from "./TaskTable.vue";
-import { getTask } from './Utils/fetchUtil';
+import TaskTable from './components/TaskTable.vue';
+import { getTask } from './components/Utils/fetchUtil';
 
 const tasks = ref([]);
 

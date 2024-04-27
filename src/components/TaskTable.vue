@@ -8,16 +8,6 @@ const props = defineProps({
     // required: true
   },
 })
-// const trimmedTasks = ref([]);
-
-// const computeTrimmedTasks = () => {
-//   trimmedTasks.value = props.tasks.map((task) => ({
-//     ...task,
-//     taskTitle: task.taskTitle.trim(),
-//   }));
-// };
-
-// computeTrimmedTasks();
 
 const statusColors = {
   "No Status": "#ccc", // Light gray for neutral state

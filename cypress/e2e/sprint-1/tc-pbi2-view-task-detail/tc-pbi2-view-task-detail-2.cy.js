@@ -28,21 +28,18 @@ describe(`TC-PBI2-VIEW-TASK-TABLE-VIEW-2\n
   })
 
   it('Open task detail for "Repository"',()=>{
-    cy.get('.itbkk-item').eq(1).as('item')
-    cy.get('@item').contains('.itbkk-title',"Repository").click() 
+    cy.get('.itbkk-title').contains("Repository").click() 
   })
 
   it('Open task detail for "Repository"',()=>{
-    cy.get('.itbkk-item').eq(1).as('item')
-    cy.get('@item').contains('.itbkk-title',"Repository").click() 
-    cy.visit('/task/2') ;
+    cy.get('.itbkk-title').contains("Repository").click() 
 
     cy.wait(200)
     cy.get('.itbkk-title').contains("Repository")
-    cy.get('.itbkk-description').contains('No Description Provided')
-    cy.get('.itbkk-description').should('have.css','font-style','italic') 
-    cy.get('.itbkk-assignees').contains('Unassigned')
-    cy.get('.itbkk-assignees').should('have.css','font-style','italic') 
+    cy.get('.itbkk-description').contains('No Description Provided').as('description')
+    cy.get('@description').should('have.css','font-style','italic') 
+    cy.get('.itbkk-assignees').contains('Unassigned').as('assignees')
+    cy.get('@assignees').should('have.css','font-style','italic') 
     cy.get('.itbkk-status').contains('To Do')
     cy.get('.itbkk-timezone').contains('Asia/Bangkok')
     cy.get('.itbkk-created-on').contains('22/04/2024')

@@ -27,14 +27,11 @@ describe(`TC-PBI2-VIEW-TASK-TABLE-VIEW-3\n
   })
 
   it('Open task detail for "ดาต้าเบส"',()=>{
-    cy.get('.itbkk-item').eq(2).as('item')
-    cy.get('@item').contains('.itbkk-title',"ดาต้าเบส").click() 
+    cy.get('.itbkk-item').contains("ดาต้าเบส").click() 
   })
 
   it('Open task detail for "ดาต้าเบส"',()=>{
-    cy.get('.itbkk-item').eq(2).as('item')
-    cy.get('@item').contains('.itbkk-title',"ดาต้าเบส").click() 
-    cy.visit('/task/3') ;
+    cy.get('.itbkk-item').contains("ดาต้าเบส").click() 
 
     cy.wait(200)
     cy.get('.itbkk-title').contains("ดาต้าเบส")
