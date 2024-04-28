@@ -1,9 +1,6 @@
 <script setup>
 import { ref, watch } from "vue"
-import dayjs from "dayjs"
-import utc from "dayjs/plugin/utc"
-
-dayjs.extend(utc)
+import router from "@/router/router"
 
 const props = defineProps({
   selectedTaskId: {
@@ -26,14 +23,33 @@ watch(
 )
 
 const formatDate = (dateString) => {
-  return dayjs.utc(dateString).local().format("DD/MM/YYYY HH:mm:ss")
+  const options = {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Get the local time zone
+  }
+
+  const utcDate = new Date(dateString)
+  const formatter = new Intl.DateTimeFormat("en-GB", options)
+  const formattedDate = formatter.format(utcDate)
+
+  return formattedDate
+}
+
+const closeModal = () => {
+  router.push("/task")
+  // Additional logic to close the modal
 }
 </script>
 
 <template>
-  <div v-if="isModalOpen" class="modal">
+  <div v-if="Object.keys(selectedTaskId).length > 0" class="modal">
     <div class="modal-content">
-      <span class="close" @click="isModalOpen = false">&times;</span>
+      <span class="close" @click="closeModal">&times;</span>
       <h2>Task Details</h2>
       <p>Task Title: {{ selectedTaskId.taskTitle }}</p>
       <p>Task Description: {{ selectedTaskId.taskDescription }}</p>

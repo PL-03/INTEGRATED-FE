@@ -1,24 +1,27 @@
-import PopupModalVue from '@/components/PopupModal.vue'
-import TaskManagerVue from '@/TaskManager.vue'
-
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory } from "vue-router"
+import TaskManagerVue from "@/TaskManager.vue"
 
 const routes = [
-    { path: '/task',
-    name:"tasklist" ,
-    component: TaskManagerVue
-    },
-    { path: '/', 
-    name:"homepage",
-    component: () => import('../components/HomePage.vue') },
-    // { path: '/form',
-    // name:"taskdetails" ,
-    // component: TaskManagerVue
-    // }
+  {
+    path: "/task",
+    name: "tasklist",
+    component: TaskManagerVue,
+  },
+  {
+    path: "/task/:taskId",
+    name: "taskdetail",
+    component: TaskManagerVue,
+  },
+  {
+    path: "/",
+    name: "homepage",
+    component: () => import("../components/HomePage.vue"),
+  },
 ]
+
 const router = createRouter({
-    history: createWebHistory(),
-    routes
-  })
+  history: createWebHistory(),
+  routes,
+})
 
 export default router
