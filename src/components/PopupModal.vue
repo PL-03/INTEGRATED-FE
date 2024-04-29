@@ -30,19 +30,18 @@ const formatDate = (dateString) => {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
-    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone, // Get the local time zone
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    // Add additional options here
+    hourCycle: "h24", // Use 24-hour format (0-23)
   }
-
   const utcDate = new Date(dateString)
   const formatter = new Intl.DateTimeFormat("en-GB", options)
   const formattedDate = formatter.format(utcDate)
-
   return formattedDate
 }
 
 const closeModal = () => {
   router.push("/task")
-  // Additional logic to close the modal
 }
 </script>
 
@@ -52,11 +51,20 @@ const closeModal = () => {
       <span class="close" @click="closeModal">&times;</span>
       <h2>Task Details</h2>
       <p>Task Title: {{ selectedTaskId.taskTitle }}</p>
-      <p>Task Description: {{ selectedTaskId.taskDescription }}</p>
+      <p class="itbkk-description">
+        Task Description: {{ selectedTaskId.taskDescription }}
+      </p>
       <p>Task Assignees: {{ selectedTaskId.taskAssignees }}</p>
-      <p>Task Status: {{ selectedTaskId.taskStatus }}</p>
-      <p>Task Created Date: {{ formatDate(selectedTaskId.createdOn) }}</p>
-      <p>Task Updated Date: {{ formatDate(selectedTaskId.updatedOn) }}</p>
+      <p class="itbkk-status">Task Status: {{ selectedTaskId.taskStatus }}</p>
+      <p class="itbkk-timezone">
+        Time Zone: {{ Intl.DateTimeFormat().resolvedOptions().timeZone }}
+      </p>
+      <p class="itbkk-created-on">
+        Task Created Date: {{ formatDate(selectedTaskId.createdOn) }}
+      </p>
+      <p class="itbkk-updated-on">
+        Task Updated Date: {{ formatDate(selectedTaskId.updatedOn) }}
+      </p>
     </div>
   </div>
 </template>
