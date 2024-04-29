@@ -11,7 +11,7 @@ const props = defineProps({
 
 const statusColors = {
   "No Status": "#ccc", // Light gray for neutral state
-  Todo: "#f9c74f", // Orange for pending tasks
+  "To Do": "#f9c74f", // Orange for pending tasks
   Doing: "#007bff", // Blue for in-progress tasks
   Done: "#28a745", // Green for completed tasks
 }

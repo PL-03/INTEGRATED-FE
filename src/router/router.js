@@ -14,8 +14,7 @@ const routes = [
   },
   {
     path: "/",
-    name: "homepage",
-    component: () => import("../components/HomePage.vue"),
+    redirect: "/task",
   },
 ]
 

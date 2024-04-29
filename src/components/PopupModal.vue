@@ -52,7 +52,11 @@ const closeModal = () => {
       <h2>Task Details</h2>
       <p>Task Title: {{ selectedTaskId.taskTitle }}</p>
       <p class="itbkk-description">
-        Task Description: {{ selectedTaskId.taskDescription }}
+        Task Description:
+        <span v-if="selectedTaskId.taskDescription != null">{{
+          selectedTaskId.taskDescription
+        }}</span>
+        <span v-else class="italic text-red-500">No Description Provided</span>
       </p>
       <p>Task Assignees: {{ selectedTaskId.taskAssignees }}</p>
       <p class="itbkk-status">Task Status: {{ selectedTaskId.taskStatus }}</p>
@@ -92,6 +96,13 @@ const closeModal = () => {
   padding: 20px;
   border: 1px solid #888;
   width: 80%;
+  max-height: 80vh; /* Limit the height of modal content */
+  overflow-y: auto; /* Enable vertical scrolling if needed */
+}
+
+/* Ensure long words wrap onto the next line */
+.itbkk-description span {
+  word-wrap: break-word;
 }
 
 /* The Close Button */
