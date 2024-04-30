@@ -26,7 +26,6 @@ const fetchTaskDetails = async (taskId) => {
         // Redirect to task list page
         router.push("/task")
       } else {
-        // Handle other errors if needed
         console.error("Error fetching task details:", taskDetails.statusText)
       }
     } catch (error) {

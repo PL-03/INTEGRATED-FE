@@ -31,8 +31,7 @@ const formatDate = (dateString) => {
     minute: "2-digit",
     second: "2-digit",
     timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    // Add additional options here
-    hourCycle: "h24", // Use 24-hour format (0-23)
+    hourCycle: "h24",
   }
   const utcDate = new Date(dateString)
   const formatter = new Intl.DateTimeFormat("en-GB", options)
@@ -46,85 +45,52 @@ const closeModal = () => {
 </script>
 
 <template>
-  <v-form>
-    <div v-if="Object.keys(selectedTaskId).length > 0" class="modal">
-      <div class="modal-content">
-        <span class="close" @click="closeModal">&times;</span>
-        <h2 class="font-bold text-xl text-yellow-800">Task Details</h2>
-        <div>
-          <!-- <input type="text" :value="selectedTaskId.taskTitle" /> -->
-          <v-responsive class="mx-auto" max-width="800px">
-            <v-text-field
-              :model-value="selectedTaskId.title"
-              maxlength="100"
-              label="Task Title"
-              counter
-            />
-          </v-responsive>
-        </div>
-        <div class="itbkk-description">
-          <v-responsive class="mx-auto" max-width="1000px">
-            <v-textarea
-              v-if="selectedTaskId.description != null"
-              :model-value="selectedTaskId.description"
-              label="Task Description"
-              maxlength="500"
-              counter
-            />
-            <v-textarea
-              v-else
-              model-value="No Description Provided"
-              label="Task Description"
-              maxlength="500"
-              counter
-            />
-          </v-responsive>
-        </div>
-        <div>
-          <v-responsive class="mx-auto" max-width="500px">
-            <v-textarea
-              :model-value="selectedTaskId.assignees"
-              label="Task Assignees"
-              maxlength="30"
-              counter
-            >
-            </v-textarea>
-          </v-responsive>
-        </div>
-        <div class="itbkk-status">
-          <strong>Task Status:</strong> {{ selectedTaskId.status }}
-        </div>
-        <div class="itbkk-timezone">
-          <strong>Time Zone:</strong>
-          {{ Intl.DateTimeFormat().resolvedOptions().timeZone }}
-        </div>
-        <div class="itbkk-created-on">
-          <strong>Task Created Date:</strong>
-          {{ formatDate(selectedTaskId.createdOn) }}
-        </div>
-        <div class="itbkk-updated-on">
-          <strong>Task Updated Date:</strong>
-          {{ formatDate(selectedTaskId.updatedOn) }}
-        </div>
-      </div>
+  <div v-if="Object.keys(selectedTaskId).length > 0" class="modal">
+    <div class="modal-content">
+      <span class="close" @click="closeModal">&times;</span>
+      <h2 class="font-bold text-xl text-yellow-900">Task Details</h2>
+      <p><strong> Title:</strong> {{ selectedTaskId.title }}</p>
+      <p class="itbkk-description">
+        <strong>Task Description:</strong>
+        <span v-if="selectedTaskId.description != null">{{
+          selectedTaskId.description
+        }}</span>
+        <span v-else class="italic text-red-500">No Description Provided</span>
+      </p>
+      <p><strong>Task Assignees:</strong> {{ selectedTaskId.assignees }}</p>
+      <p class="itbkk-status">
+        <strong>Task Status:</strong> {{ selectedTaskId.status }}
+      </p>
+      <p class="itbkk-timezone">
+        <strong>Time Zone:</strong>
+        {{ Intl.DateTimeFormat().resolvedOptions().timeZone }}
+      </p>
+      <p class="itbkk-created-on">
+        <strong>Task Created Date:</strong>
+        {{ formatDate(selectedTaskId.createdOn) }}
+      </p>
+      <p class="itbkk-updated-on">
+        <strong>Task Updated Date:</strong>
+        {{ formatDate(selectedTaskId.updatedOn) }}
+      </p>
     </div>
-  </v-form>
+  </div>
 </template>
 
 <style scoped>
 /* Styles for modal and overlay */
 .modal {
-  display: block; /* Show the modal */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Sit on top */
-  padding-top: 100px; /* Location of the box */
+  display: block;
+  position: fixed;
+  z-index: 1;
+  padding-top: 100px;
   left: 0;
   top: 0;
-  width: 100%; /* Full width */
-  height: 100%; /* Full height */
-  overflow: auto; /* Enable scroll if needed */
-  background-color: rgb(0, 0, 0); /* Fallback color */
-  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0, 0, 0);
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 /* Modal Content */
@@ -134,11 +100,10 @@ const closeModal = () => {
   padding: 20px;
   border: 1px solid #888;
   width: 80%;
-  max-height: 80vh; /* Limit the height of modal content */
-  overflow-y: auto; /* Enable vertical scrolling if needed */
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
-/* Ensure long words wrap onto the next line */
 .itbkk-description span {
   word-wrap: break-word;
 }

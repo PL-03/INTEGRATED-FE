@@ -10,10 +10,10 @@ const props = defineProps({
 })
 
 const statusColors = {
-  "No Status": "#ccc", // Light gray for neutral state
-  "To Do": "#f9c74f", // Orange for pending tasks
-  Doing: "#007bff", // Blue for in-progress tasks
-  Done: "#28a745", // Green for completed tasks
+  "No Status": "#ccc",
+  "To Do": "#f9c74f",
+  Doing: "#007bff",
+  Done: "#28a745",
 }
 console.log(props)
 </script>
@@ -22,7 +22,8 @@ console.log(props)
   <div>
     <h1 class="text-5xl font-bold">IT-Bangmod Kradan Kanban</h1>
   </div>
-  <div class="mt-4">
+
+  <div class="mt-1">
     <button
       class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
     >
@@ -68,7 +69,9 @@ console.log(props)
           <td
             class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-r"
           >
-            {{ tasks.indexOf(task) + 1 }}
+            <v-toolbar>
+              {{ tasks.indexOf(task) + 1 }}
+            </v-toolbar>
           </td>
           <td
             class="text-m text-gray-900 font-light px-6 py-4 whitespace-nowrap border-r itbkk-title"
@@ -112,4 +115,3 @@ border-r {
   border-right: 1px solid #e2e8f0;
 }
 </style>
-<!-- <router-link :to="{ path:`/v1/task/${task.id}` }" class="text-cyan-500 hover:text-cyan-700"></router-link> -->
