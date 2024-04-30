@@ -63,26 +63,26 @@ console.log(props)
         <tr
           class="font-mono bg-gray-100 border-b itbkk-item"
           v-for="task in tasks"
-          :key="task.id"
+          :key="tasks.indexOf(task) + 1"
         >
           <td
             class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-r"
           >
-            {{ task.id }}
+            {{ tasks.indexOf(task) + 1 }}
           </td>
           <td
             class="text-m text-gray-900 font-light px-6 py-4 whitespace-nowrap border-r itbkk-title"
           >
             <button @click="$router.push(`/task/${task.id}`)">
-              {{ task.taskTitle }}
+              {{ task.title }}
             </button>
           </td>
           <td>
             <span
-              v-if="task.taskAssignees"
+              v-if="task.assignees"
               class="text-m text-gray-900 font-light px-6 py-4 whitespace-nowrap border-r itbkk-assignees"
             >
-              {{ task.taskAssignees }}
+              {{ task.assignees }}
             </span>
             <span
               v-else
@@ -96,9 +96,9 @@ console.log(props)
           >
             <button
               class="font-bold py-2 px-4 rounded"
-              :style="{ background: statusColors[task.taskStatus] }"
+              :style="{ background: statusColors[task.status] }"
             >
-              {{ task.taskStatus }}
+              {{ task.status }}
             </button>
           </td>
         </tr>

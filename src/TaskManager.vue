@@ -15,7 +15,7 @@ const fetchTaskDetails = async (taskId) => {
   if (taskId) {
     try {
       const taskDetails = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/itb-kk/v1/tasks/${taskId}`
+        `${import.meta.env.VITE_BASE_URL}/v1/tasks/${taskId}`
       )
       if (taskDetails.ok) {
         const data = await taskDetails.json()
@@ -38,9 +38,7 @@ const fetchTaskDetails = async (taskId) => {
 }
 
 onMounted(async () => {
-  const response = await fetch(
-    `${import.meta.env.VITE_BASE_URL}/itb-kk/v1/tasks`
-  )
+  const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/tasks`)
   const data = await response.json()
   tasks.value = data
 
