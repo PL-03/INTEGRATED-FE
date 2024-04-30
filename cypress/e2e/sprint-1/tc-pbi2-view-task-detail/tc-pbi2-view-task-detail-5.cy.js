@@ -22,6 +22,10 @@ describe(`TC-PBI2-VIEW-TASK-TABLE-VIEW-5\n
   it('Open tsak view page at /task/100',()=>{
     cy.visit('/task/100')
     cy.wait(100)
+
+    cy.on('window:alert',(str)=>{
+      expect(str).to.equal('The requested task does not exist')
+    })
     cy.location().should((location)=>{
         expect(location.pathname).to.eq('/task')
     })
