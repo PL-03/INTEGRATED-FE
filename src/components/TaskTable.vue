@@ -10,10 +10,10 @@ const props = defineProps({
 })
 
 const statusColors = {
-  "No Status": "#ccc",
-  "To Do": "#f9c74f",
-  Doing: "#007bff",
-  Done: "#28a745",
+  "No Status": "#9ca3af",
+  "To Do": "#ffd1d1",
+  Doing: "#fde047",
+  Done: "#5cd052",
 }
 console.log(props)
 </script>
@@ -25,18 +25,18 @@ console.log(props)
 
   <div class="mt-1 ">
     <button
-      class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+      class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded "
     >
       + Add Task
     </button>
   </div>
   <div class="flex justify-center items-center mt-4 ">
     <table class="table-auto w-full ">
-      <thead class="bg-violet-200 border-b">
+      <thead class="bg-blue-200 border-b">
         <tr>
           <th
             scope="col"
-            class="text-lg font-medium text-gray-900 px-6 py-2 text-left border-r"
+            class="text-lg font-medium text-gray-900 px-6 py-2 text-left border-r "
           >
             #
           </th>
@@ -62,7 +62,7 @@ console.log(props)
       </thead>
       <tbody>
         <tr
-          class="font-mono bg-gray-100 border-b itbkk-item"
+          class="font-mono bg-yellow-50 border-b itbkk-item"
           v-for="task in tasks"
           :key="tasks.indexOf(task) + 1"
         >
