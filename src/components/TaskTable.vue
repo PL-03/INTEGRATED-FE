@@ -1,6 +1,7 @@
 <script setup>
 import router from "@/router/router"
-import { defineProps, ref, watch } from "vue"
+import { ref, watch } from "vue"
+import { AkMoreVertical } from "@kalimahapps/vue-icons"
 
 const props = defineProps({
   tasks: {
@@ -67,11 +68,24 @@ console.log(props)
           :key="tasks.indexOf(task) + 1"
         >
           <td
-            class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 border-r"
+            class="px-6 py-4 whitespace-nowrap text-m font-medium text-gray-900 border-r"
           >
-            <v-toolbar>
-              {{ tasks.indexOf(task) + 1 }}
-            </v-toolbar>
+            {{ tasks.indexOf(task) + 1 }}
+            <v-menu>
+              <template v-slot:activator="{ props }">
+                <v-btn icon :color="'grey-lighten-3'" v-bind="props"
+                  ><AkMoreVertical class="icon-style"
+                /></v-btn>
+              </template>
+              <v-list>
+                <v-list-item>
+                  <v-list-item-title>Edit</v-list-item-title>
+                </v-list-item>
+                <v-list-item>
+                  <v-list-item-title>Delete</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </td>
           <td
             class="text-m text-gray-900 font-light px-6 py-4 whitespace-nowrap border-r itbkk-title"
@@ -89,7 +103,7 @@ console.log(props)
             </span>
             <span
               v-else
-              class="text-m text-gray-500 font-style: italic itbkk-assignees"
+              class="text-m text-gray-500 border-r italic itbkk-assignees"
             >
               Unassigned
             </span>
@@ -111,6 +125,9 @@ console.log(props)
 </template>
 
 <style scoped>
+.color-style {
+  font-size: 1.3em;
+}
 border-r {
   border-right: 1px solid #e2e8f0;
 }
