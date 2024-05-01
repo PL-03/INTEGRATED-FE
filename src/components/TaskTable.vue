@@ -2,13 +2,14 @@
 import router from "@/router/router"
 import { ref, watch } from "vue"
 import { AkMoreVertical } from "@kalimahapps/vue-icons"
-
+import { convertToTitleCase } from "./libs/util.js"
 const props = defineProps({
   tasks: {
     type: Array,
     // required: true
   },
 })
+const option = ["Edit", "Delete"]
 
 const statusColors = {
   "No Status": "#ccc",
@@ -16,23 +17,26 @@ const statusColors = {
   Doing: "#007bff",
   Done: "#28a745",
 }
+const getStatusText = (status) => {
+  return convertToTitleCase(status) || status
+}
 console.log(props)
 </script>
 
 <template>
   <div>
-    <h1 class="text-5xl font-bold ">IT-Bangmod Kradan Kanban</h1>
+    <h1 class="text-5xl font-bold">IT-Bangmod Kradan Kanban</h1>
   </div>
 
-  <div class="mt-1 ">
+  <div class="mt-1">
     <button
       class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
     >
       + Add Task
     </button>
   </div>
-  <div class="flex justify-center items-center mt-4 ">
-    <table class="table-auto w-full ">
+  <div class="flex justify-center items-center mt-4">
+    <table class="table-auto w-full">
       <thead class="bg-violet-200 border-b">
         <tr>
           <th
@@ -73,16 +77,24 @@ console.log(props)
             {{ tasks.indexOf(task) + 1 }}
             <v-menu>
               <template v-slot:activator="{ props }">
-                <v-btn icon :color="'grey-lighten-3'" v-bind="props"
-                  ><AkMoreVertical class="icon-style"
-                /></v-btn>
+                <button class="text-sm" v-bind="props">
+                  <AkMoreVertical class="icon-style" />
+                </button>
               </template>
-              <v-list>
+              <v-list class="bg-grey-lighten-3">
                 <v-list-item>
-                  <v-list-item-title>Edit</v-list-item-title>
+                  <v-list-item-title
+                    ><button class="hover:text-white">
+                      Edit
+                    </button></v-list-item-title
+                  >
                 </v-list-item>
                 <v-list-item>
-                  <v-list-item-title>Delete</v-list-item-title>
+                  <v-list-item-title
+                    ><button class="hover:text-white">
+                      Delete
+                    </button></v-list-item-title
+                  >
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -113,9 +125,11 @@ console.log(props)
           >
             <button
               class="font-bold py-2 px-4 rounded"
-              :style="{ background: statusColors[task.status] }"
+              :style="{
+                background: statusColors[getStatusText(task.status)],
+              }"
             >
-              {{ task.status }}
+              {{ getStatusText(task.status) }}
             </button>
           </td>
         </tr>

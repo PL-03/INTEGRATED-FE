@@ -8,7 +8,7 @@ const props = defineProps({
     required: true,
   },
 })
-
+const previousTask = computedPrevious(() => props.selectedTaskId)
 const isModalOpen = ref(false)
 
 watch(
