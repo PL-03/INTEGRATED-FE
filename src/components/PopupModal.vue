@@ -50,38 +50,39 @@ const closeModal = () => {
       <span class="close" @click="closeModal">&times;</span>
       <h2 class="font-bold text-xl text-yellow-950">Task Details</h2><br>
       <p><strong> Title:</strong> {{ selectedTaskId.title }}</p>
-
-      <p class="itbkk-description box-content h-52 w-auto border bg-white shadow-blue-500/40 hover:shadow-indigo-500/40 shadow-xl my-8 rounded-lg px-4 py-2 w-full ">
+      
+      <p class="itbkk-description col-start-1 col-end-4 box-content h-72 w-auto border bg-amber-50 shadow-slate-500/40 hover:shadow-blue-500/40 shadow-xl mx-8 my-8 rounded-lg px-4 py-2 w-full ">
         <strong>Task Description: </strong><br>
         <span v-if="selectedTaskId.description != null">{{
           selectedTaskId.description
         }}</span>
         <span v-else class="italic text-red-500">No Description Provided</span>
       </p>
-      <div class="grid grid-cols-4 m-4">
-      <p class="col-start-1 col-end-2 break-words place-content-center box-content h-32 w-96 p-4 border bg-white shadow-md ml-15 rounded-3xl  px-4 py-2" ><strong>Task Assignees:</strong><br> {{ selectedTaskId.assignees }}</p>
+      <div class="grid grid-cols-8 rows-2 m-8">
+      <p class="col-start-1 col-end-2 break-words place-content-center box-content h-56 w-52 p-4 border bg-amber-50 shadow-lg my-4 mr-12 rounded-3xl  px-4 py-2" >
+        <strong>Task Assignees:</strong><br> {{ selectedTaskId.assignees }}</p>
 
-      <p class="itbkk-status col-start-3 col-end-4 box-content place-content-center h-32 w-96 p-4 border bg-white shadow-md mx-4 rounded-3xl px-4 py-2">
+      <p class="itbkk-status col-start-3 box-content place-content-center h-56 w-52 p-4 border bg-amber-50 drop-shadow-lg my-4  ml-6 rounded-3xl px-4 py-2">
         <strong>Task Status: </strong><br> {{ selectedTaskId.status }}
       </p>
-      </div>
+      
 
-      <div class="grid grid-cols-6  ">
-      <p class="itbkk-timezone col-start-1 col-end-2 place-content-center box-content h-24 w-72 p-4 border bg-white shadow-xl ml-5 rounded-l-3xl px-4 py-2  ">
+      <div class="row-span-2 col-start-5 mt-2 ml-8 gap-5">
+      <p class="itbkk-timezone  place-content-center box-content h-14 w-96 p-4 border bg-blue-100 shadow-md mb-3 mt-1 ml-5 rounded-full px-4 py-2  ">
         <strong>Time Zone: </strong><br>
         {{ Intl.DateTimeFormat().resolvedOptions().timeZone }}
       </p>
 
-      <p class="itbkk-created-on col-start-3 col-end-4 place-content-center box-content h-24 w-72 p-4 border bg-white shadow-xl ml-5 mr-5 rounded px-4 py-2">
+      <p class="itbkk-created-on  place-content-center box-content h-14 w-96 p-4 border bg-sky-100 shadow-md mb-3 ml-5 mr-5 rounded-full px-4 py-2">
         <strong>Task Created Date: </strong><br>
         {{ formatDate(selectedTaskId.createdOn) }}
       </p>
 
-      <p class="itbkk-updated-on col-start-5 col-end-6 place-content-center box-content h-24 w-72 p-4 border bg-white shadow-xl ml-5 rounded-r-3xl px-4 py-2">
+      <p class="itbkk-updated-on  place-content-center box-content h-14 w-96 p-4 border bg-cyan-50 shadow-md ml-5 rounded-full px-4 py-2">
         <strong>Task Updated Date: </strong><br>
         {{ formatDate(selectedTaskId.updatedOn) }}
       </p>
-    </div>
+    </div></div>
     </div>
   </div>
 </template>
@@ -108,7 +109,7 @@ const closeModal = () => {
 
 /* Modal Content */
 .modal-content {
-  background-color: #ddd6fe;
+  background-color: #f8f7f6;
   margin: auto;
   padding: 20px;
   border: 1px solid #888;

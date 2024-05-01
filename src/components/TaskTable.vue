@@ -12,10 +12,10 @@ const props = defineProps({
 const option = ["Edit", "Delete"]
 
 const statusColors = {
-  "No Status": "#ccc",
-  "To Do": "#f9c74f",
-  Doing: "#007bff",
-  Done: "#28a745",
+  "No Status": "#9ca3af",
+  "To Do": "#ffd1d1",
+  Doing: "#fde047",
+  Done: "#5cd052",
 }
 const getStatusText = (status) => {
   return convertToTitleCase(status) || status
@@ -67,7 +67,7 @@ console.log(props)
       </thead>
       <tbody>
         <tr
-          class="font-mono bg-gray-100 border-b itbkk-item"
+          class="font-mono bg-yellow-50 border-b itbkk-item"
           v-for="task in tasks"
           :key="tasks.indexOf(task) + 1"
         >
