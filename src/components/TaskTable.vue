@@ -20,19 +20,19 @@ console.log(props)
 
 <template>
   <div>
-    <h1 class="text-5xl font-bold">IT-Bangmod Kradan Kanban</h1>
+    <h1 class="text-5xl font-bold ">IT-Bangmod Kradan Kanban</h1>
   </div>
 
-  <div class="mt-1">
+  <div class="mt-1 ">
     <button
       class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
     >
       + Add Task
     </button>
   </div>
-  <div class="flex justify-center items-center mt-4">
-    <table class="table-auto w-full">
-      <thead class="bg-white border-b">
+  <div class="flex justify-center items-center mt-4 ">
+    <table class="table-auto w-full ">
+      <thead class="bg-violet-200 border-b">
         <tr>
           <th
             scope="col"
