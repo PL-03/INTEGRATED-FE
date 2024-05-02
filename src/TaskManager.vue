@@ -3,14 +3,23 @@ import { ref, onMounted, watch, computed } from "vue"
 import TaskTable from "./components/TaskTable.vue"
 import PopupModal from "./components/PopupModal.vue"
 import { useRoute, useRouter } from "vue-router"
+import AddEditModal from "./components/AddEditModal.vue"
 
 const tasks = ref([])
 const selectedTaskId = ref({})
+
+const props = defineProps({
+  initialFormValues: {
+    type: Object,
+    required: true,
+  },
+})
+
 const route = useRoute()
 const router = useRouter()
 
 const taskId = computed(() => route.params.taskId || null)
-
+console.log(route.path)
 const fetchTaskDetails = async (taskId) => {
   if (taskId) {
     try {
@@ -56,6 +65,7 @@ watch(
 <template>
   <TaskTable :tasks="tasks" />
   <PopupModal :selectedTaskId="selectedTaskId" />
+  <AddEditModal :initialFormValues="props.initialFormValues" />
 </template>
 
 <style scoped></style>

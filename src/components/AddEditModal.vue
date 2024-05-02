@@ -1,26 +1,57 @@
 <script setup>
-import { ref, watch } from "vue"
-import router from "@/router/router"
+import { ref, watch, computed } from "vue"
+import { useRouter, useRoute } from "vue-router"
+const route = useRoute()
+const router = useRouter()
+const handleSubmit = async () => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/tasks`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(initialFormValues.value),
+    })
 
+    if (response.ok) {
+      // Handle successful response
+      console.log("Task added successfully")
+      router.push("/task")
+    } else {
+      // Handle error response
+      console.error("Error adding task:", response.statusText)
+    }
+  } catch (error) {
+    console.error("Error adding task:", error)
+  }
+}
+const initialFormValues = computed(() => props.initialFormValues)
+const isAddingNewTask = route.path.includes("/add")
 const props = defineProps({
-  selectedTaskId: {
+  initialFormValues: {
     type: Object,
     required: true,
+    default: () => ({
+      title: "",
+      description: "",
+      assignees: "",
+      status: "NO_STATUS",
+    }),
   },
 })
-const previousTask = computedPrevious(() => props.selectedTaskId)
+
 const isModalOpen = ref(false)
 
-watch(
-  () => props.selectedTaskId,
-  (newValue) => {
-    if (Object.keys(newValue).length > 0) {
-      isModalOpen.value = true
-    } else {
-      isModalOpen.value = false
-    }
-  }
-)
+// watch(
+//   () => props.selectedTaskId,
+//   (newValue) => {
+//     if (Object.keys(newValue).length > 0) {
+//       isModalOpen.value = true
+//     } else {
+//       isModalOpen.value = false
+//     }
+//   }
+// )
 
 const formatDate = (dateString) => {
   const options = {
@@ -46,6 +77,31 @@ const closeModal = () => {
 
 <template>
   <v-form>
+    <div v-if="isAddingNewTask" class="modal">
+      <div class="modal-content">
+        <span class="close" @click="closeModal">&times;</span>
+        <div>
+          <v-text-field v-model="initialFormValues.title" label="Task Title" />
+        </div>
+        <div>
+          <v-textarea
+            v-model="initialFormValues.description"
+            label="Task Description"
+          />
+        </div>
+        <div>
+          <v-textarea
+            v-model="initialFormValues.assignees"
+            label="Task Assignees"
+          />
+        </div>
+        <div>
+          <v-btn color="primary" @click="handleSubmit">Add Task</v-btn>
+        </div>
+      </div>
+    </div>
+  </v-form>
+  <!-- <v-form>
     <div v-if="Object.keys(selectedTaskId).length > 0" class="modal">
       <div class="modal-content">
         <span class="close" @click="closeModal">&times;</span>
@@ -107,7 +163,7 @@ const closeModal = () => {
         </div>
       </div>
     </div>
-  </v-form>
+  </v-form> -->
 </template>
 
 <style scoped>

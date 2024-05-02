@@ -16,6 +16,19 @@ const routes = [
     path: "/",
     redirect: "/task",
   },
+  {
+    path: "/task/add",
+    name: "taskadd",
+    component: TaskManagerVue,
+    props: {
+      initialFormValues: {
+        title: "",
+        description: "",
+        assignees: "",
+        status: "NO_STATUS",
+      },
+    },
+  },
 ]
 
 const router = createRouter({

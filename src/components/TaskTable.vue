@@ -2,7 +2,8 @@
 import router from "@/router/router"
 import { ref, watch } from "vue"
 import { AkMoreVertical } from "@kalimahapps/vue-icons"
-import { convertToTitleCase } from "./libs/util.js"
+import { convertToTitleCase } from "../libs/util.js"
+import { nextTick } from "vue"
 const props = defineProps({
   tasks: {
     type: Array,
@@ -20,6 +21,9 @@ const statusColors = {
 const getStatusText = (status) => {
   return convertToTitleCase(status) || status
 }
+const handleAddTask = () => {
+  router.push({ name: "taskadd" })
+}
 console.log(props)
 </script>
 
@@ -31,6 +35,7 @@ console.log(props)
   <div class="mt-1">
     <button
       class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+      @click="handleAddTask"
     >
       + Add Task
     </button>
