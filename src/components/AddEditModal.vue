@@ -25,8 +25,6 @@ const handleSubmit = async () => {
     console.error("Error adding task:", error)
   }
 }
-const initialFormValues = computed(() => props.initialFormValues)
-const isAddingNewTask = route.path.includes("/add")
 const props = defineProps({
   initialFormValues: {
     type: Object,
@@ -39,19 +37,11 @@ const props = defineProps({
     }),
   },
 })
+const isAddingNewTask = computed(() => route.path.includes("/add"))
 
-const isModalOpen = ref(false)
+// const isModalOpen = ref(false)
 
-// watch(
-//   () => props.selectedTaskId,
-//   (newValue) => {
-//     if (Object.keys(newValue).length > 0) {
-//       isModalOpen.value = true
-//     } else {
-//       isModalOpen.value = false
-//     }
-//   }
-// )
+
 
 const formatDate = (dateString) => {
   const options = {
