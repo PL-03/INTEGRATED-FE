@@ -89,7 +89,7 @@ console.log(props)
               <v-list class="bg-grey-lighten-3">
                 <v-list-item>
                   <v-list-item-title
-                    ><button class="hover:text-white">
+                    ><button class="hover:text-white" @click="router.push("/edit")">
                       Edit
                     </button></v-list-item-title
                   >
