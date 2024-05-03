@@ -36,6 +36,10 @@ const props = defineProps({
       status: "NO_STATUS",
     }),
   },
+  selectedTaskId: {
+    type: Object,
+    required: true,
+  },
 })
 const isAddingNewTask = computed(() => route.path.includes("/add"))
 const isEditingTask = computed(() => route.path.includes("/edit"))
@@ -67,7 +71,7 @@ const closeModal = () => {
 </script>
 
 <template>
-  <!-- <v-form name="add">
+  <v-form name="add">
     <div v-if="isAddingNewTask" class="modal">
       <div class="modal-content">
         <span class="close" @click="closeModal">&times;</span>
@@ -91,13 +95,11 @@ const closeModal = () => {
         </div>
       </div>
     </div>
-  </v-form> -->
+  </v-form>
   <v-form name="edit" v-if="isEditingTask">
     <div v-if="Object.keys(selectedTaskId).length > 0" class="modal">
     <div class="modal-content">
       <span class="close" @click="closeModal">&times;</span>
-        <h2 class="font-bold text-xl text-yellow-950 m-4">Task Details</h2>
-
         
             <div class="itbkk-title">
               <v-responsive class="mx-auto" max-width="800px">

@@ -41,7 +41,7 @@ console.log(props)
     </button>
   </div>
   <div class="flex justify-center items-center mt-4">
-    <table class="table-auto w-full">
+    <table class="table-auto w-5/12">
       <thead class="bg-violet-200 border-b">
         <tr>
           <th
@@ -89,7 +89,7 @@ console.log(props)
               <v-list class="bg-grey-lighten-3">
                 <v-list-item>
                   <v-list-item-title
-                    ><button class="hover:text-white" @click="router.push("/edit")">
+                    ><button class="hover:text-white" @click="router.push(`/task/edit/${task.id}`)">
                       Edit
                     </button></v-list-item-title
                   >

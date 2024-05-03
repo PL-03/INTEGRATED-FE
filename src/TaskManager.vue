@@ -65,7 +65,7 @@ watch(
 <template>
   <TaskTable :tasks="tasks" />
   <PopupModal :selectedTaskId="selectedTaskId" />
-  <AddEditModal :initialFormValues="props.initialFormValues" />
+  <AddEditModal :initialFormValues="props.initialFormValues" :selectedTaskId="selectedTaskId"/>
 </template>
 
 <style scoped></style>
