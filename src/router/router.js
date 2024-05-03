@@ -29,6 +29,12 @@ const routes = [
       },
     },
   },
+  {
+    path: "/task/edit/:taskId",
+    name: "taskedit",
+    component: TaskManagerVue,
+    
+  }
 ]
 
 const router = createRouter({
