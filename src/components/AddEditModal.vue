@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch, computed } from "vue"
 import { useRouter, useRoute } from "vue-router"
+import { convertToTitleCase } from "../libs/util.js"
 const route = useRoute()
 const router = useRouter()
 const handleSubmit = async () => {
@@ -65,96 +66,155 @@ const formatDate = (dateString) => {
   return formattedDate
 }
 
+window.onclick = function() {
+
+}
 const closeModal = () => {
   router.push("/task")
 }
 </script>
 
 <template>
-  <v-form name="add">
-    <div v-if="isAddingNewTask" class="modal">
+  <v-form name="add" v-if="isAddingNewTask">
+    <div  class="modal">
       <div class="modal-content">
         <span class="close" @click="closeModal">&times;</span>
-        <div>
-          <v-text-field v-model="initialFormValues.title" label="Task Title" />
+        <h2 class="font-bold text-xl text-yellow-950 m-4">Task Details</h2>
+
+
+        <div class="itbkk-title">
+          <strong>Title</strong>
+          <v-responsive class="mx-auto bg-gray-100 rounded-md" max-width="800px">
+            <v-text-field :model-value="initialFormValues.title" maxlength="100" counter />
+          </v-responsive>
         </div>
-        <div>
-          <v-textarea
-            v-model="initialFormValues.description"
-            label="Task Description"
-          />
-        </div>
-        <div>
-          <v-textarea
-            v-model="initialFormValues.assignees"
-            label="Task Assignees"
-          />
-        </div>
-        <div>
-          <v-btn color="primary" @click="handleSubmit">Add Task</v-btn>
-        </div>
-      </div>
-    </div>
-  </v-form>
-  <v-form name="edit" v-if="isEditingTask">
-    <div v-if="Object.keys(selectedTaskId).length > 0" class="modal">
-    <div class="modal-content">
-      <span class="close" @click="closeModal">&times;</span>
-        
-            <div class="itbkk-title">
-              <v-responsive class="mx-auto" max-width="800px">
-                <v-text-field :model-value="selectedTaskId.title" maxlength="100" label="Task Title" counter />
-              </v-responsive>
-            </div><div class="task-details-container">
-          <div class="task-details-left">
-            <div class="itbkk-description ">
-              <v-responsive class="mx-auto" max-width="5000px" >
-                <v-textarea class="itbkk-description" v-if="selectedTaskId.description != null"
-                  :model-value="selectedTaskId.description" label="Task Description" maxlength="500" counter />
-                <v-textarea v-else model-value="No Description Provided" label="Task Description" maxlength="500"
-                  counter />
+        <div class="task-details-container border rounded-3xl bg-yellow-50 p-4 m-4 shadow-md">
+          <div class="task-details-left ml-4">
+            <div class="itbkk-description mt-4">
+              <strong>Description</strong>
+              <v-responsive class="mx-auto  rounded-t-lg " max-width="5000px">
+                <v-textarea class="itbkk-description resize-none bg-blue-100 " no-resize rows="18"
+                  :model-value="initialFormValues.description"  maxlength="500" counter />
               </v-responsive>
             </div>
           </div>
 
-          <div class="task-details-right flex flex-col justify-between ml-4">
-            <div class="itbkk-assignee mt-2">
-              <v-responsive class="mx-auto" max-width="500px">
-                <v-textarea :model-value="selectedTaskId.assignees" label="Task Assignees" maxlength="30" counter>
+          <div class="task-details-right flex flex-col justify-between mr-4 ">
+            <div class="itbkk-assignee mt-4 mb-4 ">
+              <strong>Assignees</strong>
+              <v-responsive class="mx-auto rounded-t-lg" max-width="500px">
+                <v-textarea class="bg-blue-100" no-resize rows="4" :model-value="initialFormValues.assignees"  maxlength="30" counter>
                 </v-textarea>
               </v-responsive>
             </div>
             <div class="itbkk-status mb-5">
-              <label for="countries" class="block mb-2 text-sm font-medium text-gray-900 dark:text-black">
-                <strong>Task Status: </strong>
-              </label> 
-              <select class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 bg-gray-600 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
-                <option>{{ selectedTaskId.status }}</option>
+              <strong>Status </strong>
+              <select
+                class="bg-blue-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-600">
+                <option>{{ convertToTitleCase(initialFormValues.status) }}</option>
                 <option>To Do</option>
                 <option>Doing</option>
                 <option>Done</option>
               </select>
             </div>
-            <div class="timeBox text-wrap box-content border rounded p-4">
-            <div class="itbkk-timezone m-2">
-              <strong>Time Zone:</strong> 
-              <v-textarea :model-value="Intl.DateTimeFormat().resolvedOptions().timeZone" class="w-full h-auto" label="Task TimeZone"></v-textarea>
+            <div class="timeBox bg-blue-100 text-wrap box-content border rounded-lg p-4">
+              <div class="itbkk-timezone m-1 ">
+                <strong>Time Zone</strong>
+                <v-textarea class="bg-white" no-resize rows="2" :model-value="Intl.DateTimeFormat().resolvedOptions().timeZone" 
+                  ></v-textarea>
+              </div>
+              <!-- <div class="itbkk-created-on m-2">
+                <strong>Created Date:</strong>
+                {{ formatDate(selectedTaskId.createdOn) }}
+              </div>
+              <div class="itbkk-updated-on">
+                <strong>Updated Date:</strong>
+                {{ formatDate(selectedTaskId.updatedOn) }}
+              </div> -->
             </div>
-            <div class="itbkk-created-on m-2">
-              <strong>Task Created Date:</strong> 
-              <div class="box2 box-content border rounded-full">{{ formatDate(selectedTaskId.createdOn) }}</div>
+          </div>
+        </div>
+        <div class="flex flex-row justify-end">
+          <div class="m-4">
+            <v-btn color="primary">Save</v-btn>
+          </div>
+          <div class="m-4 ">
+            <v-btn color="primary">Cancel</v-btn>
+          </div>
+        </div>
+      </div>
+    </div>
+  </v-form>
+
+  <v-form name="edit" v-if="isEditingTask">
+    <div v-if="Object.keys(selectedTaskId).length > 0" class="modal">
+      <div class="modal-content">
+        <span class="close" @click="closeModal">&times;</span>
+        <h2 class="font-bold text-xl text-yellow-950 m-4">Task Details</h2>
+
+
+        <div class="itbkk-title">
+          <strong>Title</strong>
+          <v-responsive class="mx-auto bg-gray-100 rounded-md" max-width="800px">
+            <v-text-field :model-value="selectedTaskId.title" maxlength="100" counter />
+          </v-responsive>
+        </div>
+        <div class="task-details-container border rounded-3xl bg-yellow-50 p-4 m-4 shadow-md">
+          <div class="task-details-left ml-4">
+            <div class="itbkk-description mt-4">
+              <strong>Description</strong>
+              <v-responsive class="mx-auto  rounded-t-lg " max-width="5000px">
+                <v-textarea class="itbkk-description resize-none bg-blue-100 " no-resize rows="18" v-if="selectedTaskId.description != null"
+                  :model-value="selectedTaskId.description"  maxlength="500" counter />
+                <v-textarea v-else model-value="No Description Provided" no-resize rows="20" class="resize-none" label="Task Description" maxlength="500"
+                  counter  />
+              </v-responsive>
             </div>
-            <div class="itbkk-updated-on">
-              <strong>Task Updated Date:</strong> 
-              <div class="box3 box-content border rounded-full">{{ formatDate(selectedTaskId.updatedOn) }}</div>
-            </div></div></div>
           </div>
 
-            <div class="button place-content-center box-content h-12 w-24 border-auto bg-cyan-50 shadow-md ml-5 rounded-full px-3 py-1">
-              <button><strong>Save</strong></button>
+          <div class="task-details-right flex flex-col justify-between mr-4 ">
+            <div class="itbkk-assignee mt-4 mb-4 ">
+              <strong>Assignees</strong>
+              <v-responsive class="mx-auto rounded-t-lg" max-width="500px">
+                <v-textarea class="bg-blue-100" no-resize rows="4" :model-value="selectedTaskId.assignees"  maxlength="30" counter>
+                </v-textarea>
+              </v-responsive>
             </div>
-          
-        
+            <div class="itbkk-status mb-5">
+              <strong>Status </strong>
+              <select
+                class="bg-blue-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-600">
+                <option>{{ convertToTitleCase(selectedTaskId.status) }}</option>
+                <option>To Do</option>
+                <option>Doing</option>
+                <option>Done</option>
+              </select>
+            </div>
+            <div class="timeBox bg-blue-100 text-wrap box-content border rounded-lg p-4">
+              <div class="itbkk-timezone m-1 ">
+                <strong>Time Zone</strong>
+                <v-textarea class="bg-white" no-resize rows="2" :model-value="Intl.DateTimeFormat().resolvedOptions().timeZone" 
+                  ></v-textarea>
+              </div>
+              <div class="itbkk-created-on m-2">
+                <strong>Created Date:</strong>
+                {{ formatDate(selectedTaskId.createdOn) }}
+              </div>
+              <div class="itbkk-updated-on">
+                <strong>Updated Date:</strong>
+                {{ formatDate(selectedTaskId.updatedOn) }}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-row justify-end">
+          <div class="m-4">
+            <v-btn color="primary">Save</v-btn>
+          </div>
+          <div class="m-4 ">
+            <v-btn color="primary">Cancel</v-btn>
+          </div>
+        </div>
       </div>
     </div>
   </v-form>

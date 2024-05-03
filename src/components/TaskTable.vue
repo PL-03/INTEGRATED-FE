@@ -29,10 +29,10 @@ console.log(props)
 
 <template>
   <div>
-    <h1 class="text-5xl font-bold">IT-Bangmod Kradan Kanban</h1>
+    <h1 class="text-5xl font-bold mt-6">IT-Bangmod Kradan Kanban</h1>
   </div>
 
-  <div class="mt-1">
+  <div class="mt-4 flex justify-center items-center">
     <button
       class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
       @click="handleAddTask"
@@ -40,32 +40,21 @@ console.log(props)
       + Add Task
     </button>
   </div>
-  <div class="flex justify-center items-center mt-4">
-    <table class="table-auto w-5/12">
-      <thead class="bg-violet-200 border-b">
+
+  <div class="mt-4 flex justify-center items-center">
+    <table class="table-auto w-9/12 m-4 ">
+      <thead class="bg-violet-200 border-b py-4">
         <tr>
-          <th
-            scope="col"
-            class="text-lg font-medium text-gray-900 px-6 py-2 text-left border-r"
-          >
+          <th class="text-lg font-medium text-gray-900 px-4 py-2 text-left border-r">
             #
           </th>
-          <th
-            scope="col"
-            class="text-lg font-medium text-gray-900 px-6 py-2 text-left border-r"
-          >
+          <th class="text-lg font-medium text-gray-900 px-4 py-2 text-left border-r">
             Title
           </th>
-          <th
-            scope="col"
-            class="text-lg font-medium text-gray-900 px-6 py-2 text-left border-r"
-          >
+          <th class="text-lg font-medium text-gray-900 px-4 py-2 text-left border-r">
             Assignees
           </th>
-          <th
-            scope="col"
-            class="text-lg font-medium text-gray-900 px-6 py-2 text-left"
-          >
+          <th class="text-lg font-medium text-gray-900 px-4 py-2 text-left">
             Status
           </th>
         </tr>
@@ -73,13 +62,11 @@ console.log(props)
       <tbody>
         <tr
           class="font-mono bg-yellow-50 border-b itbkk-item"
-          v-for="task in tasks"
-          :key="tasks.indexOf(task) + 1"
+          v-for="(task, index) in tasks"
+          :key="task.id"
         >
-          <td
-            class="px-6 py-4 whitespace-nowrap text-m font-medium text-gray-900 border-r"
-          >
-            {{ tasks.indexOf(task) + 1 }}
+          <td class="px-4 py-2 whitespace-nowrap text-m font-medium text-gray-900 border-r">
+            {{ index + 1 }}
             <v-menu>
               <template v-slot:activator="{ props }">
                 <button class="text-sm" v-bind="props">
@@ -95,44 +82,30 @@ console.log(props)
                   >
                 </v-list-item>
                 <v-list-item>
-                  <v-list-item-title
-                    ><button class="hover:text-white">
-                      Delete
-                    </button></v-list-item-title
-                  >
+                  <v-list-item-title>
+                    <button class="hover:text-white">Delete</button>
+                  </v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
           </td>
-          <td
-            class="text-m text-gray-900 font-light px-6 py-4 whitespace-nowrap border-r itbkk-title"
-          >
-            <button @click="$router.push(`/task/${task.id}`)">
+          <td class="break-all text-m text-gray-900 font-light px-4 py-2 whitespace-normal border-r itbkk-title">
+            <button  @click="$router.push(`/task/${task.id}`)">
               {{ task.title }}
             </button>
           </td>
-          <td>
+          <td class="break-all text-m text-gray-900 font-light px-4 py-2 whitespace-normal border-r itbkk-assignees">
             <span
               v-if="task.assignees"
-              class="text-m text-gray-900 font-light px-6 py-4 whitespace-nowrap border-r itbkk-assignees"
             >
               {{ task.assignees }}
             </span>
-            <span
-              v-else
-              class="text-m text-gray-500 border-r italic itbkk-assignees"
-            >
-              Unassigned
-            </span>
+            <span v-else class="italic text-gray-500">Unassigned</span>
           </td>
-          <td
-            class="text-m text-gray-900 font-light px-6 py-4 whitespace-nowrap border-r itbkk-status"
-          >
+          <td class="text-m text-gray-900 font-light px-4 py-2 whitespace-normal itbkk-status">
             <button
-              class="font-bold py-2 px-4 rounded"
-              :style="{
-                background: statusColors[getStatusText(task.status)],
-              }"
+              class="status font-bold py-2 px-4 rounded"
+              :style="{ background: statusColors[getStatusText(task.status)] }"
             >
               {{ getStatusText(task.status) }}
             </button>
@@ -143,11 +116,15 @@ console.log(props)
   </div>
 </template>
 
+
 <style scoped>
 .color-style {
   font-size: 1.3em;
 }
 border-r {
   border-right: 1px solid #e2e8f0;
+}
+.status {
+  width: 120px;
 }
 </style>
