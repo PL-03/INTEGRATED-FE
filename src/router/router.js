@@ -1,16 +1,16 @@
 import { createRouter, createWebHistory } from "vue-router"
-import TaskManagerVue from "@/TaskManager.vue"
+import TaskManager from "@/TaskManager.vue"
 
 const routes = [
   {
     path: "/task",
     name: "tasklist",
-    component: TaskManagerVue,
+    component: TaskManager,
   },
   {
     path: "/task/:taskId",
     name: "taskdetail",
-    component: TaskManagerVue,
+    component: TaskManager,
   },
   {
     path: "/",
@@ -19,22 +19,13 @@ const routes = [
   {
     path: "/task/add",
     name: "taskadd",
-    component: TaskManagerVue,
-    props: {
-      initialFormValues: {
-        title: "",
-        description: "",
-        assignees: "",
-        status: "NO_STATUS",
-      },
-    },
+    component: TaskManager,
   },
   {
-    path: "/task/edit/:taskId",
+    path: "/task/:taskId/edit",
     name: "taskedit",
-    component: TaskManagerVue,
-    
-  }
+    component: TaskManager,
+  },
 ]
 
 const router = createRouter({

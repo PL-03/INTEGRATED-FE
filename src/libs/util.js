@@ -5,4 +5,5 @@ function convertToTitleCase(str) {
   }
   return words.join(" ")
 }
+
 export { convertToTitleCase }

@@ -10,9 +10,9 @@ const props = defineProps({
   },
 })
 
-const isModalOpen = ref(false)
-
 const formatDate = (dateString) => {
+  if (!dateString) return "Date is undefined"
+
   const options = {
     day: "2-digit",
     month: "2-digit",
@@ -53,10 +53,13 @@ const closeModal = () => {
       </p>
       <div class="grid grid-cols-8 rows-2 m-8">
         <p
-          class="col-start-1 col-end-2 break-words place-content-center box-content h-56 w-52 p-4 border bg-amber-50 shadow-lg my-4 mr-12 rounded-3xl px-4 py-2"
+          class="itbkk-assignees col-start-1 col-end-2 break-words place-content-center box-content h-56 w-52 p-4 border bg-amber-50 shadow-lg my-4 mr-12 rounded-3xl px-4 py-2"
         >
           <strong>Task Assignees:</strong><br />
-          {{ selectedTaskId.assignees }}
+          <span v-if="selectedTaskId.assignees != null">{{
+            selectedTaskId.assignees
+          }}</span>
+          <span v-else class="italic text-gray-500">Unassigned</span>
         </p>
 
         <p
@@ -91,10 +94,7 @@ const closeModal = () => {
       </div>
     </div>
   </div>
-
 </template>
-
-
 
 <style scoped>
 /* Styles for modal and overlay */
@@ -149,7 +149,6 @@ const closeModal = () => {
 
 .task-details-left {
   width: 60%;
-  /* Adjust as needed */
 }
 
 .task-details-right {
@@ -157,7 +156,3 @@ const closeModal = () => {
   /* Adjust as needed */
 }
 </style>
-
-
-
-

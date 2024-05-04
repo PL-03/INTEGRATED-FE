@@ -1,16 +1,20 @@
 <script setup>
-import router from "@/router/router"
-import { ref, watch } from "vue"
-import { AkMoreVertical } from "@kalimahapps/vue-icons"
 import { convertToTitleCase } from "../libs/util.js"
-import { nextTick } from "vue"
+import { useRouter } from "vue-router"
+import { ref } from "vue"
+import ConfirmationModal from "./ConfirmationModal.vue"
+
 const props = defineProps({
   tasks: {
     type: Array,
-    // required: true
+    required: true,
   },
 })
-const option = ["Edit", "Delete"]
+
+const emit = defineEmits(["viewTask", "editTask"])
+const router = useRouter()
+const showConfirmationModal = ref(false)
+const taskToDelete = ref(null)
 
 const statusColors = {
   "No Status": "#9ca3af",
@@ -18,13 +22,71 @@ const statusColors = {
   Doing: "#fde047",
   Done: "#5cd052",
 }
+
 const getStatusText = (status) => {
   return convertToTitleCase(status) || status
 }
+
 const handleAddTask = () => {
   router.push({ name: "taskadd" })
+  emit("add-task") // Emit add-task event
 }
-console.log(props)
+
+const handleViewTask = (task) => {
+  emit("viewTask", task)
+}
+
+const handleEditTask = (task) => {
+  router.push(`/task/${task.id}/edit`)
+  emit("edit-task", task.id) // Emit edit-task event with task ID
+}
+
+const handleDeleteTask = (task) => {
+  taskToDelete.value = task
+  showConfirmationModal.value = true
+}
+
+const confirmDeleteTask = async () => {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/v1/tasks/${taskToDelete.value.id}`,
+      {
+        method: "DELETE",
+      }
+    )
+
+    if (response.ok) {
+      showToast("The task has been deleted", "success")
+      // Optionally, you can fetch the updated task list or remove the deleted task from the local state
+    } else if (response.status === 404) {
+      showToast("An error has occurred, the task does not exist", "error")
+    } else {
+      showToast("An error occurred while deleting the task", "error")
+    }
+  } catch (error) {
+    console.error("Error deleting task:", error)
+    showToast("An error occurred while deleting the task", "error")
+  } finally {
+    showConfirmationModal.value = false
+    taskToDelete.value = null
+  }
+}
+
+const closeConfirmationModal = () => {
+  showConfirmationModal.value = false
+  taskToDelete.value = null
+}
+
+const showToast = (message, type) => {
+  console.log(`${type}: ${message}`)
+
+  // Show different toast themes based on the type
+  if (type === "success") {
+    // Show green toast for success
+  } else if (type === "error") {
+    // Show red toast for error
+  }
+}
 </script>
 
 <template>
@@ -42,67 +104,62 @@ console.log(props)
   </div>
 
   <div class="mt-4 flex justify-center items-center">
-    <table class="table-auto w-9/12 m-4 ">
+    <table class="table-auto w-9/12 m-4">
       <thead class="bg-violet-200 border-b py-4">
         <tr>
-          <th class="text-lg font-medium text-gray-900 px-4 py-2 text-left border-r">
+          <th
+            class="text-lg font-medium text-gray-900 px-4 py-2 text-left border-r"
+          >
             #
           </th>
-          <th class="text-lg font-medium text-gray-900 px-4 py-2 text-left border-r">
+          <th
+            class="text-lg font-medium text-gray-900 px-4 py-2 text-left border-r"
+          >
             Title
           </th>
-          <th class="text-lg font-medium text-gray-900 px-4 py-2 text-left border-r">
+          <th
+            class="text-lg font-medium text-gray-900 px-4 py-2 text-left border-r"
+          >
             Assignees
           </th>
           <th class="text-lg font-medium text-gray-900 px-4 py-2 text-left">
             Status
           </th>
+          <th class="text-lg font-medium text-gray-900 px-4 py-2 text-left">
+            Actions
+          </th>
         </tr>
       </thead>
       <tbody>
         <tr
-          class="font-mono bg-yellow-50 border-b itbkk-item"
           v-for="(task, index) in tasks"
           :key="task.id"
+          class="font-mono bg-yellow-50 border-b itbkk-item"
         >
-          <td class="px-4 py-2 whitespace-nowrap text-m font-medium text-gray-900 border-r">
+          <td
+            class="px-4 py-2 whitespace-nowrap text-m font-medium text-gray-900 border-r"
+          >
             {{ index + 1 }}
-            <v-menu>
-              <template v-slot:activator="{ props }">
-                <button class="text-sm" v-bind="props">
-                  <AkMoreVertical class="icon-style" />
-                </button>
-              </template>
-              <v-list class="bg-grey-lighten-3">
-                <v-list-item>
-                  <v-list-item-title
-                    ><button class="hover:text-white" @click="router.push(`/task/edit/${task.id}`)">
-                      Edit
-                    </button></v-list-item-title
-                  >
-                </v-list-item>
-                <v-list-item>
-                  <v-list-item-title>
-                    <button class="hover:text-white">Delete</button>
-                  </v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
           </td>
-          <td class="break-all text-m text-gray-900 font-light px-4 py-2 whitespace-normal border-r itbkk-title">
-            <button  @click="$router.push(`/task/${task.id}`)">
-              {{ task.title }}
-            </button>
+          <td
+            class="break-all text-m text-gray-900 font-light px-4 py-2 whitespace-normal border-r itbkk-title"
+          >
+            <button @click="handleViewTask(task)">{{ task.title }}</button>
           </td>
-          <td class="break-all text-m text-gray-900 font-light px-4 py-2 whitespace-normal border-r itbkk-assignees">
+          <td
+            class="break-all text-m text-gray-900 font-light px-4 py-2 whitespace-normal border-r itbkk-assignees"
+          >
             <span
               v-if="task.assignees"
+              class="break-all text-m text-gray-900 font-light px-4 py-2 whitespace-normal border-r"
             >
               {{ task.assignees }}
             </span>
             <span v-else class="italic text-gray-500">Unassigned</span>
           </td>
-          <td class="text-m text-gray-900 font-light px-4 py-2 whitespace-normal itbkk-status">
+          <td
+            class="text-m text-gray-900 font-light px-4 py-2 whitespace-normal itbkk-status"
+          >
             <button
               class="status font-bold py-2 px-4 rounded"
               :style="{ background: statusColors[getStatusText(task.status)] }"
@@ -110,12 +167,31 @@ console.log(props)
               {{ getStatusText(task.status) }}
             </button>
           </td>
+          <td class="px-4 py-2">
+            <button
+              class="text-purple-600 hover:text-purple-400 mr-2"
+              @click="handleEditTask(task)"
+            >
+              Edit
+            </button>
+            <button
+              class="text-red-600 hover:text-red-400"
+              @click="handleDeleteTask(task)"
+            >
+              Delete
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
   </div>
+  <ConfirmationModal
+    :show="showConfirmationModal"
+    :taskTitle="taskToDelete?.title"
+    @close="closeConfirmationModal"
+    @confirm="confirmDeleteTask"
+  />
 </template>
-
 
 <style scoped>
 .color-style {

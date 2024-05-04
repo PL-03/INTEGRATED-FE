@@ -1,55 +1,128 @@
 <script setup>
-import { ref, watch, computed } from "vue"
-import { useRouter, useRoute } from "vue-router"
+import { ref, watchEffect, computed } from "vue"
+import { useRouter } from "vue-router"
 import { convertToTitleCase } from "../libs/util.js"
-const route = useRoute()
-const router = useRouter()
-const handleSubmit = async () => {
-  try {
-    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/tasks`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(initialFormValues.value),
-    })
 
-    if (response.ok) {
-      // Handle successful response
-      console.log("Task added successfully")
-      router.push("/task")
-    } else {
-      // Handle error response
-      console.error("Error adding task:", response.statusText)
-    }
-  } catch (error) {
-    console.error("Error adding task:", error)
-  }
-}
 const props = defineProps({
-  initialFormValues: {
-    type: Object,
+  show: {
+    type: Boolean,
     required: true,
-    default: () => ({
-      title: "",
-      description: "",
-      assignees: "",
-      status: "NO_STATUS",
-    }),
   },
-  selectedTaskId: {
+  task: {
     type: Object,
     required: true,
   },
 })
-const isAddingNewTask = computed(() => route.path.includes("/add"))
-const isEditingTask = computed(() => route.path.includes("/edit"))
 
-// const isModalOpen = ref(false)
+const emit = defineEmits(["update:show", "taskAdded", "taskUpdated"])
 
+const router = useRouter()
+const isAddMode = computed(() => !props.task.id)
 
+const formData = ref({
+  title: "",
+  description: "",
+  assignees: "",
+  status: "NO_STATUS",
+})
+const isAddingTitleEmpty = computed(
+  () => isAddMode.value && !formData.value.title.trim()
+)
+
+watchEffect(() => {
+  if (props.show) {
+    formData.value.title = props.task.title || ""
+    formData.value.description = props.task.description || ""
+    formData.value.assignees = props.task.assignees || ""
+    formData.value.status = props.task.status || "NO_STATUS"
+  }
+})
+
+const closeModal = () => {
+  emit("update:show", false)
+  router.push("/task")
+}
+
+const isFormModified = computed(() => {
+  if (isAddMode.value) {
+    return true // Always allow saving in add mode
+  }
+
+  const { title, description, assignees, status } = props.task
+  return (
+    formData.value.title !== title ||
+    formData.value.description !== description ||
+    formData.value.assignees !== assignees ||
+    formData.value.status !== status
+  )
+})
+
+const handleSubmit = async () => {
+  try {
+    const response = isAddMode.value
+      ? await fetch(`${import.meta.env.VITE_BASE_URL}/v1/tasks`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData.value),
+        })
+      : await fetch(
+          `${import.meta.env.VITE_BASE_URL}/v1/tasks/${props.task.id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData.value),
+          }
+        )
+
+    if (response.ok) {
+      emit("update:show", false)
+      router.push("/task")
+      isAddMode.value ? emit("taskAdded") : emit("taskUpdated")
+      showToast(
+        `The task "${formData.value.title}" has been successfully ${
+          isAddMode.value ? "added" : "updated"
+        }`,
+        isAddMode.value ? "success-add" : "success-update"
+      )
+    } else {
+      showToast(
+        `An error occurred ${isAddMode.value ? "adding" : "updating"} the task`,
+        "error"
+      )
+    }
+  } catch (error) {
+    console.error(
+      `Error ${isAddMode.value ? "adding" : "updating"} task:`,
+      error
+    )
+    showToast(
+      `An error occurred ${isAddMode.value ? "adding" : "updating"} the task`,
+      "error"
+    )
+  }
+}
+
+const showToast = (message, type) => {
+  // Implement your toast notification logic here
+  console.log(`${type}: ${message}`)
+
+  // Show different toast themes based on the type
+  if (type === "success-add") {
+    // Show green toast for successful add
+  } else if (type === "success-update") {
+    // Show green toast for successful update
+  } else if (type === "error") {
+    // Show red toast for error
+  }
+}
 
 const formatDate = (dateString) => {
+  if (!dateString) return "Date is undefined"
+
   const options = {
     day: "2-digit",
     month: "2-digit",
@@ -65,163 +138,108 @@ const formatDate = (dateString) => {
   const formattedDate = formatter.format(utcDate)
   return formattedDate
 }
-
-window.onclick = function() {
-
-}
-const closeModal = () => {
-  router.push("/task")
-}
 </script>
 
 <template>
-  <v-form name="add" v-if="isAddingNewTask">
-    <div  class="modal">
-      <div class="modal-content">
-        <span class="close" @click="closeModal">&times;</span>
-        <h2 class="font-bold text-xl text-yellow-950 m-4">Task Details</h2>
-
-
-        <div class="itbkk-title">
-          <strong>Title</strong>
-          <v-responsive class="mx-auto bg-gray-100 rounded-md" max-width="800px">
-            <v-text-field :model-value="initialFormValues.title" maxlength="100" counter />
-          </v-responsive>
-        </div>
-        <div class="task-details-container border rounded-3xl bg-yellow-50 p-4 m-4 shadow-md">
-          <div class="task-details-left ml-4">
-            <div class="itbkk-description mt-4">
-              <strong>Description</strong>
-              <v-responsive class="mx-auto  rounded-t-lg " max-width="5000px">
-                <v-textarea class="itbkk-description resize-none bg-blue-100 " no-resize rows="18"
-                  :model-value="initialFormValues.description"  maxlength="500" counter />
-              </v-responsive>
-            </div>
-          </div>
-
-          <div class="task-details-right flex flex-col justify-between mr-4 ">
-            <div class="itbkk-assignee mt-4 mb-4 ">
-              <strong>Assignees</strong>
-              <v-responsive class="mx-auto rounded-t-lg" max-width="500px">
-                <v-textarea class="bg-blue-100" no-resize rows="4" :model-value="initialFormValues.assignees"  maxlength="30" counter>
-                </v-textarea>
-              </v-responsive>
-            </div>
-            <div class="itbkk-status mb-5">
-              <strong>Status </strong>
-              <select
-                class="bg-blue-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-600">
-                <option>{{ convertToTitleCase(initialFormValues.status) }}</option>
-                <option>To Do</option>
-                <option>Doing</option>
-                <option>Done</option>
-              </select>
-            </div>
-            <div class="timeBox bg-blue-100 text-wrap box-content border rounded-lg p-4">
-              <div class="itbkk-timezone m-1 ">
-                <strong>Time Zone</strong>
-                <v-textarea class="bg-white" no-resize rows="2" :model-value="Intl.DateTimeFormat().resolvedOptions().timeZone" 
-                  ></v-textarea>
-              </div>
-              <!-- <div class="itbkk-created-on m-2">
-                <strong>Created Date:</strong>
-                {{ formatDate(selectedTaskId.createdOn) }}
-              </div>
-              <div class="itbkk-updated-on">
-                <strong>Updated Date:</strong>
-                {{ formatDate(selectedTaskId.updatedOn) }}
-              </div> -->
-            </div>
+  <div v-if="show" class="modal">
+    <div class="modal-content">
+      <span class="close" @click="closeModal">&times;</span>
+      <h2 class="font-bold text-xl text-yellow-950">
+        {{ isAddMode ? "Add" : "Edit" }} Task
+      </h2>
+      <br />
+      <div class="itbkk-title">
+        <strong>Title</strong>
+        <input
+          v-model.trim="formData.title"
+          type="text"
+          maxlength="100"
+          class="mx-auto bg-gray-100 rounded-md w-full"
+        />
+      </div>
+      <div
+        class="task-details-container border rounded-3xl bg-yellow-50 p-4 m-4 shadow-md"
+      >
+        <div class="task-details-left ml-4">
+          <div class="itbkk-description mt-4">
+            <strong>Description</strong>
+            <textarea
+              v-model="formData.description"
+              class="itbkk-description resize-none bg-blue-100 w-full"
+              rows="18"
+              maxlength="500"
+            ></textarea>
           </div>
         </div>
-        <div class="flex flex-row justify-end">
-          <div class="m-4">
-            <v-btn color="primary">Save</v-btn>
+
+        <div class="task-details-right flex flex-col justify-between mr-4">
+          <div class="itbkk-assignee mt-4 mb-4">
+            <strong>Assignees</strong>
+            <textarea
+              v-model.trim="formData.assignees"
+              class="bg-blue-100 w-full"
+              rows="4"
+              maxlength="30"
+            ></textarea>
           </div>
-          <div class="m-4 ">
-            <v-btn color="primary">Cancel</v-btn>
+          <div class="itbkk-status mb-5">
+            <strong>Status</strong>
+            <select
+              v-model="formData.status"
+              class="bg-blue-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            >
+              <option value="NO_STATUS">
+                {{ convertToTitleCase("NO_STATUS") }}
+              </option>
+              <option value="TO_DO">{{ convertToTitleCase("TO_DO") }}</option>
+              <option value="DOING">{{ convertToTitleCase("DOING") }}</option>
+              <option value="DONE">{{ convertToTitleCase("DONE") }}</option>
+            </select>
+          </div>
+          <div
+            class="timeBox bg-blue-100 text-wrap box-content border rounded-lg p-4"
+          >
+            <div class="itbkk-timezone m-1">
+              <strong>Time Zone</strong>
+              <textarea class="bg-white w-full" rows="2" disabled>{{
+                Intl.DateTimeFormat().resolvedOptions().timeZone
+              }}</textarea>
+            </div>
+            <div v-if="!isAddMode" class="itbkk-created-on m-2">
+              <strong>Created Date:</strong>
+              {{ formatDate(props.task.createdOn) }}
+            </div>
+            <div v-if="!isAddMode" class="itbkk-updated-on">
+              <strong>Updated Date:</strong>
+              {{ formatDate(props.task.updatedOn) }}
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </v-form>
-
-  <v-form name="edit" v-if="isEditingTask">
-    <div v-if="Object.keys(selectedTaskId).length > 0" class="modal">
-      <div class="modal-content">
-        <span class="close" @click="closeModal">&times;</span>
-        <h2 class="font-bold text-xl text-yellow-950 m-4">Task Details</h2>
-
-
-        <div class="itbkk-title">
-          <strong>Title</strong>
-          <v-responsive class="mx-auto bg-gray-100 rounded-md" max-width="800px">
-            <v-text-field :model-value="selectedTaskId.title" maxlength="100" counter />
-          </v-responsive>
+      <div class="flex flex-row justify-end">
+        <div class="m-4">
+          <button
+            class="bg-green-500 text-white font-bold py-2 px-4 rounded"
+            @click="handleSubmit"
+            :disabled="isAddingTitleEmpty || (!isAddMode && !isFormModified)"
+          >
+            Save
+          </button>
         </div>
-        <div class="task-details-container border rounded-3xl bg-yellow-50 p-4 m-4 shadow-md">
-          <div class="task-details-left ml-4">
-            <div class="itbkk-description mt-4">
-              <strong>Description</strong>
-              <v-responsive class="mx-auto  rounded-t-lg " max-width="5000px">
-                <v-textarea class="itbkk-description resize-none bg-blue-100 " no-resize rows="18" v-if="selectedTaskId.description != null"
-                  :model-value="selectedTaskId.description"  maxlength="500" counter />
-                <v-textarea v-else model-value="No Description Provided" no-resize rows="20" class="resize-none" label="Task Description" maxlength="500"
-                  counter  />
-              </v-responsive>
-            </div>
-          </div>
-
-          <div class="task-details-right flex flex-col justify-between mr-4 ">
-            <div class="itbkk-assignee mt-4 mb-4 ">
-              <strong>Assignees</strong>
-              <v-responsive class="mx-auto rounded-t-lg" max-width="500px">
-                <v-textarea class="bg-blue-100" no-resize rows="4" :model-value="selectedTaskId.assignees"  maxlength="30" counter>
-                </v-textarea>
-              </v-responsive>
-            </div>
-            <div class="itbkk-status mb-5">
-              <strong>Status </strong>
-              <select
-                class="bg-blue-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:border-gray-600 dark:placeholder-gray-400 dark:text-gray-600">
-                <option>{{ convertToTitleCase(selectedTaskId.status) }}</option>
-                <option>To Do</option>
-                <option>Doing</option>
-                <option>Done</option>
-              </select>
-            </div>
-            <div class="timeBox bg-blue-100 text-wrap box-content border rounded-lg p-4">
-              <div class="itbkk-timezone m-1 ">
-                <strong>Time Zone</strong>
-                <v-textarea class="bg-white" no-resize rows="2" :model-value="Intl.DateTimeFormat().resolvedOptions().timeZone" 
-                  ></v-textarea>
-              </div>
-              <div class="itbkk-created-on m-2">
-                <strong>Created Date:</strong>
-                {{ formatDate(selectedTaskId.createdOn) }}
-              </div>
-              <div class="itbkk-updated-on">
-                <strong>Updated Date:</strong>
-                {{ formatDate(selectedTaskId.updatedOn) }}
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="flex flex-row justify-end">
-          <div class="m-4">
-            <v-btn color="primary">Save</v-btn>
-          </div>
-          <div class="m-4 ">
-            <v-btn color="primary">Cancel</v-btn>
-          </div>
+        <div class="m-4">
+          <button
+            class="bg-red-500 text-white font-bold py-2 px-4 rounded"
+            @click="closeModal"
+          >
+            Cancel
+          </button>
         </div>
       </div>
     </div>
-  </v-form>
+  </div>
 </template>
 
 <style scoped>
-/* Styles for modal and overlay */
 .modal {
   display: block;
   position: fixed;
@@ -236,7 +254,6 @@ const closeModal = () => {
   background-color: rgba(0, 0, 0, 0.4);
 }
 
-/* Modal Content */
 .modal-content {
   background-color: #fefefe;
   margin: auto;
@@ -251,18 +268,20 @@ const closeModal = () => {
   word-wrap: break-word;
 }
 
-/* The Close Button */
 .close {
   color: #aaaaaa;
   float: right;
   font-size: 28px;
   font-weight: bold;
 }
-
 .close:hover,
 .close:focus {
   color: #000;
   text-decoration: none;
   cursor: pointer;
+}
+
+.itbkk-description textarea {
+  resize: vertical; /* Allow vertical resizing */
 }
 </style>
