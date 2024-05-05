@@ -2,6 +2,7 @@
 import { ref, watchEffect, computed } from "vue"
 import { useRouter } from "vue-router"
 import { convertToTitleCase } from "../libs/util.js"
+import { useToast, POSITION } from "vue-toastification"
 
 const props = defineProps({
   show: {
@@ -107,16 +108,29 @@ const handleSubmit = async () => {
 }
 
 const showToast = (message, type) => {
-  // Implement your toast notification logic here
-  console.log(`${type}: ${message}`)
+  const toast = useToast()
 
-  // Show different toast themes based on the type
-  if (type === "success-add") {
-    // Show green toast for successful add
-  } else if (type === "success-update") {
-    // Show green toast for successful update
-  } else if (type === "error") {
-    // Show red toast for error
+  switch (type) {
+    case "success-add":
+      toast.success(message, {
+        position: POSITION.TOP_CENTER,
+        timeout: 3000,
+      })
+      break
+    case "success-update":
+      toast.success(message, {
+        position: POSITION.TOP_CENTER,
+        timeout: 3000,
+      })
+      break
+    case "error":
+      toast.error(message, {
+        position: POSITION.TOP_CENTER,
+        timeout: 3000,
+      })
+      break
+    default:
+      toast(message)
   }
 }
 
@@ -282,6 +296,6 @@ const formatDate = (dateString) => {
 }
 
 .itbkk-description textarea {
-  resize: vertical; /* Allow vertical resizing */
+  resize: vertical;
 }
 </style>

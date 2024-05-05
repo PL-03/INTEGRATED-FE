@@ -78,6 +78,7 @@ watch(
       }
     "
     @add-task="showModal = true"
+    @task-deleted="fetchTasks"
   />
   <AddEditModal
     v-if="isAddMode || isEditMode"

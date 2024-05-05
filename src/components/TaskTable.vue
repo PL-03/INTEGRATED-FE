@@ -3,6 +3,7 @@ import { convertToTitleCase } from "../libs/util.js"
 import { useRouter } from "vue-router"
 import { ref } from "vue"
 import ConfirmationModal from "./ConfirmationModal.vue"
+import { useToast, POSITION } from "vue-toastification"
 
 const props = defineProps({
   tasks: {
@@ -11,7 +12,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(["viewTask", "editTask"])
+const emit = defineEmits(["viewTask", "editTask", "taskDeleted"])
 const router = useRouter()
 const showConfirmationModal = ref(false)
 const taskToDelete = ref(null)
@@ -57,7 +58,7 @@ const confirmDeleteTask = async () => {
 
     if (response.ok) {
       showToast("The task has been deleted", "success")
-      // Optionally, you can fetch the updated task list or remove the deleted task from the local state
+      emit("taskDeleted") // Emit the "taskDeleted" event without the task ID
     } else if (response.status === 404) {
       showToast("An error has occurred, the task does not exist", "error")
     } else {
@@ -78,13 +79,29 @@ const closeConfirmationModal = () => {
 }
 
 const showToast = (message, type) => {
-  console.log(`${type}: ${message}`)
+  const toast = useToast() // Create a toast instance
 
-  // Show different toast themes based on the type
-  if (type === "success") {
-    // Show green toast for success
-  } else if (type === "error") {
-    // Show red toast for error
+  switch (type) {
+    case "success-add":
+      toast.success(message, {
+        position: POSITION.TOP_CENTER,
+        timeout: 3000,
+      })
+      break
+    case "success-update":
+      toast.success(message, {
+        position: POSITION.TOP_CENTER,
+        timeout: 3000,
+      })
+      break
+    case "error":
+      toast.error(message, {
+        position: POSITION.TOP_CENTER,
+        timeout: 3000,
+      })
+      break
+    default:
+      toast(message)
   }
 }
 </script>
@@ -171,6 +188,7 @@ const showToast = (message, type) => {
             <button
               class="text-purple-600 hover:text-purple-400 mr-2"
               @click="handleEditTask(task)"
+              disabled
             >
               Edit
             </button>
