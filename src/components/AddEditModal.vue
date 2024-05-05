@@ -215,9 +215,12 @@ const formatDate = (dateString) => {
           >
             <div class="itbkk-timezone m-1">
               <strong>Time Zone</strong>
-              <textarea class="bg-white w-full" rows="2" disabled>{{
-                Intl.DateTimeFormat().resolvedOptions().timeZone
-              }}</textarea>
+              <textarea
+                class="bg-white w-full"
+                rows="2"
+                disabled
+                v-model="Intl.DateTimeFormat().resolvedOptions().timeZone"
+              ></textarea>
             </div>
             <div v-if="!isAddMode" class="itbkk-created-on m-2">
               <strong>Created Date:</strong>

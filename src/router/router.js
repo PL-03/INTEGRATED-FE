@@ -17,6 +17,10 @@ const routes = [
     redirect: "/task",
   },
   {
+    path: "/task",
+    redirect: "/",
+  },
+  {
     path: "/task/add",
     name: "taskadd",
     component: TaskManager,
