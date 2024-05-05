@@ -43,7 +43,7 @@ const closeModal = () => {
       <p><strong> Title:</strong> {{ selectedTaskId.title }}</p>
 
       <p
-        class="itbkk-description col-start-1 col-end-4 box-content h-72 w-auto border bg-amber-50 shadow-slate-500/40 hover:shadow-blue-500/40 shadow-xl mx-8 my-8 rounded-lg px-4 py-2 w-full"
+        class="itbkk-description col-start-1 col-end-4 box-content h-72 border bg-amber-50 shadow-slate-500/40 hover:shadow-blue-500/40 shadow-xl mx-8 my-8 rounded-lg px-4 py-2 w-full"
       >
         <strong>Task Description: </strong><br />
         <span v-if="selectedTaskId.description != null">{{
@@ -66,7 +66,7 @@ const closeModal = () => {
           class="itbkk-status col-start-3 box-content place-content-center h-56 w-52 p-4 border bg-amber-50 drop-shadow-lg my-4 ml-6 rounded-3xl px-4 py-2"
         >
           <strong>Task Status: </strong><br />
-          {{ selectedTaskId.status }}
+          {{ convertToTitleCase(selectedTaskId.status) }}
         </p>
 
         <div class="row-span-2 col-start-5 mt-2 ml-8 gap-5">
