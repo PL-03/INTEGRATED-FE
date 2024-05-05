@@ -188,7 +188,6 @@ const showToast = (message, type) => {
             <button
               class="text-purple-600 hover:text-purple-400 mr-2 e-btn"
               @click="handleEditTask(task)"
-              disabled
             >
               Edit
             </button>
