@@ -18,7 +18,7 @@ const routes = [
   },
   {
     path: "/task",
-    redirect: "/",
+    redirect: "/task",
   },
   {
     path: "/task/add",
