@@ -28,11 +28,13 @@ const confirmDelete = () => {
     <div class="modal-content">
       <span class="close" @click="closeModal">&times;</span>
       <h2 class="font-bold text-xl text-yellow-950">Delete Task</h2>
-      <p>Do you want to delete the task "{{ taskTitle }}"?</p>
+      <p class="itbkk-message">
+        Do you want to delete the task "{{ taskTitle }}"?
+      </p>
       <div class="flex flex-row justify-end">
         <div class="m-4">
           <button
-            class="bg-green-500 text-white font-bold py-2 px-4 rounded"
+            class="bg-green-500 text-white font-bold py-2 px-4 rounded itbkk-button-confirm"
             @click="confirmDelete"
           >
             Confirm
@@ -40,7 +42,7 @@ const confirmDelete = () => {
         </div>
         <div class="m-4">
           <button
-            class="bg-red-500 text-white font-bold py-2 px-4 rounded"
+            class="bg-red-500 text-white font-bold py-2 px-4 rounded itbkk-button-cancel"
             @click="closeModal"
           >
             Cancel

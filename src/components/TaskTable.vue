@@ -186,14 +186,14 @@ const showToast = (message, type) => {
           </td>
           <td class="px-4 py-2">
             <button
-              class="text-purple-600 hover:text-purple-400 mr-2"
+              class="text-purple-600 hover:text-purple-400 mr-2 e-btn"
               @click="handleEditTask(task)"
               disabled
             >
               Edit
             </button>
             <button
-              class="text-red-600 hover:text-red-400"
+              class="text-red-600 hover:text-red-400 d-btn"
               @click="handleDeleteTask(task)"
             >
               Delete
@@ -212,6 +212,28 @@ const showToast = (message, type) => {
 </template>
 
 <style scoped>
+.d-btn {
+  background-color: #ac2020;
+  border: none;
+  color: white;
+  padding: 15px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 12px;
+}
+.e-btn {
+  background-color: #04aa6d;
+  border: none;
+  color: white;
+  padding: 15px 15px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  border-radius: 12px;
+}
 .color-style {
   font-size: 1.3em;
 }

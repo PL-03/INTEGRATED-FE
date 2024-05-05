@@ -59,7 +59,7 @@ const closeModal = () => {
           <span v-if="selectedTaskId.assignees != null">{{
             selectedTaskId.assignees
           }}</span>
-          <span v-else class="italic text-gray-500">Unassigned</span>
+          <span v-else class="italic text-gray-900">Unassigned</span>
         </p>
 
         <p
@@ -97,7 +97,6 @@ const closeModal = () => {
 </template>
 
 <style scoped>
-/* Styles for modal and overlay */
 .modal {
   display: block;
   position: fixed;
