@@ -107,42 +107,43 @@ const showToast = (message, type) => {
 </script>
 
 <template>
+  <div class="bg-gradient-to-t from-gray-700 to-blue-100">
   <div>
-    <h1 class="text-5xl font-bold mt-6">IT-Bangmod Kradan Kanban</h1>
+    <h1 class="text-5xl font-bold p-8">IT-Bangmod Kradan Kanban</h1>
   </div>
 
-  <div class="mt-4 flex justify-center items-center">
+  <div class="mt-2 mr-52 flex justify-end items-center ">
     <button
-      class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+      class="bg-green-500 hover:bg-green-700 text-white font-bold p-2 rounded"
       @click="handleAddTask"
     >
       + Add Task
     </button>
   </div>
 
-  <div class="mt-4 flex justify-center items-center">
-    <table class="table-auto w-9/12 m-4">
-      <thead class="bg-violet-200 border-b py-4">
+  <div class="mt-4 flex justify-center items-center ">
+    <table class="table-auto w-9/12 m-2 rounded-2xl overflow-hidden">
+      <thead class="bg-blue-950 border-b py-4 text-white ">
         <tr>
           <th
-            class="text-lg font-medium text-gray-900 px-4 py-2 text-left border-r"
+            class="text-lg font-medium text-white px-4 py-2 text-left border-r"
           >
             #
           </th>
           <th
-            class="text-lg font-medium text-gray-900 px-4 py-2 text-left border-r"
+            class="text-lg font-medium text-white px-4 py-2 text-left border-r"
           >
             Title
           </th>
           <th
-            class="text-lg font-medium text-gray-900 px-4 py-2 text-left border-r"
+            class="text-lg font-medium text-white px-4 py-2 text-left border-r"
           >
             Assignees
           </th>
-          <th class="text-lg font-medium text-gray-900 px-4 py-2 text-left">
+          <th class="text-lg font-medium text-white px-4 py-2 text-left">
             Status
           </th>
-          <th class="text-lg font-medium text-gray-900 px-4 py-2 text-left">
+          <th class="text-lg font-medium text-white px-4 py-2 text-left">
             Actions
           </th>
         </tr>
@@ -151,26 +152,27 @@ const showToast = (message, type) => {
         <tr
           v-for="(task, index) in tasks"
           :key="task.id"
-          class="font-mono bg-yellow-50 border-b itbkk-item"
-        >
+          :class="index % 2 === 0 ? 'bg-sky-50' : 'bg-yellow-50'"
+          class="font-mono border-b itbkk-item"
+          >
           <td
-            class="px-4 py-2 whitespace-nowrap text-m font-medium text-gray-900 border-r"
+            class=" px-4 py-2 whitespace-nowrap text-m font-medium text-gray-900 border-r"
           >
             {{ index + 1 }}
           </td>
           <td
-            class="break-all text-m text-gray-900 font-light px-4 py-2 whitespace-normal border-r itbkk-title"
+            class="break-all  text-m text-gray-900 font-light px-4 py-2 whitespace-normal border-r itbkk-title"
           >
             <button @click="handleViewTask(task)">{{ task.title }}</button>
           </td>
-          <span
+          <p
             v-if="task.assignees"
-            class="break-all text-m text-gray-900 font-light px-4 py-2 whitespace-normal border-r itbkk-assignees"
+            class="break-all  text-m text-gray-900 font-light p-8 whitespace-normal border-r itbkk-assignees"
           >
             {{ task.assignees }}
-          </span>
-          <span v-else class="italic text-gray-500 font-light itbkk-assignees"
-            >Unassigned</span
+          </p>
+          <td v-else class="italic text-gray-500 font-light itbkk-assignees "
+            >Unassigned</td
           >
           <td
             class="text-m text-gray-900 font-light px-4 py-2 whitespace-normal itbkk-status"
@@ -182,15 +184,16 @@ const showToast = (message, type) => {
               {{ getStatusText(task.status) }}
             </button>
           </td>
-          <td class="px-4 py-2">
+          
+          <td class=" px-4 py-2">
             <button
-              class="text-purple-600 hover:text-purple-400 mr-2 e-btn"
+              class="text-purple-600 hover:text-purple-400 mb-2 mt-2 e-btn"
               @click="handleEditTask(task)"
             >
               Edit
             </button>
             <button
-              class="text-red-600 hover:text-red-400 d-btn"
+              class="text-red-600 hover:text-red-400  d-btn"
               @click="handleDeleteTask(task)"
             >
               Delete
@@ -200,20 +203,22 @@ const showToast = (message, type) => {
       </tbody>
     </table>
   </div>
+
   <ConfirmationModal
     :show="showConfirmationModal"
     :taskTitle="taskToDelete?.title"
     @close="closeConfirmationModal"
     @confirm="confirmDeleteTask"
   />
+  </div>
 </template>
 
 <style scoped>
 .d-btn {
-  background-color: #ac2020;
+  background-color: #a43434;
   border: none;
   color: white;
-  padding: 15px 15px;
+  padding: 10px 12px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
@@ -221,10 +226,10 @@ const showToast = (message, type) => {
   border-radius: 12px;
 }
 .e-btn {
-  background-color: #04aa6d;
+  background-color: #6b7380;
   border: none;
   color: white;
-  padding: 15px 15px;
+  padding: 10px 20px;
   text-align: center;
   text-decoration: none;
   display: inline-block;
@@ -235,7 +240,7 @@ const showToast = (message, type) => {
   font-size: 1.3em;
 }
 border-r {
-  border-right: 1px solid #e2e8f0;
+  border-right: 1px solid #f6f7f9;
 }
 .status {
   width: 120px;

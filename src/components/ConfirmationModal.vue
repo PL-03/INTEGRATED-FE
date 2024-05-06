@@ -31,7 +31,7 @@ const confirmDelete = () => {
       <p class="itbkk-message">
         Do you want to delete the task "{{ taskTitle }}"?
       </p>
-      <div class="flex flex-row justify-end">
+      <div class="flex flex-row justify-center">
         <div class="m-4">
           <button
             class="bg-green-500 text-white font-bold py-2 px-4 rounded itbkk-button-confirm"
