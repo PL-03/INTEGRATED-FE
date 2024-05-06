@@ -163,17 +163,15 @@ const showToast = (message, type) => {
           >
             <button @click="handleViewTask(task)">{{ task.title }}</button>
           </td>
-          <td
+          <span
+            v-if="task.assignees"
             class="break-all text-m text-gray-900 font-light px-4 py-2 whitespace-normal border-r itbkk-assignees"
           >
-            <span
-              v-if="task.assignees"
-              class="break-all text-m text-gray-900 font-light px-4 py-2 whitespace-normal border-r"
-            >
-              {{ task.assignees }}
-            </span>
-            <span v-else class="italic text-gray-500">Unassigned</span>
-          </td>
+            {{ task.assignees }}
+          </span>
+          <span v-else class="italic text-gray-500 font-light itbkk-assignees"
+            >Unassigned</span
+          >
           <td
             class="text-m text-gray-900 font-light px-4 py-2 whitespace-normal itbkk-status"
           >
