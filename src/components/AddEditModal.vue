@@ -33,8 +33,12 @@ const isAddingTitleEmpty = computed(
 watchEffect(() => {
   if (props.show) {
     formData.value.title = props.task.title || ""
-    formData.value.description = props.task.description || ""
-    formData.value.assignees = props.task.assignees || ""
+    formData.value.description = props.task.description
+      ? props.task.description
+      : null
+    formData.value.assignees = props.task.assignees
+      ? props.task.assignees
+      : null
     formData.value.status = props.task.status || "NO_STATUS"
   }
 })
