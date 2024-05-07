@@ -64,10 +64,10 @@ const isFormModified = computed(() => {
 
 const handleSubmit = async () => {
   try {
-    const trimmedFormData = {
+    const requestData = {
       title: formData.value.title.trim(),
-      description: formData.value.description.trim(),
-      assignees: formData.value.assignees.trim(),
+      description: formData.value.description.trim() || null,
+      assignees: formData.value.assignees.trim() || null,
       status: formData.value.status,
     }
 
@@ -77,7 +77,7 @@ const handleSubmit = async () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(trimmedFormData),
+          body: JSON.stringify(requestData),
         })
       : await fetch(
           `${import.meta.env.VITE_BASE_URL}/v1/tasks/${props.task.id}`,
@@ -86,7 +86,7 @@ const handleSubmit = async () => {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(trimmedFormData),
+            body: JSON.stringify(formData.value),
           }
         )
 
@@ -251,7 +251,7 @@ const formatDate = (dateString) => {
       <div class="flex justify-end">
         <div class="m-4">
           <button
-            class="bg-green-500 text-white font-bold py-2 px-4 rounded"
+            class="bg-green-500 text-white font-bold py-2 px-4 rounded itbkk-button-confirm"
             @click="handleSubmit"
             :disabled="isAddingTitleEmpty || (!isAddMode && !isFormModified)"
           >
@@ -260,7 +260,7 @@ const formatDate = (dateString) => {
         </div>
         <div class="m-4">
           <button
-            class="bg-red-500 text-white font-bold py-2 px-4 rounded"
+            class="bg-red-500 text-white font-bold py-2 px-4 rounded itbkk-button-cancel"
             @click="closeModal"
           >
             Cancel
