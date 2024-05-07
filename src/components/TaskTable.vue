@@ -108,108 +108,110 @@ const showToast = (message, type) => {
 
 <template>
   <div class="bg-gradient-to-t from-gray-700 to-blue-100">
-  <div>
-    <h1 class="text-5xl font-bold p-8">IT-Bangmod Kradan Kanban</h1>
-  </div>
+    <div>
+      <h1 class="text-5xl font-bold p-8">IT-Bangmod Kradan Kanban</h1>
+    </div>
 
-  <div class="mt-2 mr-52 flex justify-end items-center ">
-    <button
-      class="bg-green-500 hover:bg-green-700 text-white font-bold p-2 rounded"
-      @click="handleAddTask"
-    >
-      + Add Task
-    </button>
-  </div>
+    <div class="mt-2 mr-52 flex justify-end items-center">
+      <button
+        class="bg-green-500 hover:bg-green-700 text-white font-bold p-2 rounded itbkk-button-add"
+        @click="handleAddTask"
+      >
+        + Add Task
+      </button>
+    </div>
 
-  <div class="mt-4 flex justify-center items-center ">
-    <table class="table-auto w-9/12 m-2 rounded-2xl overflow-hidden">
-      <thead class="bg-blue-950 border-b py-4 text-white ">
-        <tr>
-          <th
-            class="text-lg font-medium text-white px-4 py-2 text-left border-r"
-          >
-            #
-          </th>
-          <th
-            class="text-lg font-medium text-white px-4 py-2 text-left border-r"
-          >
-            Title
-          </th>
-          <th
-            class="text-lg font-medium text-white px-4 py-2 text-left border-r"
-          >
-            Assignees
-          </th>
-          <th class="text-lg font-medium text-white px-4 py-2 text-left">
-            Status
-          </th>
-          <th class="text-lg font-medium text-white px-4 py-2 text-left">
-            Actions
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="(task, index) in tasks"
-          :key="task.id"
-          :class="index % 2 === 0 ? 'bg-sky-50' : 'bg-yellow-50'"
-          class="font-mono border-b itbkk-item"
-          >
-          <td
-            class=" px-4 py-2 whitespace-nowrap text-m font-medium text-gray-900 border-r"
-          >
-            {{ index + 1 }}
-          </td>
-          <td
-            class="break-all  text-m text-gray-900 font-light px-4 py-2 whitespace-normal border-r itbkk-title"
-          >
-            <button @click="handleViewTask(task)">{{ task.title }}</button>
-          </td>
-          <p
-            v-if="task.assignees"
-            class="break-all  text-m text-gray-900 font-light p-8 whitespace-normal border-r itbkk-assignees"
-          >
-            {{ task.assignees }}
-          </p>
-          <td v-else class="italic text-gray-500 font-light itbkk-assignees "
-            >Unassigned</td
-          >
-          <td
-            class="text-m text-gray-900 font-light px-4 py-2 whitespace-normal itbkk-status"
-          >
-            <button
-              class="status font-bold py-2 px-4 rounded"
-              :style="{ background: statusColors[getStatusText(task.status)] }"
+    <div class="mt-4 flex justify-center items-center">
+      <table class="table-auto w-9/12 m-2 rounded-2xl overflow-hidden">
+        <thead class="bg-blue-950 border-b py-4 text-white">
+          <tr>
+            <th
+              class="text-lg font-medium text-white px-4 py-2 text-left border-r"
             >
-              {{ getStatusText(task.status) }}
-            </button>
-          </td>
-          
-          <td class=" px-4 py-2">
-            <button
-              class="text-purple-600 hover:text-purple-400 mb-2 mt-2 e-btn"
-              @click="handleEditTask(task)"
+              #
+            </th>
+            <th
+              class="text-lg font-medium text-white px-4 py-2 text-left border-r"
             >
-              Edit
-            </button>
-            <button
-              class="text-red-600 hover:text-red-400  d-btn"
-              @click="handleDeleteTask(task)"
+              Title
+            </th>
+            <th
+              class="text-lg font-medium text-white px-4 py-2 text-left border-r"
             >
-              Delete
-            </button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+              Assignees
+            </th>
+            <th class="text-lg font-medium text-white px-4 py-2 text-left">
+              Status
+            </th>
+            <th class="text-lg font-medium text-white px-4 py-2 text-left">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(task, index) in tasks"
+            :key="task.id"
+            :class="index % 2 === 0 ? 'bg-sky-50' : 'bg-yellow-50'"
+            class="font-mono border-b itbkk-item"
+          >
+            <td
+              class="px-4 py-2 whitespace-nowrap text-m font-medium text-gray-900 border-r"
+            >
+              {{ index + 1 }}
+            </td>
+            <td
+              class="break-all text-m text-gray-900 font-light px-4 py-2 whitespace-normal border-r itbkk-title"
+            >
+              <button @click="handleViewTask(task)">{{ task.title }}</button>
+            </td>
+            <p
+              v-if="task.assignees"
+              class="break-all text-m text-gray-900 font-light p-8 whitespace-normal border-r itbkk-assignees"
+            >
+              {{ task.assignees }}
+            </p>
+            <td v-else class="italic text-gray-500 font-light itbkk-assignees">
+              Unassigned
+            </td>
+            <td
+              class="text-m text-gray-900 font-light px-4 py-2 whitespace-normal itbkk-status"
+            >
+              <button
+                class="status font-bold py-2 px-4 rounded"
+                :style="{
+                  background: statusColors[getStatusText(task.status)],
+                }"
+              >
+                {{ getStatusText(task.status) }}
+              </button>
+            </td>
 
-  <ConfirmationModal
-    :show="showConfirmationModal"
-    :taskTitle="taskToDelete?.title"
-    @close="closeConfirmationModal"
-    @confirm="confirmDeleteTask"
-  />
+            <td class="px-4 py-2">
+              <button
+                class="text-purple-600 hover:text-purple-400 mb-2 mt-2 e-btn"
+                @click="handleEditTask(task)"
+              >
+                Edit
+              </button>
+              <button
+                class="text-red-600 hover:text-red-400 d-btn"
+                @click="handleDeleteTask(task)"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ConfirmationModal
+      :show="showConfirmationModal"
+      :taskTitle="taskToDelete?.title"
+      @close="closeConfirmationModal"
+      @confirm="confirmDeleteTask"
+    />
   </div>
 </template>
 
