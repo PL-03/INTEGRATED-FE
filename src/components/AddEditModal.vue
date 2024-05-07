@@ -33,12 +33,8 @@ const isAddingTitleEmpty = computed(
 watchEffect(() => {
   if (props.show) {
     formData.value.title = props.task.title || ""
-    formData.value.description = props.task.description
-      ? props.task.description
-      : null
-    formData.value.assignees = props.task.assignees
-      ? props.task.assignees
-      : null
+    formData.value.description = props.task.description || ""
+    formData.value.assignees = props.task.assignees || ""
     formData.value.status = props.task.status || "NO_STATUS"
   }
 })
@@ -251,7 +247,7 @@ const formatDate = (dateString) => {
       <div class="flex justify-end">
         <div class="m-4">
           <button
-            class="bg-green-500 text-white font-bold py-2 px-4 rounded itbkk-button-confirm"
+            class="bg-green-500 text-white font-bold py-2 px-4 rounded itbkk-button-confirm disabled"
             @click="handleSubmit"
             :disabled="isAddingTitleEmpty || (!isAddMode && !isFormModified)"
           >
