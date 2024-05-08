@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router"
 import TaskManager from "@/TaskManager.vue"
+import StatusManager from "@/StatusManager.vue"
+
 
 const routes = [
   {
@@ -29,6 +31,12 @@ const routes = [
     path: "/task/:taskId/edit",
     name: "taskedit",
     component: TaskManager,
+  },
+
+  {
+    path: "/status/manage",
+    name: "statusList",
+    component: StatusManager,
   },
 ]
 
