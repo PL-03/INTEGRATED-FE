@@ -1,7 +1,6 @@
 <script setup>
 import { ref, watchEffect, computed } from "vue"
 import { useRouter } from "vue-router"
-import { convertToTitleCase } from "../libs/util.js"
 import { useToast, POSITION } from "vue-toastification"
 
 const props = defineProps({

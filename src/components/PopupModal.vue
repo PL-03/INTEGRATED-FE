@@ -1,5 +1,4 @@
 <script setup>
-import { ref, watch } from "vue"
 import router from "@/router/router"
 
 const props = defineProps({
@@ -30,20 +29,6 @@ const formatDate = (dateString) => {
 
 const closeModal = () => {
   router.push("/task")
-}
-
-const convertToTitleCase = (str) => {
-  if (typeof str === "object" && str !== null) {
-    return str.name
-  } else if (typeof str === "string") {
-    let words = str.toLowerCase().split("_")
-    for (let i = 0; i < words.length; i++) {
-      words[i] = words[i].charAt(0).toUpperCase() + words[i].slice(1)
-    }
-    return words.join(" ")
-  } else {
-    return "Unknown Status"
-  }
 }
 </script>
 
@@ -79,7 +64,7 @@ const convertToTitleCase = (str) => {
           class="itbkk-status col-start-3 box-content place-content-center h-56 w-52 p-4 border bg-yellow-100 drop-shadow-lg my-4 ml-6 rounded-3xl px-4 py-2"
         >
           <strong>Status</strong><br />
-          {{ convertToTitleCase(selectedTaskId.status) }}
+          {{ selectedTaskId.status.name }}
         </p>
 
         <div class="row-span-2 col-start-5 mt-2 ml-8 gap-5">
