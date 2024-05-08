@@ -25,7 +25,13 @@ const statusColors = {
 }
 
 const getStatusText = (status) => {
-  return convertToTitleCase(status) || status
+  if (typeof status === "object" && status !== null) {
+    return status.name || ""
+  } else if (typeof status === "string") {
+    return convertToTitleCase(status) || status
+  } else {
+    return "Unknown Status"
+  }
 }
 
 const handleStatusList = () => {
@@ -117,11 +123,16 @@ const showToast = (message, type) => {
     </div>
 
     <div class="mt-2 mr-48 flex justify-end items-center">
-      <button class="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold p-2 rounded itbkk-button-add"
-        @click="handleAddTask">
+      <button
+        class="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold p-2 rounded itbkk-button-add"
+        @click="handleAddTask"
+      >
         + Add Task
       </button>
-      <button class="mt-4 ml-2 bg-gray-500 hover:bg-slate-600 text-white font-bold p-2 rounded itbkk-button-add" @click="handleStatusList">
+      <button
+        class="mt-4 ml-2 bg-gray-500 hover:bg-slate-600 text-white font-bold p-2 rounded itbkk-button-add"
+        @click="handleStatusList"
+      >
         Manage Status
       </button>
     </div>
@@ -130,13 +141,19 @@ const showToast = (message, type) => {
       <table class="table-auto w-9/12 m-2 rounded-2xl overflow-hidden">
         <thead class="bg-blue-950 border-b py-4 text-white">
           <tr>
-            <th class="text-lg font-medium text-white px-4 py-2 text-left border-r">
+            <th
+              class="text-lg font-medium text-white px-4 py-2 text-left border-r"
+            >
               #
             </th>
-            <th class="text-lg font-medium text-white px-4 py-2 text-left border-r">
+            <th
+              class="text-lg font-medium text-white px-4 py-2 text-left border-r"
+            >
               Title
             </th>
-            <th class="text-lg font-medium text-white px-4 py-2 text-left border-r">
+            <th
+              class="text-lg font-medium text-white px-4 py-2 text-left border-r"
+            >
               Assignees
             </th>
             <th class="text-lg font-medium text-white px-4 py-2 text-left">
@@ -148,46 +165,69 @@ const showToast = (message, type) => {
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(task, index) in tasks" :key="task.id" :class="index % 2 === 0 ? 'bg-sky-50' : 'bg-yellow-50'"
-            class="font-mono border-b itbkk-item">
-            <td class="px-4 py-2 whitespace-nowrap text-m font-medium text-gray-900 border-r">
+          <tr
+            v-for="(task, index) in tasks"
+            :key="task.id"
+            :class="index % 2 === 0 ? 'bg-sky-50' : 'bg-yellow-50'"
+            class="font-mono border-b itbkk-item"
+          >
+            <td
+              class="px-4 py-2 whitespace-nowrap text-m font-medium text-gray-900 border-r"
+            >
               {{ index + 1 }}
             </td>
-            <td class="break-all text-m text-gray-900 font-light px-4 py-2 whitespace-normal border-r itbkk-title">
+            <td
+              class="break-all text-m text-gray-900 font-light px-4 py-2 whitespace-normal border-r itbkk-title"
+            >
               <button @click="handleViewTask(task)">{{ task.title }}</button>
             </td>
-            <p v-if="task.assignees"
-              class="break-all text-m text-gray-900 font-light p-8 whitespace-normal border-r itbkk-assignees">
+            <p
+              v-if="task.assignees"
+              class="break-all text-m text-gray-900 font-light p-8 whitespace-normal border-r itbkk-assignees"
+            >
               {{ task.assignees }}
             </p>
             <td v-else class="italic text-gray-500 font-light itbkk-assignees">
               Unassigned
             </td>
-            <td class="text-m text-gray-900 font-light px-4 py-2 whitespace-normal itbkk-status">
-              <button class="status font-bold py-2 px-4 rounded" :style="{
-                background: statusColors[getStatusText(task.status)],
-              }">
+            <td
+              class="text-m text-gray-900 font-light px-4 py-2 whitespace-normal itbkk-status"
+            >
+              <button
+                class="status font-bold py-2 px-4 rounded"
+                :style="{
+                  background: statusColors[getStatusText(task.status)],
+                }"
+              >
                 {{ getStatusText(task.status) }}
               </button>
             </td>
 
             <td class="px-4 py-2">
-              <button class="text-purple-600 hover:text-purple-400 mb-2 mt-2 e-btn" @click="handleEditTask(task)">
+              <button
+                class="text-purple-600 hover:text-purple-400 mb-2 mt-2 e-btn"
+                @click="handleEditTask(task)"
+              >
                 Edit
               </button>
-              <button class="text-red-600 hover:text-red-400 d-btn" @click="handleDeleteTask(task)">
+              <button
+                class="text-red-600 hover:text-red-400 d-btn"
+                @click="handleDeleteTask(task)"
+              >
                 Delete
               </button>
             </td>
           </tr>
-
-
         </tbody>
       </table>
     </div>
 
-    <ConfirmationModal :show="showConfirmationModal" :taskTitle="taskToDelete?.title" @close="closeConfirmationModal"
-      @confirm="confirmDeleteTask" />
+    <ConfirmationModal
+      :show="showConfirmationModal"
+      :taskTitle="taskToDelete?.title"
+      @close="closeConfirmationModal"
+      @confirm="confirmDeleteTask"
+    />
   </div>
 </template>
 

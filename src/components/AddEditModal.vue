@@ -35,7 +35,9 @@ watchEffect(() => {
     formData.value.title = props.task.title || ""
     formData.value.description = props.task.description || ""
     formData.value.assignees = props.task.assignees || ""
-    formData.value.status = props.task.status || "NO_STATUS"
+    formData.value.status = props.task.status
+      ? props.task.status.statusId
+      : null
   }
 })
 
@@ -64,7 +66,7 @@ const handleSubmit = async () => {
       title: formData.value.title.trim(),
       description: formData.value.description.trim() || null,
       assignees: formData.value.assignees.trim() || null,
-      status: formData.value.status,
+      statusId: formData.value.status, // Send the statusId instead of the status string
     }
 
     const response = isAddMode.value
@@ -210,12 +212,13 @@ const formatDate = (dateString) => {
               v-model="formData.status"
               class="shadow-md bg-blue-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             >
-              <option value="NO_STATUS">
-                {{ convertToTitleCase("NO_STATUS") }}
+              <option
+                v-for="status in statuses"
+                :key="status.statusId"
+                :value="status.statusId"
+              >
+                {{ status.name }}
               </option>
-              <option value="TO_DO">{{ convertToTitleCase("TO_DO") }}</option>
-              <option value="DOING">{{ convertToTitleCase("DOING") }}</option>
-              <option value="DONE">{{ convertToTitleCase("DONE") }}</option>
             </select>
           </div>
 
