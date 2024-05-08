@@ -116,13 +116,13 @@ const showToast = (message, type) => {
       <h1 class="text-5xl font-bold p-8">IT-Bangmod Kradan Kanban</h1>
     </div>
 
-    <div class="mt-2 mr-52 flex justify-end items-center">
-      <button class="bg-green-500 hover:bg-green-700 text-white font-bold p-2 rounded itbkk-button-add"
+    <div class="mt-2 mr-48 flex justify-end items-center">
+      <button class="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold p-2 rounded itbkk-button-add"
         @click="handleAddTask">
         + Add Task
       </button>
-      <button class="text-purple-600 hover:text-purple-400 mb-2 mt-2 e-btn" @click="handleStatusList">
-        Edit status
+      <button class="mt-4 ml-2 bg-gray-500 hover:bg-slate-600 text-white font-bold p-2 rounded itbkk-button-add" @click="handleStatusList">
+        Manage Status
       </button>
     </div>
 
