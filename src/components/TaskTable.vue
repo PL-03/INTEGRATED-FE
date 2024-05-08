@@ -4,6 +4,7 @@ import { useRouter } from "vue-router"
 import { ref } from "vue"
 import ConfirmationModal from "./ConfirmationModal.vue"
 import { useToast, POSITION } from "vue-toastification"
+import { AkMoreVertical } from "@kalimahapps/vue-icons"
 
 const props = defineProps({
   tasks: {
@@ -188,18 +189,53 @@ const showToast = (message, type) => {
             </td>
 
             <td class="px-4 py-2">
-              <button
-                class="text-purple-600 hover:text-purple-400 mb-2 mt-2 e-btn"
-                @click="handleEditTask(task)"
-              >
-                Edit
-              </button>
-              <button
-                class="text-red-600 hover:text-red-400 d-btn"
-                @click="handleDeleteTask(task)"
-              >
-                Delete
-              </button>
+              <!-- <div class="itbkk-button-action">
+                <v-menu>
+                  <template v-slot:activator="{ props }">
+                    <button class="text-sm" v-bind="props">
+                      <AkMoreVertical class="icon-style" />
+                    </button>
+                  </template>
+                  <v-list class="bg-grey-lighten-3">
+                    <v-list-item class="itbkk-button-edit">
+                      <v-list-item-title
+                        ><button
+                          class="hover:text-white itbkk-button-edit"
+                          @click="handleEditTask(task)"
+                        >
+                          Edit
+                        </button></v-list-item-title
+                      >
+                    </v-list-item>
+                    <v-list-item>
+                      <v-list-item-title
+                        ><button
+                          class="hover:text-white itbkk-button-cancel"
+                          @click="handleDeleteTask(task)"
+                        >
+                          Delete
+                        </button></v-list-item-title
+                      >
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </div> -->
+              <!-- <AkMoreVertical> -->
+              <div class="itbkk-button-action">
+                <button
+                  class="text-purple-600 hover:text-purple-400 mb-2 mt-2 e-btn itbkk-button-edit"
+                  @click="handleEditTask(task)"
+                >
+                  Edit
+                </button>
+                <button
+                  class="text-red-600 hover:text-red-400 d-btn itbkk-button-delete"
+                  @click="handleDeleteTask(task)"
+                >
+                  Delete
+                </button>
+              </div>
+              <!-- </AkMoreVertical> -->
             </td>
           </tr>
         </tbody>

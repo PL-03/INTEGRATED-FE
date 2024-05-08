@@ -13,6 +13,7 @@ import "vue-toastification/dist/index.css"
 const app = createApp(App)
 
 // app.use(createPinia())
+// app.component("v-icon", OhVueIcon)
 app.use(router)
 app.use(Toast, {
   position: POSITION.TOP_RIGHT,
