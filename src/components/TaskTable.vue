@@ -29,6 +29,10 @@ const getStatusText = (status) => {
   return convertToTitleCase(status) || status
 }
 
+const handleStatusList = () => {
+  router.push({ name: "statusList" })
+}
+
 const handleAddTask = () => {
   router.push({ name: "taskadd" })
   emit("add-task") // Emit add-task event
@@ -113,12 +117,18 @@ const showToast = (message, type) => {
       <h1 class="text-5xl font-bold p-8">IT-Bangmod Kradan Kanban</h1>
     </div>
 
-    <div class="mt-2 mr-52 flex justify-end items-center">
+    <div class="mt-2 mr-48 flex justify-end items-center">
       <button
-        class="bg-green-500 hover:bg-green-700 text-white font-bold p-2 rounded itbkk-button-add"
+        class="mt-4 bg-green-500 hover:bg-green-700 text-white font-bold p-2 rounded itbkk-button-add"
         @click="handleAddTask"
       >
         + Add Task
+      </button>
+      <button
+        class="mt-4 ml-2 bg-gray-500 hover:bg-slate-600 text-white font-bold p-2 rounded itbkk-button-add"
+        @click="handleStatusList"
+      >
+        Manage Status
       </button>
     </div>
 
@@ -189,38 +199,6 @@ const showToast = (message, type) => {
             </td>
 
             <td class="px-4 py-2">
-              <!-- <div class="itbkk-button-action">
-                <v-menu>
-                  <template v-slot:activator="{ props }">
-                    <button class="text-sm" v-bind="props">
-                      <AkMoreVertical class="icon-style" />
-                    </button>
-                  </template>
-                  <v-list class="bg-grey-lighten-3">
-                    <v-list-item class="itbkk-button-edit">
-                      <v-list-item-title
-                        ><button
-                          class="hover:text-white itbkk-button-edit"
-                          @click="handleEditTask(task)"
-                        >
-                          Edit
-                        </button></v-list-item-title
-                      >
-                    </v-list-item>
-                    <v-list-item>
-                      <v-list-item-title
-                        ><button
-                          class="hover:text-white itbkk-button-cancel"
-                          @click="handleDeleteTask(task)"
-                        >
-                          Delete
-                        </button></v-list-item-title
-                      >
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-              </div> -->
-              <!-- <AkMoreVertical> -->
               <div class="itbkk-button-action">
                 <button
                   class="text-purple-600 hover:text-purple-400 mb-2 mt-2 e-btn itbkk-button-edit"
@@ -263,6 +241,7 @@ const showToast = (message, type) => {
   font-size: 16px;
   border-radius: 12px;
 }
+
 .e-btn {
   background-color: #6b7380;
   border: none;
@@ -274,12 +253,15 @@ const showToast = (message, type) => {
   font-size: 16px;
   border-radius: 12px;
 }
+
 .color-style {
   font-size: 1.3em;
 }
+
 border-r {
   border-right: 1px solid #f6f7f9;
 }
+
 .status {
   width: 120px;
 }

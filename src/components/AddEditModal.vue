@@ -210,12 +210,12 @@ const formatDate = (dateString) => {
               v-model="formData.status"
               class="shadow-md bg-blue-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             >
-              <option value="NO_STATUS">
+              <option value="1">
                 {{ convertToTitleCase("NO_STATUS") }}
               </option>
-              <option value="TO_DO">{{ convertToTitleCase("TO_DO") }}</option>
-              <option value="DOING">{{ convertToTitleCase("DOING") }}</option>
-              <option value="DONE">{{ convertToTitleCase("DONE") }}</option>
+              <option value="2">{{ convertToTitleCase("TO_DO") }}</option>
+              <option value="3">{{ convertToTitleCase("DOING") }}</option>
+              <option value="4">{{ convertToTitleCase("DONE") }}</option>
             </select>
           </div>
 
