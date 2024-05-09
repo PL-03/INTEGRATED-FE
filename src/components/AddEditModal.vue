@@ -256,7 +256,7 @@ const formatDate = (dateString) => {
           <div
             v-if="!isAddMode"
             class="timeBox bg-blue-200 text-wrap box-content border shadow-md rounded-lg p-4 mt-10"
-          >
+            >
             <div class="itbkk-timezone">
               <strong>Time Zone</strong>
               <textarea
@@ -279,18 +279,19 @@ const formatDate = (dateString) => {
       </div>
 
       <div class="flex justify-end">
-        <div class="m-4">
-          <button
-            class="bg-green-500 text-white font-bold py-2 px-4 rounded itbkk-button-confirm disabled"
+        <div class="m-2" >
+          
+          <button 
+            class="save bg-green-500 text-white font-bold py-2 px-6 rounded itbkk-button-confirm disabled"
             @click="handleSubmit"
-            :disabled="isAddingTitleEmpty || (!isAddMode && !isFormModified)"
+            :disabled="isAddingTitleEmpty || (!isAddMode && !isFormModified) "
           >
             Save
           </button>
         </div>
-        <div class="m-4">
+        <div class="m-2">
           <button
-            class="bg-red-500 text-white font-bold py-2 px-4 rounded itbkk-button-cancel"
+            class="bg-red-700 text-white font-bold py-2 px-4 rounded itbkk-button-cancel"
             @click="closeModal"
           >
             Cancel
@@ -346,5 +347,10 @@ const formatDate = (dateString) => {
 
 .itbkk-description textarea {
   resize: vertical;
+}
+
+.save:disabled{
+  background-color: #7777779f;
+  color: #fefefe;
 }
 </style>
