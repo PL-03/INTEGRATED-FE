@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watchEffect, computed } from "vue"
+import { ref, watchEffect, computed, onMounted } from "vue"
 import { useRouter } from "vue-router"
 import { useToast, POSITION } from "vue-toastification"
 
@@ -12,31 +12,57 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  statuses: {
+    type: Array,
+    required: true,
+  },
 })
 
 const emit = defineEmits(["update:show", "taskAdded", "taskUpdated"])
-
+const selectedStatus = ref(props.task.status || null)
 const router = useRouter()
 const isAddMode = computed(() => !props.task.id)
+
+const selectedStatusOption = computed({
+  get: () => {
+    if (props.task.status) {
+      return props.task.status
+    } else {
+      return null
+    }
+  },
+  set: (newValue) => {
+    selectedStatus.value = newValue
+  },
+})
 
 const formData = ref({
   title: "",
   description: "",
   assignees: "",
-  status: "NO_STATUS",
+  status: null,
 })
 const isAddingTitleEmpty = computed(
   () => isAddMode.value && !formData.value.title.trim()
 )
+
+onMounted(() => {
+  if (props.task.id) {
+    formData.value = {
+      title: props.task.title,
+      description: props.task.description,
+      assignees: props.task.assignees,
+      status: props.task.status,
+    }
+  }
+})
 
 watchEffect(() => {
   if (props.show) {
     formData.value.title = props.task.title || ""
     formData.value.description = props.task.description || ""
     formData.value.assignees = props.task.assignees || ""
-    formData.value.status = props.task.status
-      ? props.task.status.statusId
-      : null
+    formData.value.status = selectedStatusOption.value
   }
 })
 
@@ -55,7 +81,8 @@ const isFormModified = computed(() => {
     formData.value.title !== title ||
     formData.value.description !== description ||
     formData.value.assignees !== assignees ||
-    formData.value.status !== status
+    (formData.value.status &&
+      formData.value.status.statusId !== status?.statusId)
   )
 })
 
@@ -65,7 +92,7 @@ const handleSubmit = async () => {
       title: formData.value.title.trim(),
       description: formData.value.description.trim() || null,
       assignees: formData.value.assignees.trim() || null,
-      statusId: formData.value.status, // Send the statusId instead of the status string
+      status: selectedStatus.value ? selectedStatus.value.statusId : null,
     }
 
     const response = isAddMode.value
@@ -83,14 +110,14 @@ const handleSubmit = async () => {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(formData.value),
+            body: JSON.stringify(requestData),
           }
         )
 
     if (response.ok) {
       emit("update:show", false)
       router.push("/task")
-      isAddMode.value ? emit("taskAdded") : emit("taskUpdated")
+      isAddMode.value ? emit("task-added") : emit("task-updated")
       showToast(
         `The task "${formData.value.title}" has been successfully ${
           isAddMode.value ? "added" : "updated"
@@ -208,13 +235,15 @@ const formatDate = (dateString) => {
           <div class="itbkk-status mx-4">
             <strong>Status</strong>
             <select
-              v-model="formData.status"
+              v-model="selectedStatusOption"
               class="shadow-md bg-blue-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             >
+              <!-- <option value="" disabled>Select Status</option> -->
               <option
-                v-for="status in statuses"
+                v-for="status in props.statuses"
                 :key="status.statusId"
-                :value="status.statusId"
+                :value="status"
+                :disabled="status.statusId === props.task.status?.statusId"
               >
                 {{ status.name }}
               </option>
