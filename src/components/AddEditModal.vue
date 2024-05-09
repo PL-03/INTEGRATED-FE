@@ -73,16 +73,16 @@ const closeModal = () => {
 
 const isFormModified = computed(() => {
   if (isAddMode.value) {
-    return true // Always allow saving in add mode
+    return true // always true for add mode
   }
 
   const { title, description, assignees, status } = props.task
   return (
     formData.value.title !== title ||
-    formData.value.description !== description ||
-    formData.value.assignees !== assignees ||
-    (formData.value.status &&
-      formData.value.status.statusId !== status?.statusId)
+    formData.value.description !== (description || "") ||
+    formData.value.assignees !== (assignees || "") ||
+    (selectedStatusOption.value &&
+      selectedStatusOption.value.statusId !== status?.statusId)
   )
 })
 
@@ -238,12 +238,15 @@ const formatDate = (dateString) => {
               v-model="selectedStatusOption"
               class="shadow-md bg-blue-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             >
-              <!-- <option value="" disabled>Select Status</option> -->
+              <option :value="props.task.status">
+                {{ props.task.status?.name }}
+              </option>
               <option
-                v-for="status in props.statuses"
+                v-for="status in props.statuses.filter(
+                  (s) => s.statusId !== props.task.status?.statusId
+                )"
                 :key="status.statusId"
                 :value="status"
-                :disabled="status.statusId === props.task.status?.statusId"
               >
                 {{ status.name }}
               </option>
