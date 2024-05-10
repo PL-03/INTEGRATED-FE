@@ -356,3 +356,114 @@ const tryCicked = () => {
   color: #fefefe;
 }
 </style>
+
+<!-- add Status -->
+<!-- <template>
+  <div v-if="show" class="modal">
+    <div class="modal-content bg-gradient-to-t from-slate-300 to-yellow-50">
+     
+      <span class="close" @click="closeModal">&times;</span>
+      <h2 class="font-bold text-xl text-yellow-950 mt-6">
+        {{ isAddMode ? "Add" : "Edit" }} Status
+      </h2>
+      <br />
+
+      <div class="itbkk-modal-status ">
+        <div class="itbkk-status-name text-black text-start">
+          <strong class="ml-8 text-gray-500">Name</strong><br />
+          <input v-model.trim="formData.title" type="text" maxlength="100"
+            class="ml-4 mt-1 bg-yellow-100 rounded-md px-8 py-2 w-11/12 shadow-md " />
+        </div>
+
+        
+          <div class="w-full pr-4 mt-4 mb-4 ml-2">
+            <div class="itbkk-status-description text-white text-start">
+              <strong class="ml-4 text-gray-500">Description</strong>
+              <textarea v-model="formData.description"
+                class="shadow-lg shadow-gray-500/50 mt-2 p-4 resize-none bg-yellow-950 w-full rounded-md" rows="6"
+                maxlength="500"></textarea>
+            </div>
+          </div>
+
+
+        <div class="flex justify-end ">
+          <div class="m-2">
+            <button class="save bg-green-500 text-white font-bold py-2 px-6 rounded itbkk-button-confirm disabled"
+              @click="handleSubmit" :disabled="isAddingTitleEmpty || (!isAddMode && !isFormModified)">
+              Save
+            </button>
+          </div>
+          <div class="m-2">
+            <button class="bg-red-700 text-white font-bold py-2 px-4 rounded itbkk-button-cancel" @click="closeModal">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template> -->
+
+<!-- Edit Status -->
+<!-- <template>
+  <div v-if="show" class="modal">
+    <div class="modal-content bg-gradient-to-t from-slate-300 to-yellow-50">
+
+
+      <span class="close" @click="closeModal">&times;</span>
+      <h2 class="font-bold text-xl text-yellow-950 mt-4">
+        {{ isAddMode ? "Add" : "Edit" }} Status
+      </h2>
+      <br />
+
+      <div class="itbkk-modal-status ">
+        <div class="itbkk-status-name text-black text-start">
+          <strong class="ml-8 text-gray-500">Name</strong><br />
+          <input v-model.trim="formData.status.name" type="text" maxlength="100"
+            class="ml-4 bg-yellow-100 rounded-md shadow-gray-400 px-8 py-2 w-11/12 shadow-md " />
+        </div>
+
+
+        <div class="w-full pr-4 mt-4  ml-2">
+          <div class="itbkk-status-description text-white text-start">
+            <strong class="ml-4 text-gray-500">Description</strong>
+            <textarea v-model="formData.status.description"
+              class="shadow-yellow-400  p-4 resize-none bg-yellow-950 w-full rounded-md" rows="6"
+              maxlength="500"></textarea>
+          </div>
+        </div>
+
+        <div v-if="!isAddMode" class="flex ml-4 text-gray-500 ">
+          <div class="itbkk-timezone bg-yellow-100 rounded-lg mt-4 px-10 py-4 shadow-md shadow-gray-400">
+            <p><strong>Time Zone</strong><br>
+              {{ Intl.DateTimeFormat().resolvedOptions().timeZone }}
+            </p>
+          </div>
+          <div class="itbkk-created-on bg-yellow-100 rounded-lg mt-4 ml-6 px-4 py-4 shadow-md shadow-gray-400">
+            <strong>Created Date</strong><br>
+            {{ formatDate(props.task.createdOn) }}
+          </div>
+          <div class="itbkk-updated-on bg-yellow-100 rounded-lg mt-4 ml-6 px-4 py-4 shadow-md shadow-gray-400">
+            <strong>Updated Date</strong><br>
+            {{ formatDate(props.task.updatedOn) }}
+          </div>
+        </div>
+
+        <div class="flex justify-end mt-2">
+          <div class="m-2">
+            <button class="save bg-green-500 text-white font-bold py-2 px-6 rounded itbkk-button-confirm disabled"
+              @click="handleSubmit" :disabled="isAddingTitleEmpty || (!isAddMode && !isFormModified)">
+              Save
+            </button>
+          </div>
+          <div class="m-2">
+            <button class="bg-red-700 text-white font-bold py-2 px-4 rounded itbkk-button-cancel" @click="closeModal">
+              Cancel
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</template> -->
