@@ -1,7 +1,6 @@
 <script setup>
 import { ref, watch } from "vue"
 import router from "@/router/router"
-import { convertToTitleCase } from "../libs/util.js"
 
 const props = defineProps({
   selectedTaskId: {
@@ -43,7 +42,8 @@ const closeModal = () => {
       <p><strong> Title:</strong> {{ selectedTaskId.title }}</p>
 
       <p
-        class="itbkk-description col-start-1 col-end-4 box-content h-72 border bg-yellow-100 shadow-slate-500/40 hover:shadow-blue-500/40 shadow-xl ml-16 mt-4 rounded-lg p-8 w-10/12">
+        class="itbkk-description col-start-1 col-end-4 box-content h-72 border bg-yellow-100 shadow-slate-500/40 hover:shadow-blue-500/40 shadow-xl ml-16 mt-4 rounded-lg p-8 w-10/12"
+      >
         <strong>Description</strong><br />
         <span v-if="selectedTaskId.description != null">{{
           selectedTaskId.description
@@ -52,7 +52,8 @@ const closeModal = () => {
       </p>
       <div class="grid grid-cols-8 rows-2 mt-4 ml-16">
         <p
-          class="itbkk-assignees col-start-1 col-end-2 break-words place-content-center box-content h-56 w-52 p-4 border bg-yellow-100 shadow-lg my-4 mr-12 rounded-3xl px-4 py-2">
+          class="itbkk-assignees col-start-1 col-end-2 break-words place-content-center box-content h-56 w-52 p-4 border bg-yellow-100 shadow-lg my-4 mr-12 rounded-3xl px-4 py-2"
+        >
           <strong>Assignees</strong><br />
           <span v-if="selectedTaskId.assignees != null">{{
             selectedTaskId.assignees
@@ -61,26 +62,30 @@ const closeModal = () => {
         </p>
 
         <p
-          class="itbkk-status col-start-3 box-content place-content-center h-56 w-52 p-4 border bg-yellow-100 drop-shadow-lg my-4 ml-6 rounded-3xl px-4 py-2">
+          class="itbkk-status col-start-3 box-content place-content-center h-56 w-52 p-4 border bg-yellow-100 drop-shadow-lg my-4 ml-6 rounded-3xl px-4 py-2"
+        >
           <strong>Status</strong><br />
-          {{ convertToTitleCase(selectedTaskId.status) }}
+          {{ selectedTaskId.status.name }}
         </p>
 
         <div class="row-span-2 col-start-5 mt-2 ml-8 gap-5">
           <p
-            class="itbkk-timezone place-content-center box-content h-14 w-96 p-4 border bg-blue-200 shadow-md mb-3 mt-1 ml-5 rounded-full px-4 py-2">
+            class="itbkk-timezone place-content-center box-content h-14 w-96 p-4 border bg-blue-200 shadow-md mb-3 mt-1 ml-5 rounded-full px-4 py-2"
+          >
             <strong>Time Zone</strong><br />
             {{ Intl.DateTimeFormat().resolvedOptions().timeZone }}
           </p>
 
           <p
-            class="itbkk-created-on place-content-center box-content h-14 w-96 p-4 border bg-sky-200 shadow-md mb-3 ml-5 mr-5 rounded-full px-4 py-2">
+            class="itbkk-created-on place-content-center box-content h-14 w-96 p-4 border bg-sky-200 shadow-md mb-3 ml-5 mr-5 rounded-full px-4 py-2"
+          >
             <strong>Created Date</strong><br />
             {{ formatDate(selectedTaskId.createdOn) }}
           </p>
 
           <p
-            class="itbkk-updated-on place-content-center box-content h-14 w-96 p-4 border bg-cyan-100 shadow-md ml-5 rounded-full px-4 py-2">
+            class="itbkk-updated-on place-content-center box-content h-14 w-96 p-4 border bg-cyan-100 shadow-md ml-5 rounded-full px-4 py-2"
+          >
             <strong>Updated Date</strong><br />
             {{ formatDate(selectedTaskId.updatedOn) }}
           </p>

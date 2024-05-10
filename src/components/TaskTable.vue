@@ -1,5 +1,4 @@
 <script setup>
-import { convertToTitleCase } from "../libs/util.js"
 import { useRouter } from "vue-router"
 import { ref } from "vue"
 import ConfirmationModal from "./ConfirmationModal.vue"
@@ -26,7 +25,13 @@ const statusColors = {
 }
 
 const getStatusText = (status) => {
-  return convertToTitleCase(status) || status
+  if (typeof status === "object" && status !== null) {
+    return status.name || ""
+  } else if (typeof status === "string") {
+    return status.name || status
+  } else {
+    return "Unknown Status"
+  }
 }
 
 const handleStatusList = () => {
