@@ -14,6 +14,7 @@ const isAddMode = computed(() => route.name === "taskadd")
 const isEditMode = computed(() => route.name === "taskedit")
 const isViewMode = computed(() => route.name === "taskdetail")
 const showModal = ref(false)
+const statuses = ref([])
 
 const fetchTasks = async () => {
   try {
@@ -48,8 +49,19 @@ const fetchTaskDetails = async (id) => {
   }
 }
 
+const fetchStatuses = async () => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v2/statuses`)
+    const data = await response.json()
+    statuses.value = data
+  } catch (error) {
+    console.error("Error fetching statuses:", error)
+  }
+}
+
 onMounted(async () => {
   await fetchTasks()
+  await fetchStatuses()
   fetchTaskDetails(taskId.value)
 })
 
@@ -60,30 +72,39 @@ watch(
   },
   { immediate: true }
 )
+
+const handleViewTask = (task) => {
+  selectedTask.value = task
+  router.push(`/task/${task.id}`)
+}
+
+const handleEditTask = (taskId) => {
+  const task = tasks.value.find((t) => t.id === taskId)
+  if (task) {
+    selectedTask.value = { ...task }
+    showModal.value = true
+  }
+}
+
+const handleAddTask = () => {
+  showModal.value = true
+  selectedTask.value = {}
+}
 </script>
 
 <template>
   <TaskTable
     :tasks="tasks"
-    @view-task="
-      (task) => {
-        selectedTask = task
-        router.push(`/task/${task.id}`)
-      }
-    "
-    @edit-task="
-      (taskId) => {
-        selectedTask = tasks.find((task) => task.id === taskId)
-        showModal = true
-      }
-    "
-    @add-task="showModal = true"
+    @view-task="handleViewTask"
+    @edit-task="handleEditTask"
+    @add-task="handleAddTask"
     @task-deleted="fetchTasks"
   />
   <AddEditModal
     v-if="isAddMode || isEditMode"
     :show="showModal"
     :task="isEditMode ? selectedTask : {}"
+    :statuses="statuses"
     @update:show="showModal = $event"
     @task-added="fetchTasks"
     @task-updated="fetchTasks"
