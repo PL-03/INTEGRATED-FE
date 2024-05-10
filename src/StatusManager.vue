@@ -56,6 +56,21 @@ watch(
   },
   { immediate: true }
 )
+const handleEditStatus = (statusId) => {
+  const status = statuses.value.find((s) => s.id === statusId)
+  if (status) {
+    selectedStatus.value = { ...status }
+    showModal.value = true
+  }
+}
+// const handleAddStatus = () => {
+//   showModal.value = true
+//   selectedStatus.value = {}
+// }
+// const handleViewStatus = (status) => {
+//   selectedStatus.value = status
+//   router.push(`/status/manage/${status.id}`)
+// }
 </script>
 
 <template>
@@ -63,6 +78,7 @@ watch(
   <StatusTable
     :statuses="statuses"
     @add-status="showModal = true"
+    @edit-status="handleEditStatus"
     @view-status="
       (status) => {
         selectedStatus = status

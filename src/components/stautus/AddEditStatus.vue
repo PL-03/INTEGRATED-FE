@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watchEffect, computed } from "vue"
+import { ref, watchEffect, computed, onMounted } from "vue"
 import { useRouter } from "vue-router"
 import { useToast, POSITION } from "vue-toastification"
 const props = defineProps({
@@ -16,16 +16,24 @@ const emit = defineEmits(["update:show", "statusAdded", "statusUpdated"])
 const router = useRouter()
 const isAddMode = computed(() => !props.statuses.id)
 const isAddingNameEmpty = computed(
-  () => isAddMode.value && !statusData.value.name.trim()
+  () => isAddMode.value && !statusInput.value.name.trim()
 )
-const statusData = ref({
+const statusInput = ref({
   name: "",
   description: "",
 })
+onMounted(() => {
+  if (props.statuses.id) {
+    statusInput.value = {
+      name: props.statuses.title,
+      description: props.statuses.description,
+    }
+  }
+})
 watchEffect(() => {
   if (props.show) {
-    statusData.value.name = props.statuses.name || ""
-    statusData.value.description = props.statuses.description || ""
+    statusInput.value.name = props.statuses.name || ""
+    statusInput.value.description = props.statuses.description || ""
   }
 })
 const closeModal = () => {
@@ -34,20 +42,20 @@ const closeModal = () => {
 }
 const isFormModified = computed(() => {
   if (isAddMode.value) {
-    return true // Always allow saving in add mode
+    return true
   }
 
   const { name, description } = props.statuses
   return (
-    statusData.value.name !== name ||
-    statusData.value.description !== description
+    statusInput.value.name !== name ||
+    statusInput.value.description !== (description || "")
   )
 })
 const handleSubmit = async () => {
   try {
     const requestData = {
-      name: statusData.value.name.trim(),
-      description: statusData.value.description.trim() || null,
+      name: statusInput.value.name.trim(),
+      description: statusInput.value.description.trim() || null,
     }
 
     const response = isAddMode.value
@@ -65,7 +73,7 @@ const handleSubmit = async () => {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(statusData.value),
+            body: JSON.stringify(requestData),
           }
         )
 
@@ -74,7 +82,7 @@ const handleSubmit = async () => {
       router.push("/status/manage")
       isAddMode.value ? emit("statusAdded") : emit("statusUpdated")
       showToast(
-        `The status "${statusData.value.name}" has been successfully ${
+        `The status "${statusInput.value.name}" has been successfully ${
           isAddMode.value ? "added" : "updated"
         }`,
         isAddMode.value ? "success-add" : "success-update"
@@ -138,7 +146,7 @@ const showToast = (message, type) => {
       <div class="itbkk-status-name mb-4">
         <strong>Status Name:</strong><br />
         <input
-          v-model.trim="statusData.name"
+          v-model.trim="statusInput.name"
           type="text"
           maxlength="100"
           class="mx-auto bg-gray-300 rounded-md px-4 py-2 w-10/12 shadow-md"
@@ -150,7 +158,7 @@ const showToast = (message, type) => {
           <div class="itbkk-description">
             <strong>Description</strong>
             <textarea
-              v-model="statusData.description"
+              v-model="statusInput.description"
               class="shadow-lg shadow-gray-500/50 p-8 resize-none bg-yellow-100 w-full rounded-lg"
               rows="18"
               maxlength="500"

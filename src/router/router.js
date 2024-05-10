@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router"
 import TaskManager from "@/TaskManager.vue"
 import StatusManager from "@/StatusManager.vue"
-
 const routes = [
   {
     path: "/task",
@@ -54,7 +53,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes,
 })
 

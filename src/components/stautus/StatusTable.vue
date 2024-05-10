@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue"
 import { useRouter } from "vue-router"
+import { useToast, POSITION } from "vue-toastification"
 import ConfirmationModal from "../ConfirmationModal.vue"
 
 const emit = defineEmits(["statusDeleted"])
@@ -29,7 +30,9 @@ const handleAddStatus = () => {
 }
 
 const handleEditStatus = (status) => {
-  // Implement the logic for editing a status
+  router.push(`/status/manage/${status.id}/edit`)
+  emit("edit-status", status.id)
+  console.log(status.id)
 }
 const handleViewTask = (status) => {
   console.log(status)
