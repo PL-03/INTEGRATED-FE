@@ -99,27 +99,38 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="Status-content bg-gradient-to-t from-gray-700 to-blue-100 min-h-screen">
-    <div>
-      <h1 class="text-5xl font-bold p-8">IT-Bangmod Kradan Kanban</h1>
-    </div>
-    <div class="mt-2 grid grid-cols-2 items-center">
-      <div class="flex justify-start">
-        <button @click="closeStatusPage" class="ml-48 mt-2 font-bold p-2 rounded itbkk-button-home">
-          <strong class="text-blue-700">Home</strong>
-        </button>
-        <strong class="text-gray-500 mt-4 ml-2"> &gt; </strong>
-        <strong class="text-black mt-4 ml-4">Task Status</strong>
+  <div class="Status-content bg-gradient-to-t from-gray-500 to-blue-100/20 min-h-screen">
+
+    <div class="h-20 flex justify-between  shadow-md bg-blue-950 fixed top-0 left-0 right-0 min-w-screen">
+      <div class="image flex h-14 m-2">
+          <img class="mt-2 ml-8" src="https://www.sit.kmutt.ac.th/wp-content/uploads/2016/12/logo-flat-blk-55.png">
+          <img class="ml-4" src="https://www.sit.kmutt.ac.th/wp-content/uploads/2016/12/logo-kmutt.png">
+      
+        <h1 class="text-start  text-2xl font-serif font-bold p-4 text-white">IT-Bangmod Kradan Kanban</h1>
       </div>
-      <div class="flex justify-end">
-        <button class="flex mr-48 mt-2 bg-green-500 hover:bg-emerald-500 text-white font-bold p-2 rounded itbkk-button-add"
+
+      <div class="flex m-4  ">
+        <button class="flex text-sm px-3 py-1 mt-4 mr-8 bg-green-700 hover:bg-emerald-500 text-white font-bold rounded itbkk-button-add"
           @click="handleAddStatus">
           <svg class="mr-1" xmlns="http://www.w3.org/2000/svg" width="12" height="24"
           viewBox="0 0 20 20">
           <path fill="currentColor" d="M11 9V5H9v4H5v2h4v4h2v-4h4V9zm-1 11a10 10 0 1 1 0-20a10 10 0 0 1 0 20" />
         </svg>
-        Add Task
+        Add Status
         </button>
+
+      </div>
+    </div>
+    <div class="h-28">
+      
+    </div>
+    <div class="mt-2 grid grid-cols-2 items-center">
+      <div class="flex justify-start">
+        <button @click="closeStatusPage" class="ml-48 mt-2 font-bold p-2 rounded itbkk-button-home">
+          <strong class="text-pink-700  decoration-2 hover:underline decoration-yellow-900/90">Home</strong>
+        </button>
+        <strong class="text-gray-500 mt-4 ml-2"> &gt; </strong>
+        <strong class="text-black mt-4 ml-4 ">Task Status</strong>
       </div>
     </div>
     <div class="mt-4 flex justify-center items-center">
@@ -179,5 +190,5 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-/* Add any necessary styles here */
+
 </style>
