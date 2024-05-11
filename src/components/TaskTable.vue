@@ -12,7 +12,7 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(["viewTask", "editTask", "addTask", "taskDeleted"])
+const emit = defineEmits(["viewTask", "edit-task", "add-task", "taskDeleted"])
 const router = useRouter()
 const showConfirmationModal = ref(false)
 const taskToDelete = ref(null)
