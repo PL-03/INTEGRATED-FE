@@ -107,30 +107,29 @@ const handleSubmit = async () => {
 
     const response = isAddMode.value
       ? await fetch(`${import.meta.env.VITE_BASE_URL}/v1/tasks`, {
-          method: "POST",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestData),
+      })
+      : await fetch(
+        `${import.meta.env.VITE_BASE_URL}/v1/tasks/${props.task.id}`,
+        {
+          method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(requestData),
-        })
-      : await fetch(
-          `${import.meta.env.VITE_BASE_URL}/v1/tasks/${props.task.id}`,
-          {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(requestData),
-          }
-        )
+        }
+      )
 
     if (response.ok) {
       emit("update:show", false)
       router.push("/task")
       isAddMode.value ? emit("task-added") : emit("task-updated")
       showToast(
-        `The task "${formData.value.title}" has been successfully ${
-          isAddMode.value ? "added" : "updated"
+        `The task "${formData.value.title}" has been successfully ${isAddMode.value ? "added" : "updated"
         }`,
         isAddMode.value ? "success-add" : "success-update"
       )
@@ -206,76 +205,58 @@ const tryCicked = () => {
   <div v-if="show" class="modal">
     <div class="modal-content bg-gradient-to-t from-slate-300 to-yellow-50">
       <span class="close" @click="closeModal">&times;</span>
-      <h2 class="font-bold text-xl text-yellow-950">
+      <h2 class="font-bold text-xl text-blue-800 mt-2">
         {{ isAddMode ? "Add" : "Edit" }} Task
       </h2>
       <br />
 
-      <div class="itbkk-title mb-4">
-        <strong>Title</strong><br />
-        <input
-          v-model.trim="formData.title"
-          type="text"
-          maxlength="100"
-          class="mx-auto bg-gray-300 rounded-md px-4 py-2 w-10/12 shadow-md"
-        />
+      <div class="itbkk-title mb-2  text-start">
+        <strong class="flex text-gray-500 text-sm ml-10 text-sm mb-1">
+          Title <strong v-if="isAddMode" class="text-red-700 ml-2">*</strong>
+        </strong>
+        <input v-model.trim="formData.title" type="text" maxlength="100"
+          class="ml-6 bg-gray-300 rounded-md px-4 py-2 w-11/12 shadow-md" />
       </div>
 
-      <div class="flex justify-between mt-8">
-        <div class="w-3/5 pr-4 mb-8 ml-12">
-          <div class="itbkk-description">
-            <strong>Description</strong>
-            <textarea
-              v-model="formData.description"
-              class="shadow-lg shadow-gray-500/50 p-8 resize-none bg-yellow-100 w-full rounded-lg"
-              rows="18"
-              maxlength="500"
-            ></textarea>
+      <div class="flex justify-between mt-4">
+        <div class="w-3/5 pr-4 mb-4 ml-4 ">
+          <div class="itbkk-description text-start">
+            <strong class="text-gray-500 text-sm ml-4">Description</strong>
+            <textarea v-model="formData.description"
+              class="shadow-lg shadow-gray-500/50 p-8 resize-none bg-yellow-100 w-full rounded-lg" rows="8"
+              maxlength="500"></textarea>
           </div>
         </div>
 
         <div class="w-2/5 pl-4 mr-8">
-          <div class="itbkk-assignee mt-2 mb-4">
-            <strong>Assignees</strong>
-            <textarea
-              v-model.trim="formData.assignees"
-              class="shadow-md p-4 bg-blue-200 w-full rounded-lg"
-              rows="5"
-              maxlength="30"
-            ></textarea>
+          <div class="itbkk-assignee mt-2 mb-2 text-start">
+            <strong class="text-gray-500 text-sm ml-4">Assignees</strong>
+            <textarea v-model.trim="formData.assignees" class="shadow-md p-4 bg-blue-200 w-full rounded-lg" rows="3"
+              maxlength="30"></textarea>
           </div>
 
-          <div class="itbkk-status mx-4" @click="tryCicked">
-            <strong>Status</strong>
-            <select
-              v-model="selectedStatus"
-              class="shadow-md bg-blue-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
-            >
+          <div class="itbkk-status mt-2 text-start" @click="tryCicked">
+            <strong class="text-gray-500 text-sm ml-4">Status</strong>
+
+            <select v-model="selectedStatus"
+              class="shadow-md bg-blue-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
               <option :value="props.task.status" selected>
                 {{ props.task.status?.name }}
               </option>
-              <option
-                v-for="status in filteredStatuses"
-                :key="status.statusId"
-                :value="status"
-              >
+              <option v-for="status in filteredStatuses"
+               :key="status.statusId" 
+               :value="status">
                 {{ status.name }}
               </option>
             </select>
           </div>
 
-          <div
-            v-if="!isAddMode"
-            class="timeBox bg-blue-200 text-wrap box-content border shadow-md rounded-lg p-4 mt-10"
-          >
+          <!-- <div v-if="!isAddMode"
+            class="timeBox bg-blue-200 text-wrap box-content border shadow-md rounded-lg p-4 mt-10">
             <div class="itbkk-timezone">
               <strong>Time Zone</strong>
-              <textarea
-                class="p-4 bg-gray-100 rounded-lg w-full"
-                rows="2"
-                disabled
-                v-model="Intl.DateTimeFormat().resolvedOptions().timeZone"
-              ></textarea>
+              <textarea class="p-4 bg-gray-100 rounded-lg w-full" rows="2" disabled
+                v-model="Intl.DateTimeFormat().resolvedOptions().timeZone"></textarea>
             </div>
             <div class="itbkk-created-on mt-2">
               <strong>Created Date:</strong>
@@ -285,25 +266,20 @@ const tryCicked = () => {
               <strong>Updated Date:</strong>
               {{ formatDate(props.task.updatedOn) }}
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
 
       <div class="flex justify-end">
         <div class="m-2">
-          <button
-            class="save bg-green-500 text-white font-bold py-2 px-6 rounded itbkk-button-confirm disabled"
-            @click="handleSubmit"
-            :disabled="isAddingTitleEmpty || (!isAddMode && !isFormModified)"
-          >
+
+          <button class="save bg-green-500 text-white font-bold py-2 px-6 rounded itbkk-button-confirm disabled"
+            @click="handleSubmit" :disabled="isAddingTitleEmpty || (!isAddMode && !isFormModified)">
             Save
           </button>
         </div>
         <div class="m-2">
-          <button
-            class="bg-red-700 text-white font-bold py-2 px-4 rounded itbkk-button-cancel"
-            @click="closeModal"
-          >
+          <button class="bg-red-700 text-white font-bold py-2 px-4 rounded itbkk-button-cancel" @click="closeModal">
             Cancel
           </button>
         </div>
@@ -332,7 +308,7 @@ const tryCicked = () => {
   margin: auto;
   padding: 20px;
   border: 1px solid #888;
-  width: 80%;
+  width: 50%;
   max-height: 80vh;
   overflow-y: auto;
 }

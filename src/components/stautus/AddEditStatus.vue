@@ -143,43 +143,34 @@ const showToast = (message, type) => {
       </h2>
       <br />
 
-      <div class="itbkk-status-name mb-4">
-        <strong>Status Name:</strong><br />
-        <input
-          v-model.trim="statusInput.name"
-          type="text"
-          maxlength="100"
-          class="mx-auto bg-gray-300 rounded-md px-4 py-2 w-10/12 shadow-md"
-        />
-      </div>
+      <div class="itbkk-modal-status ">
+        <div class="itbkk-status-name text-black text-start">
+          <strong class="flex ml-8 text-gray-500 text-sm mb-1">
+            Status Name <strong v-if="isAddMode" class="text-red-700 ml-2">*</strong>
+          </strong>
+          <input v-model.trim="statusInput.name" type="text" maxlength="100"
+            class="ml-4 bg-yellow-100 rounded-md shadow-gray-400 px-8 py-2 w-11/12 shadow-md " />
+        </div>
 
-      <div class="flex justify-between mt-8">
-        <div class="w-3/5 pr-4 mb-8 ml-12">
-          <div class="itbkk-description">
-            <strong>Description</strong>
-            <textarea
-              v-model="statusInput.description"
-              class="shadow-lg shadow-gray-500/50 p-8 resize-none bg-yellow-100 w-full rounded-lg"
-              rows="18"
-              maxlength="500"
-            ></textarea>
+
+        <div class="w-full pr-4 mt-4  ml-2">
+          <div class="itbkk-status-description text-white text-start ">
+            <strong class="ml-4 text-gray-500 text-sm mb-1">Description</strong>
+            <textarea v-model="statusInput.description"
+              class="shadow-yellow-400  p-4 resize-none bg-yellow-950 w-full rounded-md" rows="6"
+              maxlength="500"></textarea>
           </div>
         </div>
-        <div class="flex justify-end">
-          <div class="m-4">
-            <button
-              class="bg-green-500 text-white font-bold py-2 px-4 rounded itbkk-button-confirm disabled"
-              @click="handleSubmit"
-              :disabled="isAddingNameEmpty || (!isAddMode && !isFormModified)"
-            >
+
+        <div class="flex justify-end mt-2">
+          <div class="m-2">
+            <button class="save bg-green-500 text-white font-bold py-2 px-6 rounded itbkk-button-confirm disabled"
+              @click="handleSubmit" :disabled="isAddingNameEmpty || (!isAddMode && !isFormModified)">
               Save
             </button>
           </div>
-          <div class="m-4">
-            <button
-              class="bg-red-500 text-white font-bold py-2 px-4 rounded itbkk-button-cancel"
-              @click="closeModal"
-            >
+          <div class="m-2">
+            <button class="bg-red-700 text-white font-bold py-2 px-4 rounded itbkk-button-cancel" @click="closeModal">
               Cancel
             </button>
           </div>
@@ -187,7 +178,10 @@ const showToast = (message, type) => {
       </div>
     </div>
   </div>
+
 </template>
+
+
 
 <style scoped>
 .modal {
@@ -209,7 +203,7 @@ const showToast = (message, type) => {
   margin: auto;
   padding: 20px;
   border: 1px solid #888;
-  width: 80%;
+  width: 50%;
   max-height: 80vh;
   overflow-y: auto;
 }
@@ -234,5 +228,10 @@ const showToast = (message, type) => {
 
 .itbkk-description textarea {
   resize: vertical;
+}
+
+.save:disabled {
+  background-color: #7777779f;
+  color: #fefefe;
 }
 </style>
