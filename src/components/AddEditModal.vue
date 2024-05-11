@@ -52,17 +52,18 @@ onMounted(() => {
       title: props.task.title,
       description: props.task.description,
       assignees: props.task.assignees,
-      status: props.task.status,
+      status: (selectedStatus.value = props.task.status),
     }
   }
 })
 
 watchEffect(() => {
   if (props.show) {
-    formData.value.title = props.task.title || ""
-    formData.value.description = props.task.description || ""
-    formData.value.assignees = props.task.assignees || ""
-    formData.value.status = selectedStatusOption.value
+    const { title, description, assignees, status } = props.task
+    formData.value.title = title || ""
+    formData.value.description = description || ""
+    formData.value.assignees = assignees || ""
+    selectedStatus.value = status || null
   }
 })
 
@@ -77,12 +78,21 @@ const isFormModified = computed(() => {
   }
 
   const { title, description, assignees, status } = props.task
-  return (
-    formData.value.title !== title ||
+  const statusChanged =
+    selectedStatus.value &&
+    selectedStatus.value.statusId !== (status?.statusId || null)
+  const otherFieldsChanged =
+    formData.value.title !== (title || "") ||
     formData.value.description !== (description || "") ||
-    formData.value.assignees !== (assignees || "") ||
-    (selectedStatusOption.value &&
-      selectedStatusOption.value.statusId !== status?.statusId)
+    formData.value.assignees !== (assignees || "")
+
+  // Return true if any field (including status) is changed
+  return statusChanged || otherFieldsChanged
+})
+
+const filteredStatuses = computed(() => {
+  return props.statuses.filter(
+    (status) => status.statusId !== props.task.status?.statusId
   )
 })
 
@@ -238,16 +248,14 @@ const tryCicked = () => {
           <div class="itbkk-status mx-4" @click="tryCicked">
             <strong>Status</strong>
             <select
-              v-model="selectedStatusOption"
+              v-model="selectedStatus"
               class="shadow-md bg-blue-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             >
-              <option :value="props.task.status">
+              <option :value="props.task.status" selected>
                 {{ props.task.status?.name }}
               </option>
               <option
-                v-for="status in props.statuses.filter(
-                  (s) => s.statusId !== props.task.status?.statusId
-                )"
+                v-for="status in filteredStatuses"
                 :key="status.statusId"
                 :value="status"
               >
