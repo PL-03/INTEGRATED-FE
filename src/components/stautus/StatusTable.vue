@@ -4,21 +4,22 @@ import { useRouter } from "vue-router"
 import { useToast, POSITION } from "vue-toastification"
 import ConfirmationModal from "../ConfirmationModal.vue"
 
-const emit = defineEmits(["statusDeleted"])
+const props = defineProps({
+  statuses: {
+    type: Array,
+    required: true,
+  },
+})
+
+const emit = defineEmits([
+  "view-status",
+  "edit-status",
+  "add-status",
+  "statusDeleted",
+])
 const router = useRouter()
-const statuses = ref([])
 const showConfirmationModal = ref(false)
 const statusToDelete = ref(null)
-
-const fetchStatuses = async () => {
-  try {
-    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v2/statuses`)
-    const data = await response.json()
-    statuses.value = data
-  } catch (error) {
-    console.error("Error fetching statuses:", error)
-  }
-}
 
 const closeStatusPage = () => {
   router.push("/task")
@@ -30,12 +31,12 @@ const handleAddStatus = () => {
 }
 
 const handleEditStatus = (status) => {
-  router.push(`/status/manage/${status.id}/edit`)
-  emit("edit-status", status.id)
-  console.log(status.id)
+  router.push(`/status/manage/${status.statusId}/edit`)
+  emit("edit-status", status.statusId)
+  // console.log(status.statusId)
 }
 const handleViewTask = (status) => {
-  console.log(status)
+  // console.log(status)
   emit("view-status", status)
 }
 
@@ -101,10 +102,6 @@ const showToast = (message, type) => {
       toast(message)
   }
 }
-
-onMounted(async () => {
-  await fetchStatuses()
-})
 </script>
 
 <template>

@@ -8,7 +8,7 @@ const props = defineProps({
   },
   taskTitle: {
     type: String,
-    required: true,
+    // required: true,
   },
 })
 

@@ -23,11 +23,11 @@ const fetchStatus = async () => {
     console.error("Error fetching statuses:", error)
   }
 }
-const fetchStatusDetails = async (id) => {
-  if (id) {
+const fetchStatusDetails = async (statusId) => {
+  if (statusId) {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/v2/statuses/${id}`
+        `${import.meta.env.VITE_BASE_URL}/v2/statuses/${statusId}`
       )
       if (response.ok) {
         const data = await response.json()
@@ -82,7 +82,7 @@ const handleEditStatus = (statusId) => {
     @view-status="
       (status) => {
         selectedStatus = status
-        router.push(`/status/manage/${status.id}`)
+        router.push(`/status/manage/${status.statusId}`)
       }
     "
   />
