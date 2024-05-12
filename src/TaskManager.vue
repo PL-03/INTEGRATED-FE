@@ -84,6 +84,7 @@ const handleEditTask = (taskId) => {
     selectedTask.value = { ...task }
     showModal.value = true
   }
+  console.log(showModal.value)
 }
 
 const handleAddTask = () => {

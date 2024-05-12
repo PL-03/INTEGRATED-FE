@@ -57,34 +57,31 @@ watch(
   { immediate: true }
 )
 const handleEditStatus = (statusId) => {
-  const status = statuses.value.find((s) => s.id === statusId)
+  const status = statuses.value.find((s) => s.statusId === statusId)
   if (status) {
     selectedStatus.value = { ...status }
     showModal.value = true
   }
+  // console.log(showModal.value)
+  // console.log(status)
 }
-// const handleAddStatus = () => {
-//   showModal.value = true
-//   selectedStatus.value = {}
-// }
-// const handleViewStatus = (status) => {
-//   selectedStatus.value = status
-//   router.push(`/status/manage/${status.id}`)
-// }
+const handleAddStatus = () => {
+  showModal.value = true
+  selectedStatus.value = {}
+}
+const handleViewStatus = (status) => {
+  selectedStatus.value = status
+  router.push(`/status/manage/${status.statusId}`)
+}
 </script>
 
 <template>
   <PopupStatusModal v-if="isViewMode" :selectedStatusId="selectedStatus" />
   <StatusTable
     :statuses="statuses"
-    @add-status="showModal = true"
+    @add-status="handleAddStatus"
     @edit-status="handleEditStatus"
-    @view-status="
-      (status) => {
-        selectedStatus = status
-        router.push(`/status/manage/${status.statusId}`)
-      }
-    "
+    @view-status="handleViewStatus"
   />
   <AddEditStatus
     v-if="isAddMode || isEditMode"

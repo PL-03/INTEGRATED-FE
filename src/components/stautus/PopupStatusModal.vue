@@ -8,7 +8,7 @@ const props = defineProps({
     required: true,
   },
 })
-
+// console.log(props.selectedStatusId)
 const closeModal = () => {
   router.push("/status/manage")
 }

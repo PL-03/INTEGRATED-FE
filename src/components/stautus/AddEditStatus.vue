@@ -14,7 +14,7 @@ const props = defineProps({
 })
 const emit = defineEmits(["update:show", "statusAdded", "statusUpdated"])
 const router = useRouter()
-const isAddMode = computed(() => !props.statuses.id)
+const isAddMode = computed(() => !props.statuses.statusId)
 const isAddingNameEmpty = computed(
   () => isAddMode.value && !statusInput.value.name.trim()
 )
@@ -23,7 +23,7 @@ const statusInput = ref({
   description: "",
 })
 onMounted(() => {
-  if (props.statuses.id) {
+  if (props.statuses.statusId) {
     statusInput.value = {
       name: props.statuses.title,
       description: props.statuses.description,
@@ -39,6 +39,7 @@ watchEffect(() => {
 const closeModal = () => {
   emit("update:show", false)
   router.push("/status/manage")
+  console.log(!props.statuses.statusId)
 }
 const isFormModified = computed(() => {
   if (isAddMode.value) {
@@ -67,7 +68,9 @@ const handleSubmit = async () => {
           body: JSON.stringify(requestData),
         })
       : await fetch(
-          `${import.meta.env.VITE_BASE_URL}/v2/statuses/${props.statuses.id}`,
+          `${import.meta.env.VITE_BASE_URL}/v2/statuses/${
+            props.statuses.statusId
+          }`,
           {
             method: "PUT",
             headers: {
