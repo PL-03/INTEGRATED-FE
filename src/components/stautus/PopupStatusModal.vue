@@ -10,7 +10,7 @@ const props = defineProps({
 })
 // console.log(props.selectedStatusId)
 const closeModal = () => {
-  router.push("/status/manage")
+  router.push("/status")
 }
 </script>
 

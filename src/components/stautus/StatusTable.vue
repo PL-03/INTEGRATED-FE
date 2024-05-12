@@ -12,14 +12,16 @@ const props = defineProps({
 })
 
 const emit = defineEmits([
-  "view-status",
-  "edit-status",
   "add-status",
-  "statusDeleted",
+  "edit-status",
+  "view-status",
+  "status-deleted",
 ])
 const router = useRouter()
 const showConfirmationModal = ref(false)
 const statusToDelete = ref(null)
+
+const showTransferModal = ref(false)
 
 const closeStatusPage = () => {
   router.push("/task")
@@ -31,18 +33,35 @@ const handleAddStatus = () => {
 }
 
 const handleEditStatus = (status) => {
-  router.push(`/status/manage/${status.statusId}/edit`)
+  if (status.statusId === 1) {
+    showToast("The default status cannot be edited or deleted.", "error")
+    return
+  }
+
+  router.push(`/status/${status.statusId}/edit`)
   emit("edit-status", status.statusId)
-  // console.log(status.statusId)
 }
 const handleViewTask = (status) => {
   // console.log(status)
   emit("view-status", status)
 }
 
-const handleDeleteStatus = (status) => {
+const handleDeleteStatus = async (status) => {
   statusToDelete.value = status
-  showConfirmationModal.value = true
+  const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/tasks`)
+  const tasks = await response.json()
+
+  console.log("Tasks:", tasks)
+
+  const hasAssociatedTasks = tasks.some((task) => task.status === status.name)
+
+  console.log("Has associated tasks:", hasAssociatedTasks)
+
+  if (hasAssociatedTasks) {
+    showTransferModal.value = true
+  } else {
+    showConfirmationModal.value = true
+  }
 }
 
 const confirmDeleteStatus = async () => {
@@ -57,9 +76,20 @@ const confirmDeleteStatus = async () => {
     )
 
     if (response.ok) {
-      showToast("The status has been deleted", "success")
-      emit("statusDeleted")
+      // Remove the deleted status from the statuses array
+      props.statuses.splice(
+        props.statuses.findIndex(
+          (s) => s.statusId === statusToDelete.value.statusId
+        ),
+        1
+      )
+      emit("status-deleted")
+      showToast(
+        `The status "${statusToDelete.value.name}" has been successfully deleted`,
+        "success-delete"
+      )
     } else {
+      console.error("Error deleting status:", response.statusText)
       showToast("An error occurred while deleting the status", "error")
     }
   } catch (error) {
@@ -67,13 +97,62 @@ const confirmDeleteStatus = async () => {
     showToast("An error occurred while deleting the status", "error")
   } finally {
     showConfirmationModal.value = false
-    statusToDelete.value = null
+    showTransferModal.value = false
   }
 }
 
 const closeConfirmationModal = () => {
   showConfirmationModal.value = false
-  statusToDelete.value = null
+}
+
+const closeTransferModal = () => {
+  showTransferModal.value = false
+}
+
+const transferTasks = async (targetStatusId) => {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/v2/statuses/${
+        statusToDelete.value.statusId
+      }/${targetStatusId}`,
+      {
+        method: "DELETE",
+      }
+    )
+
+    if (response.ok) {
+      // Remove the deleted status from the statuses array
+      props.statuses.splice(
+        props.statuses.findIndex(
+          (s) => s.statusId === statusToDelete.value.statusId
+        ),
+        1
+      )
+      emit("status-deleted")
+      showToast(
+        `The status "${statusToDelete.value.name}" has been successfully deleted and associated tasks transferred`,
+        "success-delete"
+      )
+    } else {
+      console.error(
+        "Error deleting status and transferring tasks:",
+        response.statusText
+      )
+      showToast(
+        "An error occurred while deleting the status and transferring associated tasks",
+        "error"
+      )
+    }
+  } catch (error) {
+    console.error("Error deleting status and transferring tasks:", error)
+    showToast(
+      "An error occurred while deleting the status and transferring associated tasks",
+      "error"
+    )
+  } finally {
+    showConfirmationModal.value = false
+    showTransferModal.value = false
+  }
 }
 
 const showToast = (message, type) => {
@@ -213,8 +292,9 @@ const showToast = (message, type) => {
             </td>
             <td class="px-4 py-2">
               <button
-                class="text-blue-800 hover:text-blue-500 mb-2 e-btn"
+                class="text-blue-800 hover:text-blue-500 mb-2 e-btn edit-delete"
                 @click="handleEditStatus(status)"
+                :disabled="status.statusId === 1"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -229,8 +309,9 @@ const showToast = (message, type) => {
                 </svg>
               </button>
               <button
-                class="text-red-700 hover:text-red-400 d-btn px-4"
+                class="text-red-700 hover:text-red-400 d-btn px-4 edit-delete"
                 @click="handleDeleteStatus(status)"
+                :disabled="status.statusId === 1"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -252,11 +333,25 @@ const showToast = (message, type) => {
 
     <ConfirmationModal
       :show="showConfirmationModal"
-      :statusName="statusToDelete?.name"
+      :task-title="statusToDelete?.name"
+      :is-status="true"
       @close="closeConfirmationModal"
       @confirm="confirmDeleteStatus"
+    />
+    <ConfirmationModal
+      :show="showTransferModal"
+      :task-title="statusToDelete?.name"
+      :is-status="true"
+      :statuses="statuses"
+      :tasks-associated="true"
+      @close="closeTransferModal"
+      @transfer="transferTasks"
     />
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.edit-delete:disabled {
+  color: grey;
+}
+</style>

@@ -62,8 +62,6 @@ const handleEditStatus = (statusId) => {
     selectedStatus.value = { ...status }
     showModal.value = true
   }
-  // console.log(showModal.value)
-  // console.log(status)
 }
 const handleAddStatus = () => {
   showModal.value = true
@@ -71,7 +69,7 @@ const handleAddStatus = () => {
 }
 const handleViewStatus = (status) => {
   selectedStatus.value = status
-  router.push(`/status/manage/${status.statusId}`)
+  router.push(`/status/${status.statusId}`)
 }
 </script>
 
@@ -82,12 +80,12 @@ const handleViewStatus = (status) => {
     @add-status="handleAddStatus"
     @edit-status="handleEditStatus"
     @view-status="handleViewStatus"
+    @status-deleted="fetchStatus"
   />
   <AddEditStatus
     v-if="isAddMode || isEditMode"
-    :statuses="statuses"
     :show="showModal"
-    :task="isEditMode ? selectedStatus : {}"
+    :statuses="isEditMode ? selectedStatus : {}"
     @update:show="showModal = $event"
     @status-added="fetchStatus"
     @status-updated="fetchStatus"

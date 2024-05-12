@@ -22,28 +22,27 @@ const statusInput = ref({
   name: "",
   description: "",
 })
+
 onMounted(() => {
   if (props.statuses.statusId) {
     statusInput.value = {
-      name: props.statuses.title,
+      name: props.statuses.name,
       description: props.statuses.description,
     }
   }
 })
+
 watchEffect(() => {
   if (props.show) {
-    statusInput.value.name = props.statuses.name || ""
-    statusInput.value.description = props.statuses.description || ""
+    const { name, description } = props.statuses
+    statusInput.value.name = name || ""
+    statusInput.value.description = description || ""
   }
 })
-const closeModal = () => {
-  emit("update:show", false)
-  router.push("/status/manage")
-  console.log(!props.statuses.statusId)
-}
+
 const isFormModified = computed(() => {
   if (isAddMode.value) {
-    return true
+    return true // always true for add mode
   }
 
   const { name, description } = props.statuses
@@ -52,6 +51,12 @@ const isFormModified = computed(() => {
     statusInput.value.description !== (description || "")
   )
 })
+
+const closeModal = () => {
+  emit("update:show", false)
+  router.push("/status")
+  console.log(!props.statuses.statusId)
+}
 const handleSubmit = async () => {
   try {
     const requestData = {
@@ -82,7 +87,7 @@ const handleSubmit = async () => {
 
     if (response.ok) {
       emit("update:show", false)
-      router.push("/status/manage")
+      router.push("/status")
       isAddMode.value ? emit("statusAdded") : emit("statusUpdated")
       showToast(
         `The status "${statusInput.value.name}" has been successfully ${
@@ -146,34 +151,47 @@ const showToast = (message, type) => {
       </h2>
       <br />
 
-      <div class="itbkk-modal-status ">
+      <div class="itbkk-modal-status">
         <div class="itbkk-status-name text-black text-start">
           <strong class="flex ml-8 text-gray-500 text-sm mb-1">
-            Status Name <strong v-if="isAddMode" class="text-red-700 ml-2">*</strong>
+            Status Name
+            <strong v-if="isAddMode" class="text-red-700 ml-2">*</strong>
           </strong>
-          <input v-model.trim="statusInput.name" type="text" maxlength="100"
-            class="ml-4 bg-yellow-100 rounded-md shadow-gray-400 px-8 py-2 w-11/12 shadow-md " />
+          <input
+            v-model.trim="statusInput.name"
+            type="text"
+            maxlength="100"
+            class="ml-4 bg-yellow-100 rounded-md shadow-gray-400 px-8 py-2 w-11/12 shadow-md"
+          />
         </div>
 
-
-        <div class="w-full pr-4 mt-4  ml-2">
-          <div class="itbkk-status-description text-white text-start ">
+        <div class="w-full pr-4 mt-4 ml-2">
+          <div class="itbkk-status-description text-white text-start">
             <strong class="ml-4 text-gray-500 text-sm mb-1">Description</strong>
-            <textarea v-model="statusInput.description"
-              class="shadow-yellow-400  p-4 resize-none bg-yellow-950 w-full rounded-md" rows="6"
-              maxlength="500"></textarea>
+            <textarea
+              v-model="statusInput.description"
+              class="shadow-yellow-400 p-4 resize-none bg-yellow-950 w-full rounded-md"
+              rows="6"
+              maxlength="500"
+            ></textarea>
           </div>
         </div>
 
         <div class="flex justify-end mt-2">
           <div class="m-2">
-            <button class="save bg-green-500 text-white font-bold py-2 px-6 rounded itbkk-button-confirm disabled"
-              @click="handleSubmit" :disabled="isAddingNameEmpty || (!isAddMode && !isFormModified)">
+            <button
+              class="save bg-green-500 text-white font-bold py-2 px-6 rounded itbkk-button-confirm disabled"
+              @click="handleSubmit"
+              :disabled="isAddingNameEmpty || (!isAddMode && !isFormModified)"
+            >
               Save
             </button>
           </div>
           <div class="m-2">
-            <button class="bg-red-700 text-white font-bold py-2 px-4 rounded itbkk-button-cancel" @click="closeModal">
+            <button
+              class="bg-red-700 text-white font-bold py-2 px-4 rounded itbkk-button-cancel"
+              @click="closeModal"
+            >
               Cancel
             </button>
           </div>
@@ -181,10 +199,7 @@ const showToast = (message, type) => {
       </div>
     </div>
   </div>
-
 </template>
-
-
 
 <style scoped>
 .modal {

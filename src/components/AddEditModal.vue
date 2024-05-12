@@ -107,29 +107,30 @@ const handleSubmit = async () => {
 
     const response = isAddMode.value
       ? await fetch(`${import.meta.env.VITE_BASE_URL}/v1/tasks`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(requestData),
-      })
-      : await fetch(
-        `${import.meta.env.VITE_BASE_URL}/v1/tasks/${props.task.id}`,
-        {
-          method: "PUT",
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(requestData),
-        }
-      )
+        })
+      : await fetch(
+          `${import.meta.env.VITE_BASE_URL}/v1/tasks/${props.task.id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestData),
+          }
+        )
 
     if (response.ok) {
       emit("update:show", false)
       router.push("/task")
       isAddMode.value ? emit("task-added") : emit("task-updated")
       showToast(
-        `The task "${formData.value.title}" has been successfully ${isAddMode.value ? "added" : "updated"
+        `The task "${formData.value.title}" has been successfully ${
+          isAddMode.value ? "added" : "updated"
         }`,
         isAddMode.value ? "success-add" : "success-update"
       )
@@ -196,9 +197,6 @@ const formatDate = (dateString) => {
   const formattedDate = formatter.format(utcDate)
   return formattedDate
 }
-const tryCicked = () => {
-  console.log(props.statuses)
-}
 </script>
 
 <template>
@@ -210,42 +208,57 @@ const tryCicked = () => {
       </h2>
       <br />
 
-      <div class="itbkk-title mb-2  text-start">
+      <div class="itbkk-title mb-2 text-start">
         <strong class="flex text-gray-500 text-sm ml-10 text-sm mb-1">
           Title <strong v-if="isAddMode" class="text-red-700 ml-2">*</strong>
         </strong>
-        <input v-model.trim="formData.title" type="text" maxlength="100"
-          class="ml-6 bg-gray-300 rounded-md px-4 py-2 w-11/12 shadow-md" />
+        <input
+          v-model.trim="formData.title"
+          type="text"
+          maxlength="100"
+          class="ml-6 bg-gray-300 rounded-md px-4 py-2 w-11/12 shadow-md"
+        />
       </div>
 
       <div class="flex justify-between mt-4">
-        <div class="w-3/5 pr-4 mb-4 ml-4 ">
+        <div class="w-3/5 pr-4 mb-4 ml-4">
           <div class="itbkk-description text-start">
             <strong class="text-gray-500 text-sm ml-4">Description</strong>
-            <textarea v-model="formData.description"
-              class="shadow-lg shadow-gray-500/50 p-8 resize-none bg-yellow-100 w-full rounded-lg" rows="8"
-              maxlength="500"></textarea>
+            <textarea
+              v-model="formData.description"
+              class="shadow-lg shadow-gray-500/50 p-8 resize-none bg-yellow-100 w-full rounded-lg"
+              rows="8"
+              maxlength="500"
+            ></textarea>
           </div>
         </div>
 
         <div class="w-2/5 pl-4 mr-8">
           <div class="itbkk-assignee mt-2 mb-2 text-start">
             <strong class="text-gray-500 text-sm ml-4">Assignees</strong>
-            <textarea v-model.trim="formData.assignees" class="shadow-md p-4 bg-blue-200 w-full rounded-lg" rows="3"
-              maxlength="30"></textarea>
+            <textarea
+              v-model.trim="formData.assignees"
+              class="shadow-md p-4 bg-blue-200 w-full rounded-lg"
+              rows="3"
+              maxlength="30"
+            ></textarea>
           </div>
 
-          <div class="itbkk-status mt-2 text-start" @click="tryCicked">
+          <div class="itbkk-status mt-2 text-start">
             <strong class="text-gray-500 text-sm ml-4">Status</strong>
 
-            <select v-model="selectedStatus"
-              class="shadow-md bg-blue-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+            <select
+              v-model="selectedStatus"
+              class="shadow-md bg-blue-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            >
               <option :value="props.task.status" selected>
                 {{ props.task.status?.name }}
               </option>
-              <option v-for="status in filteredStatuses"
-               :key="status.statusId" 
-               :value="status">
+              <option
+                v-for="status in filteredStatuses"
+                :key="status.statusId"
+                :value="status"
+              >
                 {{ status.name }}
               </option>
             </select>
@@ -272,14 +285,19 @@ const tryCicked = () => {
 
       <div class="flex justify-end">
         <div class="m-2">
-
-          <button class="save bg-green-500 text-white font-bold py-2 px-6 rounded itbkk-button-confirm disabled"
-            @click="handleSubmit" :disabled="isAddingTitleEmpty || (!isAddMode && !isFormModified)">
+          <button
+            class="save bg-green-500 text-white font-bold py-2 px-6 rounded itbkk-button-confirm disabled"
+            @click="handleSubmit"
+            :disabled="isAddingTitleEmpty || (!isAddMode && !isFormModified)"
+          >
             Save
           </button>
         </div>
         <div class="m-2">
-          <button class="bg-red-700 text-white font-bold py-2 px-4 rounded itbkk-button-cancel" @click="closeModal">
+          <button
+            class="bg-red-700 text-white font-bold py-2 px-4 rounded itbkk-button-cancel"
+            @click="closeModal"
+          >
             Cancel
           </button>
         </div>

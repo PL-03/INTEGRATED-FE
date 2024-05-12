@@ -31,22 +31,22 @@ const routes = [
     component: TaskManager,
   },
   {
-    path: "/status/manage/:statusId",
+    path: "/status/:statusId",
     name: "statusview",
     component: StatusManager,
   },
   {
-    path: "/status/manage",
+    path: "/status",
     name: "statusList",
     component: StatusManager,
   },
   {
-    path: "/status/manage/:statusId/edit",
+    path: "/status/:statusId/edit",
     name: "statusedit",
     component: StatusManager,
   },
   {
-    path: "/status/manage/add",
+    path: "/status/add",
     name: "statusadd",
     component: StatusManager,
   },

@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue"
+import { ref, computed } from "vue"
 
 const props = defineProps({
   show: {
@@ -10,6 +10,18 @@ const props = defineProps({
     type: String,
     // required: true,
   },
+  isStatus: {
+    type: Boolean,
+    default: false,
+  },
+  statuses: {
+    type: Array,
+    required: true,
+  },
+  tasksAssociated: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const emit = defineEmits(["close", "confirm"])
@@ -19,25 +31,71 @@ const closeModal = () => {
 }
 
 const confirmDelete = () => {
-  emit("confirm")
+  if (props.tasksAssociated) {
+    emit("transfer", transferStatus.value.statusId)
+  } else {
+    emit("confirm")
+  }
 }
+
+const modalTitle = computed(() => {
+  return props.tasksAssociated
+    ? "Transfer Tasks"
+    : props.isStatus
+    ? "Delete Status"
+    : "Delete Task"
+})
+
+const modalMessage = computed(() => {
+  if (props.tasksAssociated) {
+    return `There are some tasks associated with the "${props.taskTitle}". Transfer to:`
+  } else if (props.isStatus) {
+    return `Do you want to delete the status "${props.taskTitle}"?`
+  } else {
+    return `Do you want to delete the task "${props.taskTitle}"?`
+  }
+})
+
+const transferStatus = ref(null)
+
+const filteredStatuses = computed(() => {
+  return props.statuses.filter(
+    (status) =>
+      status.statusId !==
+      props.statuses.find((s) => s.name === props.taskTitle).statusId
+  )
+})
 </script>
 
 <template>
   <div v-if="show" class="modal-overlay">
     <div class="modal-content">
       <span class="close" @click="closeModal">&times;</span>
-      <h2 class="font-bold text-xl text-yellow-950">Delete Task</h2>
-      <p class="itbkk-message">
-        Do you want to delete the task "{{ taskTitle }}"?
-      </p>
-      <div class="flex flex-row justify-center itbkk-button-action">
+      <h2 class="font-bold text-xl text-yellow-950">{{ modalTitle }}</h2>
+      <p class="itbkk-message">{{ modalMessage }}</p>
+      <div v-if="tasksAssociated" class="mt-4">
+        <select
+          id="transfer-status"
+          v-model="transferStatus"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md"
+        >
+          <option
+            v-for="status in filteredStatuses"
+            :key="status.statusId"
+            :value="status"
+          >
+            {{ status.name }}
+          </option>
+        </select>
+      </div>
+      <div class="flex flex-row justify-center itbkk-button-action mt-4">
         <div class="m-4">
           <button
             class="bg-green-500 text-white font-bold py-2 px-4 rounded itbkk-button-confirm"
             @click="confirmDelete"
+            :disabled="tasksAssociated && !transferStatus"
           >
-            save
+            {{ tasksAssociated ? "Transfer" : "Save" }}
           </button>
         </div>
         <div class="m-4">
