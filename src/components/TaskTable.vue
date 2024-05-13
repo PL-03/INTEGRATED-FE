@@ -16,6 +16,7 @@ const emit = defineEmits(["viewTask", "edit-task", "add-task", "taskDeleted"])
 const router = useRouter()
 const showConfirmationModal = ref(false)
 const taskToDelete = ref(null)
+const defaultStatuses = ["No Status", "To Do", "Doing", "Done"]
 
 const statusColors = {
   "No Status": "#9ca3af",
@@ -31,6 +32,14 @@ const getStatusText = (status) => {
     return status.name || status
   } else {
     return "Unknown Status"
+  }
+}
+
+const getStatusColor = (statusText) => {
+  if (defaultStatuses.includes(statusText)) {
+    return statusColors[statusText]
+  } else {
+    return "#D1FFFF" // New color for new status
   }
 }
 
@@ -243,7 +252,7 @@ const showToast = (message, type) => {
               <button
                 class="status font-bold py-2 px-4 rounded"
                 :style="{
-                  background: statusColors[getStatusText(task.status)],
+                  background: getStatusColor(getStatusText(task.status)),
                 }"
               >
                 {{ getStatusText(task.status) }}
