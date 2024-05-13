@@ -278,10 +278,18 @@ const showToast = (message, type) => {
               {{ status.name }}
             </td>
             <td
+              v-if="status.description"
               class="text-m text-gray-900 font-light px-4 py-2 border-r itbkk-status-description"
               style="word-break: break-word"
             >
-              {{ status.description || "No description provided" }}
+              {{ status.description }}
+            </td>
+            <td
+              v-else
+              class="italic text-m text-gray-500 font-light px-4 py-2 border-r itbkk-status-description"
+              style="word-break: break-word"
+            >
+              No description is provided
             </td>
             <td class="px-4 py-2">
               <button

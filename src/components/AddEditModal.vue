@@ -162,25 +162,6 @@ const showToast = (message, type) => {
       toast(message)
   }
 }
-
-const formatDate = (dateString) => {
-  if (!dateString) return "Date is undefined"
-
-  const options = {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-    hourCycle: "h24",
-  }
-  const utcDate = new Date(dateString)
-  const formatter = new Intl.DateTimeFormat("en-GB", options)
-  const formattedDate = formatter.format(utcDate)
-  return formattedDate
-}
 </script>
 
 <template>
@@ -217,7 +198,7 @@ const formatDate = (dateString) => {
           </div>
         </div>
 
-        <div class="w-2/5 pl-4 mr-8">
+        <div class="w-2/5 pl-4 mr-8 itbkk-assignees">
           <div class="itbkk-assignee mt-2 mb-2 text-start">
             <strong class="text-gray-500 text-sm ml-4">Assignees</strong>
             <textarea
@@ -228,7 +209,7 @@ const formatDate = (dateString) => {
             ></textarea>
           </div>
 
-          <div class="itbkk-status mt-2 text-start">
+          <div class="itbkk-status mt-2 text-start itbkk-status">
             <strong class="text-gray-500 text-sm ml-4">Status</strong>
 
             <select
