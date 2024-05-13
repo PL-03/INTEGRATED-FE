@@ -8,21 +8,22 @@ import PopupStatusModal from "./components/stautus/PopupStatusModal.vue"
 const route = useRoute()
 const router = useRouter()
 const selectedStatus = ref({})
-const stautsId = computed(() => route.params.id || null)
+const statusId = computed(() => route.params.id || null)
 const isAddMode = computed(() => route.name === "statusadd")
 const isEditMode = computed(() => route.name === "statusedit")
 const isViewMode = computed(() => route.name === "statusview")
 const showModal = ref(false)
 const statuses = ref([])
+
 const fetchStatus = async () => {
   try {
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v2/statuses`)
-    const data = await response.json()
-    statuses.value = data
+    statuses.value = await response.json()
   } catch (error) {
     console.error("Error fetching statuses:", error)
   }
 }
+
 const fetchStatusDetails = async (statusId) => {
   if (statusId) {
     try {
@@ -45,24 +46,25 @@ const fetchStatusDetails = async (statusId) => {
     selectedStatus.value = {}
   }
 }
+
 onMounted(async () => {
   await fetchStatus()
-  fetchStatusDetails(stautsId.value)
+  fetchStatusDetails(statusId.value)
 })
+
 watch(
-  stautsId,
+  statusId,
   (newStatusId) => {
     fetchStatusDetails(newStatusId)
   },
   { immediate: true }
 )
-const handleEditStatus = (statusId) => {
-  const status = statuses.value.find((s) => s.statusId === statusId)
-  if (status) {
-    selectedStatus.value = { ...status }
-    showModal.value = true
-  }
+
+const handleEditStatus = (status) => {
+  selectedStatus.value = { ...status }
+  showModal.value = true
 }
+
 const handleAddStatus = () => {
   showModal.value = true
   selectedStatus.value = {}

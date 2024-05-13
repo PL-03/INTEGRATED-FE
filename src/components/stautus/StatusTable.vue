@@ -322,6 +322,7 @@ const showToast = (message, type) => {
       :show="showConfirmationModal"
       :task-title="statusToDelete?.name"
       :is-status="true"
+      :statuses="statuses"
       @close="closeConfirmationModal"
       @confirm="confirmDeleteStatus"
     />

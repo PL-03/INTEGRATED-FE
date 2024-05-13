@@ -44,14 +44,14 @@ const routes = [
     path: "/status/:id/edit",
     name: "statusedit",
     component: StatusManager,
-    // beforeEnter: (to, from, next) => {
-    //   if (to.params.id === "1") {
-    //     alert("The default status cannot be edited or deleted.")
-    //     next({ name: "statusList" }) // Prevent navigating to the route
-    //   } else {
-    //     next("/status") // Proceed with navigating to the route
-    //   }
-    // },
+    beforeEnter: (to, from, next) => {
+      if (to.params.id === "1") {
+        alert("The default status cannot be edited or deleted.")
+        next({ name: "statusList" })
+      } else {
+        next()
+      }
+    },
   },
   {
     path: "/status/add",
