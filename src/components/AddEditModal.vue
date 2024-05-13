@@ -198,7 +198,7 @@ const formatDate = (dateString) => {
 
 <template>
   <div v-if="show" class="modal">
-    <div class="modal-content bg-gradient-to-t from-slate-300 to-yellow-50">
+    <div class="itbkk-modal-task bg-gradient-to-t from-slate-300 to-yellow-50">
       <span class="close" @click="closeModal">&times;</span>
       <h2 class="font-bold text-xl text-blue-800 mt-2">
         {{ isAddMode ? "Add" : "Edit" }} Task
