@@ -250,10 +250,11 @@ const showToast = (message, type) => {
               class="text-m text-gray-900 font-light px-4 py-2 border whitespace-normal itbkk-status"
             >
               <button
-                class="status font-bold py-2 px-4 rounded"
+                class="status font-bold py-2 px-4 rounded status-text"
                 :style="{
                   background: getStatusColor(getStatusText(task.status)),
                 }"
+                style="word-break: break-word"
               >
                 {{ getStatusText(task.status) }}
               </button>
