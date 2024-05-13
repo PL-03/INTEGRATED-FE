@@ -318,7 +318,7 @@ const formatDate = (dateString) => {
   background-color: rgba(0, 0, 0, 0.4);
 }
 
-.modal-content {
+.itbkk-modal-task {
   background-color: #fefefe;
   margin: auto;
   padding: 20px;
