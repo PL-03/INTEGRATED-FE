@@ -23,19 +23,6 @@ const selectedStatus = ref(props.task.status || null)
 const router = useRouter()
 const isAddMode = computed(() => !props.task.id)
 
-const selectedStatusOption = computed({
-  get: () => {
-    if (props.task.status) {
-      return props.task.status
-    } else {
-      return null
-    }
-  },
-  set: (newValue) => {
-    selectedStatus.value = newValue
-  },
-})
-
 const formData = ref({
   title: "",
   description: "",
@@ -206,7 +193,7 @@ const formatDate = (dateString) => {
       <br />
 
       <div class="itbkk-title mb-2 text-start">
-        <strong class="flex text-gray-500 text-sm ml-10 text-sm mb-1">
+        <strong class="flex text-gray-500 text-sm ml-10 mb-1">
           Title <strong v-if="isAddMode" class="text-red-700 ml-2">*</strong>
         </strong>
         <input
