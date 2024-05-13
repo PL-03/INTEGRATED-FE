@@ -3,7 +3,6 @@ import { ref, onMounted, watch, computed } from "vue"
 import StatusTable from "./components/stautus/StatusTable.vue"
 import { useRoute, useRouter } from "vue-router"
 import AddEditStatus from "./components/stautus/AddEditStatus.vue"
-import PopupStatusModal from "./components/stautus/PopupStatusModal.vue"
 
 const route = useRoute()
 const router = useRouter()

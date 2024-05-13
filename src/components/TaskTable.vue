@@ -76,7 +76,10 @@ const confirmDeleteTask = async () => {
     )
 
     if (response.ok) {
-      showToast("The task has been deleted", "success")
+      showToast(
+        `The task "${taskToDelete.value.title}" has been successfully deleted`,
+        "success-delete"
+      )
       emit("taskDeleted") // Emit the "taskDeleted" event without the task ID
     } else if (response.status === 404) {
       showToast("An error has occurred, the task does not exist", "error")
@@ -108,6 +111,12 @@ const showToast = (message, type) => {
       })
       break
     case "success-update":
+      toast.success(message, {
+        position: POSITION.TOP_CENTER,
+        timeout: 3000,
+      })
+      break
+    case "success-delete":
       toast.success(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,

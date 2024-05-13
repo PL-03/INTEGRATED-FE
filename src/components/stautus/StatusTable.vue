@@ -157,6 +157,12 @@ const showToast = (message, type) => {
         timeout: 3000,
       })
       break
+    case "success-delete":
+      toast.success(message, {
+        position: POSITION.TOP_CENTER,
+        timeout: 5000,
+      })
+      break
     case "error":
       toast.error(message, {
         position: POSITION.TOP_CENTER,
