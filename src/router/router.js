@@ -44,6 +44,14 @@ const routes = [
     path: "/status/:statusId/edit",
     name: "statusedit",
     component: StatusManager,
+    beforeEnter: (to, from, next) => {
+      if (to.params.statusId === "1") {
+        alert("The default status cannot be edited or deleted.")
+        next({ name: "statusList" }) // Prevent navigating to the route
+      } else {
+        next("/status") // Proceed with navigating to the route
+      }
+    },
   },
   {
     path: "/status/add",

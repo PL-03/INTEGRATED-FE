@@ -55,7 +55,6 @@ const isFormModified = computed(() => {
 const closeModal = () => {
   emit("update:show", false)
   router.push("/status")
-  console.log(!props.statuses.statusId)
 }
 const handleSubmit = async () => {
   try {

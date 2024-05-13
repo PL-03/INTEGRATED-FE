@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from "vue"
-import { useRouter } from "vue-router"
+import { useRouter, useRoute } from "vue-router"
 import { useToast, POSITION } from "vue-toastification"
 import ConfirmationModal from "../ConfirmationModal.vue"
 
@@ -11,12 +11,8 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits([
-  "add-status",
-  "edit-status",
-  "view-status",
-  "status-deleted",
-])
+const route = useRoute()
+const emit = defineEmits(["add-status", "edit-status", "status-deleted"])
 const router = useRouter()
 const showConfirmationModal = ref(false)
 const statusToDelete = ref(null)
@@ -34,16 +30,12 @@ const handleAddStatus = () => {
 
 const handleEditStatus = (status) => {
   if (status.statusId === 1) {
-    showToast("The default status cannot be edited or deleted.", "error")
+    alert("The default status cannot be edited or deleted.")
     return
   }
 
   router.push(`/status/${status.statusId}/edit`)
   emit("edit-status", status.statusId)
-}
-const handleViewTask = (status) => {
-  // console.log(status)
-  emit("view-status", status)
 }
 
 const handleDeleteStatus = async (status) => {
@@ -283,7 +275,7 @@ const showToast = (message, type) => {
             <td
               class="text-m text-gray-900 font-light px-4 py-2 whitespace-normal border-r itbkk-status-name"
             >
-              <button @click="handleViewTask(status)">{{ status.name }}</button>
+              {{ status.name }}
             </td>
             <td
               class="text-m text-gray-900 font-light px-4 py-2 border-r itbkk-status-description"

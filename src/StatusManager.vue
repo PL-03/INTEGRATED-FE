@@ -33,13 +33,13 @@ const fetchStatusDetails = async (statusId) => {
         const data = await response.json()
         selectedStatus.value = data
       } else if (response.status === 404) {
-        alert("The requested task does not exist")
-        router.push("/task")
+        alert("The requested status does not exist")
+        router.push("/status")
       } else {
-        console.error("Error fetching task details:", response.statusText)
+        console.error("Error fetching status details:", response.statusText)
       }
     } catch (error) {
-      console.error("Error fetching task details:", error)
+      console.error("Error fetching status details:", error)
     }
   } else {
     selectedStatus.value = {}
@@ -67,10 +67,6 @@ const handleAddStatus = () => {
   showModal.value = true
   selectedStatus.value = {}
 }
-const handleViewStatus = (status) => {
-  selectedStatus.value = status
-  router.push(`/status/${status.statusId}`)
-}
 </script>
 
 <template>
@@ -79,7 +75,6 @@ const handleViewStatus = (status) => {
     :statuses="statuses"
     @add-status="handleAddStatus"
     @edit-status="handleEditStatus"
-    @view-status="handleViewStatus"
     @status-deleted="fetchStatus"
   />
   <AddEditStatus
