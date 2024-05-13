@@ -8,7 +8,7 @@ import PopupStatusModal from "./components/stautus/PopupStatusModal.vue"
 const route = useRoute()
 const router = useRouter()
 const selectedStatus = ref({})
-const stautsId = computed(() => route.params.statusId || null)
+const stautsId = computed(() => route.params.id || null)
 const isAddMode = computed(() => route.name === "statusadd")
 const isEditMode = computed(() => route.name === "statusedit")
 const isViewMode = computed(() => route.name === "statusview")

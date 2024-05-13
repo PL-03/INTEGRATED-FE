@@ -60,7 +60,7 @@ const handleDeleteTask = (task) => {
 const confirmDeleteTask = async () => {
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/v1/tasks/${taskToDelete.value.id}`,
+      `${import.meta.env.VITE_BASE_URL}/v2/tasks/${taskToDelete.value.id}`,
       {
         method: "DELETE",
       }

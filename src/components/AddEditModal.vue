@@ -79,8 +79,7 @@ const isFormModified = computed(() => {
 
   const { title, description, assignees, status } = props.task
   const statusChanged =
-    selectedStatus.value &&
-    selectedStatus.value.statusId !== (status?.statusId || null)
+    selectedStatus.value && selectedStatus.value.id !== (status?.id || null)
   const otherFieldsChanged =
     formData.value.title !== (title || "") ||
     formData.value.description !== (description || "") ||
@@ -91,9 +90,7 @@ const isFormModified = computed(() => {
 })
 
 const filteredStatuses = computed(() => {
-  return props.statuses.filter(
-    (status) => status.statusId !== props.task.status?.statusId
-  )
+  return props.statuses.filter((status) => status.id !== props.task.status?.id)
 })
 
 const handleSubmit = async () => {
@@ -102,11 +99,11 @@ const handleSubmit = async () => {
       title: formData.value.title.trim(),
       description: formData.value.description.trim() || null,
       assignees: formData.value.assignees.trim() || null,
-      status: selectedStatus.value ? selectedStatus.value.statusId : null,
+      status: selectedStatus.value ? selectedStatus.value.id : null,
     }
 
     const response = isAddMode.value
-      ? await fetch(`${import.meta.env.VITE_BASE_URL}/v1/tasks`, {
+      ? await fetch(`${import.meta.env.VITE_BASE_URL}/v2/tasks`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -114,7 +111,7 @@ const handleSubmit = async () => {
           body: JSON.stringify(requestData),
         })
       : await fetch(
-          `${import.meta.env.VITE_BASE_URL}/v1/tasks/${props.task.id}`,
+          `${import.meta.env.VITE_BASE_URL}/v2/tasks/${props.task.id}`,
           {
             method: "PUT",
             headers: {
@@ -256,7 +253,7 @@ const formatDate = (dateString) => {
               </option>
               <option
                 v-for="status in filteredStatuses"
-                :key="status.statusId"
+                :key="status.id"
                 :value="status"
               >
                 {{ status.name }}

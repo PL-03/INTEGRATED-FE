@@ -32,7 +32,7 @@ const closeModal = () => {
 
 const confirmDelete = () => {
   if (props.tasksAssociated) {
-    emit("transfer", transferStatus.value.statusId)
+    emit("transfer", transferStatus.value.id)
   } else {
     emit("confirm")
   }
@@ -61,8 +61,7 @@ const transferStatus = ref(null)
 const filteredStatuses = computed(() => {
   return props.statuses.filter(
     (status) =>
-      status.statusId !==
-      props.statuses.find((s) => s.name === props.taskTitle).statusId
+      status.id !== props.statuses.find((s) => s.name === props.taskTitle).id
   )
 })
 </script>
@@ -81,7 +80,7 @@ const filteredStatuses = computed(() => {
         >
           <option
             v-for="status in filteredStatuses"
-            :key="status.statusId"
+            :key="status.id"
             :value="status"
           >
             {{ status.name }}

@@ -18,7 +18,7 @@ const statuses = ref([])
 
 const fetchTasks = async () => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/tasks`)
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v2/tasks`)
     const data = await response.json()
     tasks.value = data
   } catch (error) {
@@ -30,7 +30,7 @@ const fetchTaskDetails = async (id) => {
   if (id) {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/v1/tasks/${id}`
+        `${import.meta.env.VITE_BASE_URL}/v2/tasks/${id}`
       )
       if (response.ok) {
         const data = await response.json()

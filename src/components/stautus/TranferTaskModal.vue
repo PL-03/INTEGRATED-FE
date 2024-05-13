@@ -25,7 +25,7 @@ const emit = defineEmits(["close", "confirm", "transfer"])
 const newStatusId = ref(null)
 
 const filteredStatuses = computed(() => {
-  return props.statuses.filter((status) => status.statusId !== props.statusId)
+  return props.statuses.filter((status) => status.id !== props.statusId)
 })
 
 const closeModal = () => {
@@ -57,8 +57,8 @@ const confirmTransfer = () => {
         >
           <option
             v-for="status in filteredStatuses"
-            :key="status.statusId"
-            :value="status.statusId"
+            :key="status.id"
+            :value="status.id"
           >
             {{ status.name }}
           </option>

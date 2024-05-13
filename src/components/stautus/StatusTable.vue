@@ -29,18 +29,18 @@ const handleAddStatus = () => {
 }
 
 const handleEditStatus = (status) => {
-  if (status.statusId === 1) {
+  if (status.id === 1) {
     alert("The default status cannot be edited or deleted.")
     return
   }
 
-  router.push(`/status/${status.statusId}/edit`)
-  emit("edit-status", status.statusId)
+  router.push(`/status/${status.id}/edit`)
+  emit("edit-status", status.id)
 }
 
 const handleDeleteStatus = async (status) => {
   statusToDelete.value = status
-  const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v1/tasks`)
+  const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v2/tasks`)
   const tasks = await response.json()
 
   console.log("Tasks:", tasks)
@@ -59,9 +59,7 @@ const handleDeleteStatus = async (status) => {
 const confirmDeleteStatus = async () => {
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/v2/statuses/${
-        statusToDelete.value.statusId
-      }`,
+      `${import.meta.env.VITE_BASE_URL}/v2/statuses/${statusToDelete.value.id}`,
       {
         method: "DELETE",
       }
@@ -70,9 +68,7 @@ const confirmDeleteStatus = async () => {
     if (response.ok) {
       // Remove the deleted status from the statuses array
       props.statuses.splice(
-        props.statuses.findIndex(
-          (s) => s.statusId === statusToDelete.value.statusId
-        ),
+        props.statuses.findIndex((s) => s.id === statusToDelete.value.id),
         1
       )
       emit("status-deleted")
@@ -105,7 +101,7 @@ const transferTasks = async (targetStatusId) => {
   try {
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/v2/statuses/${
-        statusToDelete.value.statusId
+        statusToDelete.value.id
       }/${targetStatusId}`,
       {
         method: "DELETE",
@@ -115,9 +111,7 @@ const transferTasks = async (targetStatusId) => {
     if (response.ok) {
       // Remove the deleted status from the statuses array
       props.statuses.splice(
-        props.statuses.findIndex(
-          (s) => s.statusId === statusToDelete.value.statusId
-        ),
+        props.statuses.findIndex((s) => s.id === statusToDelete.value.id),
         1
       )
       emit("status-deleted")
@@ -263,7 +257,7 @@ const showToast = (message, type) => {
         <tbody>
           <tr
             v-for="(status, index) in statuses"
-            :key="status.statusId"
+            :key="status.id"
             :class="index % 2 === 0 ? 'bg-yellow-50' : 'bg-orange-100'"
             class="itbkk-item font-mono border-b"
           >
@@ -287,7 +281,7 @@ const showToast = (message, type) => {
               <button
                 class="text-blue-800 hover:text-blue-500 mb-2 e-btn edit-delete"
                 @click="handleEditStatus(status)"
-                :disabled="status.statusId === 1"
+                :disabled="status.id === 1"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -304,7 +298,7 @@ const showToast = (message, type) => {
               <button
                 class="text-red-700 hover:text-red-400 d-btn px-4 edit-delete"
                 @click="handleDeleteStatus(status)"
-                :disabled="status.statusId === 1"
+                :disabled="status.id === 1"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
