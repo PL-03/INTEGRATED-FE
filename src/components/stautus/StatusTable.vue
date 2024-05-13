@@ -286,7 +286,8 @@ const showToast = (message, type) => {
               <button @click="handleViewTask(status)">{{ status.name }}</button>
             </td>
             <td
-              class="text-m text-gray-900 font-light px-4 py-2 whitespace-normal border-r itbkk-status-description"
+              class="text-m text-gray-900 font-light px-4 py-2 border-r itbkk-status-description"
+              style="word-break: break-word"
             >
               {{ status.description || "No description provided" }}
             </td>

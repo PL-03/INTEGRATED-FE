@@ -160,7 +160,7 @@ const showToast = (message, type) => {
           <input
             v-model.trim="statusInput.name"
             type="text"
-            maxlength="100"
+            maxlength="50"
             class="ml-4 bg-yellow-100 rounded-md shadow-gray-400 px-8 py-2 w-11/12 shadow-md"
           />
         </div>
@@ -172,7 +172,7 @@ const showToast = (message, type) => {
               v-model="statusInput.description"
               class="shadow-yellow-400 p-4 resize-none bg-yellow-950 w-full rounded-md"
               rows="6"
-              maxlength="500"
+              maxlength="200"
             ></textarea>
           </div>
         </div>
