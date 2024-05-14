@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watchEffect, computed } from "vue"
+import { ref, watchEffect, computed, onMounted } from "vue"
 import { useRouter } from "vue-router"
 import { convertToTitleCase } from "../libs/util.js"
 import { useToast, POSITION } from "vue-toastification"
@@ -26,9 +26,21 @@ const formData = ref({
   assignees: "",
   status: "NO_STATUS",
 })
+
 const isAddingTitleEmpty = computed(
   () => isAddMode.value && !formData.value.title.trim()
 )
+
+onMounted(() => {
+  if (props.task.id) {
+    formData.value = {
+      title: props.task.title,
+      description: props.task.description,
+      assignees: props.task.assignees,
+      status: props.task.status,
+    }
+  }
+})
 
 watchEffect(() => {
   if (props.show) {
@@ -50,12 +62,12 @@ const isFormModified = computed(() => {
   }
 
   const { title, description, assignees, status } = props.task
-  return (
-    formData.value.title !== title ||
-    formData.value.description !== description ||
-    formData.value.assignees !== assignees ||
-    formData.value.status !== status
-  )
+  const titleChanged = formData.value.title !== (title || "")
+  const descriptionChanged = formData.value.description !== (description || "")
+  const assigneesChanged = formData.value.assignees !== (assignees || "")
+  const statusChanged = formData.value.status !== status
+
+  return titleChanged || descriptionChanged || assigneesChanged || statusChanged
 })
 
 const handleSubmit = async () => {
@@ -247,7 +259,7 @@ const formatDate = (dateString) => {
       <div class="flex justify-end">
         <div class="m-4">
           <button
-            class="bg-green-500 text-white font-bold py-2 px-4 rounded itbkk-button-confirm disabled"
+            class="bg-green-500 text-white font-bold py-2 px-4 rounded itbkk-button-confirm save"
             @click="handleSubmit"
             :disabled="isAddingTitleEmpty || (!isAddMode && !isFormModified)"
           >
@@ -256,7 +268,7 @@ const formatDate = (dateString) => {
         </div>
         <div class="m-4">
           <button
-            class="bg-red-500 text-white font-bold py-2 px-4 rounded itbkk-button-cancel"
+            class="bg-red-700 text-white font-bold py-2 px-4 rounded itbkk-button-cancel"
             @click="closeModal"
           >
             Cancel
@@ -312,5 +324,10 @@ const formatDate = (dateString) => {
 
 .itbkk-description textarea {
   resize: vertical;
+}
+
+.save:disabled {
+  background-color: #7777779f;
+  color: #fefefe;
 }
 </style>
