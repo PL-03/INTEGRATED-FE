@@ -293,11 +293,13 @@ const showToast = (message, type) => {
             </td>
             <td class="px-4 py-2">
               <button
-                class="text-blue-800 hover:text-blue-500 mb-2 e-btn edit-delete"
+                class="text-blue-800 hover:text-blue-500 mb-2 e-btn edit-delete itbkk-button-edit"
                 @click="handleEditStatus(status)"
                 :disabled="status.id === 1"
               >
                 <svg
+                  class="itbkk-button-edit"
+                  name="Edit"
                   xmlns="http://www.w3.org/2000/svg"
                   width="28"
                   height="28"
@@ -310,11 +312,13 @@ const showToast = (message, type) => {
                 </svg>
               </button>
               <button
-                class="text-red-700 hover:text-red-400 d-btn px-4 edit-delete"
+                class="text-red-700 hover:text-red-400 d-btn px-4 edit-delete itbkk-button-delete"
                 @click="handleDeleteStatus(status)"
                 :disabled="status.id === 1"
               >
                 <svg
+                  class="itbkk-button-delete"
+                  name="Delete"
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
                   height="24"

@@ -33,7 +33,7 @@ const fetchStatusDetails = async (statusId) => {
         const data = await response.json()
         selectedStatus.value = data
       } else if (response.status === 404) {
-        alert("The requested status does not exist")
+        alert("An error has occurred, the status does not exist")
         router.push("/status")
       } else {
         console.error("Error fetching status details:", response.statusText)
