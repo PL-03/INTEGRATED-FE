@@ -272,10 +272,12 @@ const showToast = (message, type) => {
             <td class="flex justify-center px-4 py-2">
               <!-- //edit -->
               <button
-                class="text-blue-800 hover:text-blue-500 mt-3 ml-2 e-btn"
+                class="text-blue-800 hover:text-blue-500 mt-3 ml-2 e-btn itbkk-button-edit"
                 @click="handleEditTask(task)"
               >
                 <svg
+                  class="itbkk-button-edit"
+                  name="Edit"
                   xmlns="http://www.w3.org/2000/svg"
                   width="28"
                   height="28"

@@ -198,23 +198,23 @@ const showToast = (message, type) => {
           </div>
         </div>
 
-        <div class="w-2/5 pl-4 mr-8 itbkk-assignees">
-          <div class="itbkk-assignee mt-2 mb-2 text-start">
+        <div class="w-2/5 pl-4 mr-8">
+          <div class="mt-2 mb-2 text-start">
             <strong class="text-gray-500 text-sm ml-4">Assignees</strong>
             <textarea
               v-model.trim="formData.assignees"
-              class="shadow-md p-4 bg-blue-200 w-full rounded-lg"
+              class="shadow-md p-4 bg-blue-200 w-full rounded-lg itbkk-assignees"
               rows="3"
               maxlength="30"
             ></textarea>
           </div>
 
-          <div class="itbkk-status mt-2 text-start itbkk-status">
+          <div class="itbkk-status mt-2 text-start">
             <strong class="text-gray-500 text-sm ml-4">Status</strong>
 
             <select
               v-model="selectedStatus"
-              class="shadow-md bg-blue-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+              class="itbkk-status shadow-md bg-blue-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             >
               <option :value="props.task.status" selected>
                 {{ props.task.status?.name }}
