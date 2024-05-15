@@ -25,7 +25,15 @@ const fetchTasks = async () => {
     console.error("Error fetching tasks:", error)
   }
 }
-
+const getStatusText = (status) => {
+  if (typeof status === "object" && status !== null) {
+    return status.name || ""
+  } else if (typeof status === "string") {
+    return status.name || status
+  } else {
+    return "Unknown Status"
+  }
+}
 const fetchTaskDetails = async (id) => {
   if (id) {
     try {
@@ -58,7 +66,20 @@ const fetchStatuses = async () => {
     console.error("Error fetching statuses:", error)
   }
 }
+const sortData = (order = "Asc") => {
+  tasks.value.sort((a, b) => {
+    const statusA = getStatusText(a.status).toUpperCase()
+    const statusB = getStatusText(b.status).toUpperCase()
 
+    if (statusA < statusB) {
+      return order === "Asc" ? -1 : 1
+    }
+    if (statusA > statusB) {
+      return order === "Asc" ? 1 : -1
+    }
+    return 0
+  })
+}
 onMounted(async () => {
   await fetchTasks()
   await fetchStatuses()
@@ -100,6 +121,7 @@ const handleAddTask = () => {
     @edit-task="handleEditTask"
     @add-task="handleAddTask"
     @task-deleted="fetchTasks"
+    @direction="sortData"
   />
   <AddEditModal
     v-if="isAddMode || isEditMode"

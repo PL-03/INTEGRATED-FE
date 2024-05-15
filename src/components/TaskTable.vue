@@ -7,12 +7,21 @@ import { AkMoreVertical } from "@kalimahapps/vue-icons"
 
 const props = defineProps({
   tasks: {
-    type: Array,
+    type: Object,
     required: true,
   },
 })
 
-const emit = defineEmits(["viewTask", "edit-task", "add-task", "taskDeleted"])
+const sortData = (direction) => {
+  emit("direction", direction)
+}
+const emit = defineEmits([
+  "viewTask",
+  "edit-task",
+  "add-task",
+  "taskDeleted",
+  "direction",
+])
 const router = useRouter()
 const showConfirmationModal = ref(false)
 const taskToDelete = ref(null)
@@ -219,7 +228,19 @@ const showToast = (message, type) => {
             <th
               class="text-lg font-medium text-white px-4 py-2 text-left border-r"
             >
-              Status
+              Status<br />
+              <button
+                class="border border-black bg-white text-yellow-950 hover:bg-yellow-950 hover:text-white"
+                @click="sortData('Asc')"
+              >
+                Asc
+              </button>
+              <button
+                class="ml-2 border border-black bg-white text-yellow-950 hover:bg-yellow-950 hover:text-white"
+                @click="sortData('Desc')"
+              >
+                Desc
+              </button>
             </th>
             <th class="text-lg font-medium text-white px-4 py-2 text-left">
               Actions
@@ -229,7 +250,7 @@ const showToast = (message, type) => {
         <tbody>
           <tr
             v-for="(task, index) in tasks"
-            :key="task.id"
+            :key="index"
             :class="index % 2 === 0 ? 'bg-yellow-50' : 'bg-orange-100'"
             class="font-mono text-center border itbkk-item"
           >
@@ -312,14 +333,14 @@ const showToast = (message, type) => {
         </tbody>
       </table>
     </div>
-    <div class="h-16"></div>
-    <ConfirmationModal
-      :show="showConfirmationModal"
-      :taskTitle="taskToDelete?.title"
-      @close="closeConfirmationModal"
-      @confirm="confirmDeleteTask"
-    />
   </div>
+  <div class="h-16"></div>
+  <ConfirmationModal
+    :show="showConfirmationModal"
+    :taskTitle="taskToDelete?.title"
+    @close="closeConfirmationModal"
+    @confirm="confirmDeleteTask"
+  />
 </template>
 
 <style scoped>
