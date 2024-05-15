@@ -7,6 +7,7 @@ import { useRoute, useRouter } from "vue-router"
 import { getStatusText } from "./libs/util"
 
 const tasks = ref([])
+const sortableTasks = tasks
 const selectedTask = ref({})
 const route = useRoute()
 const router = useRouter()
@@ -59,8 +60,12 @@ const fetchStatuses = async () => {
     console.error("Error fetching statuses:", error)
   }
 }
-const sortData = (order = "Asc") => {
-  tasks.value.sort((a, b) => {
+const sortData = (order) => {
+  if (order === "Def") {
+    return sortableTasks.value.sort((a, b) => a.id - b.id)
+  }
+
+  sortableTasks.value.sort((a, b) => {
     const statusA = getStatusText(a.status).toUpperCase()
     const statusB = getStatusText(b.status).toUpperCase()
 
@@ -109,7 +114,7 @@ const handleAddTask = () => {
 
 <template>
   <TaskTable
-    :tasks="tasks"
+    :sortableTasks="sortableTasks"
     @view-task="handleViewTask"
     @edit-task="handleEditTask"
     @add-task="handleAddTask"

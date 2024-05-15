@@ -7,7 +7,7 @@ import { AkMoreVertical } from "@kalimahapps/vue-icons"
 import { getStatusText } from "@/libs/util"
 
 const props = defineProps({
-  tasks: {
+  sortableTasks: {
     type: Object,
     required: true,
   },
@@ -232,6 +232,12 @@ const showToast = (message, type) => {
               >
                 Desc
               </button>
+              <button
+                class="ml-2 border border-black bg-white text-yellow-950 hover:bg-yellow-950 hover:text-white"
+                @click="handleSortData('Def')"
+              >
+                Default
+              </button>
             </th>
             <th class="text-lg font-medium text-white px-4 py-2 text-left">
               Actions
@@ -240,7 +246,7 @@ const showToast = (message, type) => {
         </thead>
         <tbody>
           <tr
-            v-for="(task, index) in tasks"
+            v-for="(task, index) in sortableTasks"
             :key="index"
             :class="index % 2 === 0 ? 'bg-yellow-50' : 'bg-orange-100'"
             class="font-mono text-center border itbkk-item"
