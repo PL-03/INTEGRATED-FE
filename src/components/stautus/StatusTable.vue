@@ -20,21 +20,21 @@ const statusToDelete = ref(null)
 const showTransferModal = ref(false)
 
 const closeStatusPage = () => {
-  router.push("/task")
+  router.push({name: "tasklist"})
 }
 
 const handleAddStatus = () => {
   router.push({ name: "statusadd" })
   emit("add-status") // Emit add-status event
 }
-
+// name: "statusedit"
 const handleEditStatus = (status) => {
   if (status.id === 1) {
     alert("The default status cannot be edited or deleted.")
     return
   }
 
-  router.push(`/status/${status.id}/edit`)
+  router.push({ name: "statusedit", params: { id: status.id } })
   emit("edit-status", status.id)
 }
 

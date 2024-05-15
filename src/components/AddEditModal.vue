@@ -56,7 +56,7 @@ watchEffect(() => {
 
 const closeModal = () => {
   emit("update:show", false)
-  router.push("/task")
+  router.push({name: "tasklist"})
 }
 
 const isFormModified = computed(() => {
@@ -110,7 +110,7 @@ const handleSubmit = async () => {
 
     if (response.ok) {
       emit("update:show", false)
-      router.push("/task")
+      router.push({name: "tasklist"})
       isAddMode.value ? emit("task-added") : emit("task-updated")
       showToast(
         `The task "${formData.value.title}" has been successfully ${
