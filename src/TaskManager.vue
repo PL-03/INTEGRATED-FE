@@ -37,7 +37,7 @@ const fetchTaskDetails = async (id) => {
         selectedTask.value = data
       } else if (response.status === 404) {
         alert("The requested task does not exist")
-        router.push("/task")
+        router.push({name:"tasklist"})
       } else {
         console.error("Error fetching task details:", response.statusText)
       }
@@ -75,7 +75,7 @@ watch(
 
 const handleViewTask = (task) => {
   selectedTask.value = task
-  router.push(`/task/${task.id}`)
+  router.push({ name: 'taskdetail', params: { taskId: task.id }})
 }
 
 const handleEditTask = (taskId) => {

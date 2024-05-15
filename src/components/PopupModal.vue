@@ -28,7 +28,7 @@ const formatDate = (dateString) => {
 }
 
 const closeModal = () => {
-  router.push("/task")
+  router.push({name: "tasklist"})
 }
 </script>
 

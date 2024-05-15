@@ -54,7 +54,7 @@ const isFormModified = computed(() => {
 
 const closeModal = () => {
   emit("update:show", false)
-  router.push("/status")
+  router.push({name: "statusList"})
 }
 const handleSubmit = async () => {
   try {
@@ -84,7 +84,7 @@ const handleSubmit = async () => {
 
     if (response.ok) {
       emit("update:show", false)
-      router.push("/status")
+      router.push({name: "statusList"})
       isAddMode.value ? emit("statusAdded") : emit("statusUpdated")
       showToast(
         `The status "${statusInput.value.name}" has been successfully ${

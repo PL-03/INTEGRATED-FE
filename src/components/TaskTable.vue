@@ -57,7 +57,7 @@ const handleViewTask = (task) => {
 }
 
 const handleEditTask = (task) => {
-  router.push(`/task/${task.id}/edit`)
+  router.push({ name: 'taskedit', params: { taskId: task.id } })
   emit("edit-task", task.id) // Emit edit-task event with task ID
 }
 
