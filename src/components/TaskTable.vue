@@ -4,6 +4,7 @@ import { ref } from "vue"
 import ConfirmationModal from "./ConfirmationModal.vue"
 import { useToast, POSITION } from "vue-toastification"
 import { AkMoreVertical } from "@kalimahapps/vue-icons"
+import { getStatusText } from "@/libs/util"
 
 const props = defineProps({
   tasks: {
@@ -12,7 +13,7 @@ const props = defineProps({
   },
 })
 
-const sortData = (direction) => {
+const handleSortData = (direction) => {
   emit("direction", direction)
 }
 const emit = defineEmits([
@@ -32,16 +33,6 @@ const statusColors = {
   "To Do": "#ffd1d1",
   Doing: "#fde047",
   Done: "#5cd052",
-}
-
-const getStatusText = (status) => {
-  if (typeof status === "object" && status !== null) {
-    return status.name || ""
-  } else if (typeof status === "string") {
-    return status.name || status
-  } else {
-    return "Unknown Status"
-  }
 }
 
 const getStatusColor = (statusText) => {
@@ -66,7 +57,7 @@ const handleViewTask = (task) => {
 }
 
 const handleEditTask = (task) => {
-  router.push({ name: 'taskedit', params: { taskId: task.id } })
+  router.push({ name: "taskedit", params: { taskId: task.id } })
   emit("edit-task", task.id) // Emit edit-task event with task ID
 }
 
@@ -231,13 +222,13 @@ const showToast = (message, type) => {
               Status<br />
               <button
                 class="border border-black bg-white text-yellow-950 hover:bg-yellow-950 hover:text-white"
-                @click="sortData('Asc')"
+                @click="handleSortData('Asc')"
               >
                 Asc
               </button>
               <button
                 class="ml-2 border border-black bg-white text-yellow-950 hover:bg-yellow-950 hover:text-white"
-                @click="sortData('Desc')"
+                @click="handleSortData('Desc')"
               >
                 Desc
               </button>

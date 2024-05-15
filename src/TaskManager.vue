@@ -4,6 +4,7 @@ import TaskTable from "./components/TaskTable.vue"
 import PopupModal from "./components/PopupModal.vue"
 import AddEditModal from "./components/AddEditModal.vue"
 import { useRoute, useRouter } from "vue-router"
+import { getStatusText } from "./libs/util"
 
 const tasks = ref([])
 const selectedTask = ref({})
@@ -25,15 +26,7 @@ const fetchTasks = async () => {
     console.error("Error fetching tasks:", error)
   }
 }
-const getStatusText = (status) => {
-  if (typeof status === "object" && status !== null) {
-    return status.name || ""
-  } else if (typeof status === "string") {
-    return status.name || status
-  } else {
-    return "Unknown Status"
-  }
-}
+
 const fetchTaskDetails = async (id) => {
   if (id) {
     try {
@@ -45,7 +38,7 @@ const fetchTaskDetails = async (id) => {
         selectedTask.value = data
       } else if (response.status === 404) {
         alert("The requested task does not exist")
-        router.push({name:"tasklist"})
+        router.push({ name: "tasklist" })
       } else {
         console.error("Error fetching task details:", response.statusText)
       }
@@ -96,7 +89,7 @@ watch(
 
 const handleViewTask = (task) => {
   selectedTask.value = task
-  router.push({ name: 'taskdetail', params: { taskId: task.id }})
+  router.push({ name: "taskdetail", params: { taskId: task.id } })
 }
 
 const handleEditTask = (taskId) => {
