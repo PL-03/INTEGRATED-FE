@@ -16,10 +16,6 @@ const props = defineProps({
     type: Array,
     required: true,
   },
-  tasks: {
-    type: Array,
-    default: () => [],
-  },
 })
 
 const emit = defineEmits(["update:show", "taskAdded", "taskUpdated"])
@@ -86,14 +82,6 @@ const filteredStatuses = computed(() => {
 
 const handleSubmit = async () => {
   try {
-    const titleToAdd = formData.value.title.trim().toLowerCase()
-    if (existingTitles.value.includes(titleToAdd)) {
-      showToast(
-        `Can not add task that already exists with title "${formData.value.title}"`,
-        "error"
-      )
-      return
-    }
     const requestData = {
       title: formData.value.title.trim(),
       description: formData.value.description.trim() || null,
@@ -174,14 +162,6 @@ const showToast = (message, type) => {
       toast(message)
   }
 }
-const existingTitles = computed(() => {
-  if (!props.tasks) {
-    return []
-  }
-  return props.tasks
-    .filter((t) => t.id !== props.task.id)
-    .map((task) => task.title.toLowerCase())
-})
 </script>
 
 <template>

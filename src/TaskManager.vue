@@ -126,7 +126,6 @@ const handleAddTask = () => {
     :show="showModal"
     :task="isEditMode ? selectedTask : {}"
     :statuses="statuses"
-    :tasks="tasks"
     @update:show="showModal = $event"
     @task-added="fetchTasks"
     @task-updated="fetchTasks"
