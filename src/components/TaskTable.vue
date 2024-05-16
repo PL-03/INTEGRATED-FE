@@ -3,7 +3,6 @@ import { useRouter } from "vue-router"
 import { ref } from "vue"
 import ConfirmationModal from "./ConfirmationModal.vue"
 import { useToast, POSITION } from "vue-toastification"
-import { AkMoreVertical } from "@kalimahapps/vue-icons"
 import { getStatusText } from "@/libs/util"
 
 const props = defineProps({
@@ -196,7 +195,23 @@ const showToast = (message, type) => {
     </div>
 
     <div class="h-32"></div>
-
+    <!-- <div>
+      <v-select
+        variant="outlined"
+        chips
+        clearable
+        label="Select"
+        :items="[
+          'California',
+          'Colorado',
+          'Florida',
+          'Georgia',
+          'Texas',
+          'Wyoming',
+        ]"
+        multiple
+      ></v-select>
+    </div> -->
     <div class="flex justify-center items-center">
       <table class="table-auto w-9/12 m-2 rounded-2xl overflow-hidden">
         <thead class="bg-yellow-950 border-b py-4 text-white">

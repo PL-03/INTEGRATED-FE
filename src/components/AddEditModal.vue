@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watchEffect, computed, onMounted } from "vue"
+import { ref, watchEffect, computed, onMounted, inject } from "vue"
 import { useRouter } from "vue-router"
 import { useToast, POSITION } from "vue-toastification"
 
@@ -15,6 +15,10 @@ const props = defineProps({
   statuses: {
     type: Array,
     required: true,
+  },
+  tasks: {
+    type: Array,
+    default: () => [],
   },
 })
 
@@ -56,7 +60,7 @@ watchEffect(() => {
 
 const closeModal = () => {
   emit("update:show", false)
-  router.push({name: "tasklist"})
+  router.push({ name: "tasklist" })
 }
 
 const isFormModified = computed(() => {
@@ -82,6 +86,14 @@ const filteredStatuses = computed(() => {
 
 const handleSubmit = async () => {
   try {
+    const titleToAdd = formData.value.title.trim().toLowerCase()
+    if (existingTitles.value.includes(titleToAdd)) {
+      showToast(
+        `Can not add task that already exists with title "${formData.value.title}"`,
+        "error"
+      )
+      return
+    }
     const requestData = {
       title: formData.value.title.trim(),
       description: formData.value.description.trim() || null,
@@ -110,7 +122,7 @@ const handleSubmit = async () => {
 
     if (response.ok) {
       emit("update:show", false)
-      router.push({name: "tasklist"})
+      router.push({ name: "tasklist" })
       isAddMode.value ? emit("task-added") : emit("task-updated")
       showToast(
         `The task "${formData.value.title}" has been successfully ${
@@ -162,6 +174,14 @@ const showToast = (message, type) => {
       toast(message)
   }
 }
+const existingTitles = computed(() => {
+  if (!props.tasks) {
+    return []
+  }
+  return props.tasks
+    .filter((t) => t.id !== props.task.id)
+    .map((task) => task.title.toLowerCase())
+})
 </script>
 
 <template>

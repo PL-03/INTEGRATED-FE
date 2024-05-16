@@ -34,7 +34,7 @@ const fetchStatusDetails = async (statusId) => {
         selectedStatus.value = data
       } else if (response.status === 404) {
         alert("An error has occurred, the status does not exist")
-        router.push({ name: "statusList"})
+        router.push({ name: "statusList" })
       } else {
         console.error("Error fetching status details:", response.statusText)
       }
@@ -81,7 +81,8 @@ const handleAddStatus = () => {
   <AddEditStatus
     v-if="isAddMode || isEditMode"
     :show="showModal"
-    :statuses="isEditMode ? selectedStatus : {}"
+    :status="isEditMode ? selectedStatus : {}"
+    :statuses="statuses"
     @update:show="showModal = $event"
     @status-added="fetchStatus"
     @status-updated="fetchStatus"

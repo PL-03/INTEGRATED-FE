@@ -7,14 +7,18 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
-  statuses: {
+  status: {
     type: Object,
     required: true,
+  },
+  statuses: {
+    type: Array,
+    default: () => [],
   },
 })
 const emit = defineEmits(["update:show", "statusAdded", "statusUpdated"])
 const router = useRouter()
-const isAddMode = computed(() => !props.statuses.id)
+const isAddMode = computed(() => !props.status.id)
 const isAddingNameEmpty = computed(
   () => isAddMode.value && !statusInput.value.name.trim()
 )
@@ -24,17 +28,17 @@ const statusInput = ref({
 })
 
 onMounted(() => {
-  if (props.statuses.id) {
+  if (props.status.id) {
     statusInput.value = {
-      name: props.statuses.name,
-      description: props.statuses.description,
+      name: props.status.name,
+      description: props.status.description,
     }
   }
 })
 
 watchEffect(() => {
   if (props.show) {
-    const { name, description } = props.statuses
+    const { name, description } = props.status
     statusInput.value.name = name || ""
     statusInput.value.description = description || ""
   }
@@ -45,7 +49,7 @@ const isFormModified = computed(() => {
     return true // always true for add mode
   }
 
-  const { name, description } = props.statuses
+  const { name, description } = props.status
   return (
     statusInput.value.name !== name ||
     statusInput.value.description !== (description || "")
@@ -54,10 +58,18 @@ const isFormModified = computed(() => {
 
 const closeModal = () => {
   emit("update:show", false)
-  router.push({name: "statusList"})
+  router.push({ name: "statusList" })
 }
 const handleSubmit = async () => {
   try {
+    const nameToAdd = statusInput.value.name.trim().toLowerCase()
+    if (existingNames.value.includes(nameToAdd)) {
+      showToast(
+        `Can not add status that already exists with name "${statusInput.value.name}"`,
+        "error"
+      )
+      return
+    }
     const requestData = {
       name: statusInput.value.name.trim(),
       description: statusInput.value.description.trim() || null,
@@ -72,7 +84,7 @@ const handleSubmit = async () => {
           body: JSON.stringify(requestData),
         })
       : await fetch(
-          `${import.meta.env.VITE_BASE_URL}/v2/statuses/${props.statuses.id}`,
+          `${import.meta.env.VITE_BASE_URL}/v2/statuses/${props.status.id}`,
           {
             method: "PUT",
             headers: {
@@ -84,7 +96,7 @@ const handleSubmit = async () => {
 
     if (response.ok) {
       emit("update:show", false)
-      router.push({name: "statusList"})
+      router.push({ name: "statusList" })
       isAddMode.value ? emit("statusAdded") : emit("statusUpdated")
       showToast(
         `The status "${statusInput.value.name}" has been successfully ${
@@ -137,6 +149,14 @@ const showToast = (message, type) => {
       toast(message)
   }
 }
+const existingNames = computed(() => {
+  if (!props.statuses) {
+    return []
+  }
+  return props.statuses
+    .filter((s) => s.statusId !== props.status.statusId)
+    .map((statuses) => statuses.name.toLowerCase())
+})
 </script>
 
 <template>
