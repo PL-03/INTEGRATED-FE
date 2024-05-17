@@ -178,7 +178,12 @@ const existingNames = computed(() => {
         <div class="itbkk-status-name text-black text-start">
           <strong class="flex ml-8 text-gray-500 text-sm mb-1">
             Status Name
-            <strong v-if="isAddMode" class="text-red-700 ml-2">*</strong>
+            <strong v-if="isAddMode" class="text-red-700 ml-2"
+              >* Limit to 50 characters</strong
+            >
+            <span v-else class="text-gray-400 ml-2 text-xs"
+              >* Limit to 50 characters</span
+            >
           </strong>
           <input
             v-model.trim="statusInput.name"
@@ -190,6 +195,9 @@ const existingNames = computed(() => {
         <div class="w-full pr-4 mt-4 ml-2">
           <div class="itbkk-status-description text-white text-start">
             <strong class="ml-4 text-gray-500 text-sm mb-1">Description</strong>
+            <span class="text-gray-400 ml-2 text-xs"
+              >* Limit to 500 characters</span
+            >
             <textarea
               v-model="statusInput.description"
               class="shadow-yellow-400 p-4 resize-none bg-yellow-950 w-full rounded-md"

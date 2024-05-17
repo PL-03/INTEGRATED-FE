@@ -186,7 +186,13 @@ const showToast = (message, type) => {
 
       <div class="itbkk-title mb-2 text-start">
         <strong class="flex text-gray-500 text-sm ml-10 mb-1">
-          Title <strong v-if="isAddMode" class="text-red-700 ml-2">*</strong>
+          Title
+          <strong v-if="isAddMode" class="text-red-700 ml-2 text-xs"
+            >* Limit to 100 characters</strong
+          >
+          <span v-else class="text-gray-400 ml-2 text-xs"
+            >* Limit to 100 characters</span
+          >
         </strong>
         <input
           v-model.trim="formData.title"
@@ -199,6 +205,9 @@ const showToast = (message, type) => {
         <div class="w-3/5 pr-4 mb-4 ml-4">
           <div class="itbkk-description text-start">
             <strong class="text-gray-500 text-sm ml-4">Description</strong>
+            <span class="text-gray-400 ml-2 text-xs"
+              >* Limit to 500 characters</span
+            >
             <textarea
               v-model="formData.description"
               class="shadow-lg shadow-gray-500/50 p-8 resize-none bg-yellow-100 w-full rounded-lg"
@@ -210,6 +219,9 @@ const showToast = (message, type) => {
         <div class="w-2/5 pl-4 mr-8">
           <div class="mt-2 mb-2 text-start">
             <strong class="text-gray-500 text-sm ml-4">Assignees</strong>
+            <span class="text-gray-400 ml-2 text-xs"
+              >* Limit to 30 characters</span
+            >
             <textarea
               v-model.trim="formData.assignees"
               class="shadow-md p-4 bg-blue-200 w-full rounded-lg itbkk-assignees"
