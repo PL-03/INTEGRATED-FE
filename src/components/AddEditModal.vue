@@ -89,12 +89,12 @@ const handleSubmit = async () => {
       status: selectedStatus.value ? selectedStatus.value.id : null,
     }
     if (
-      requestData.name.length > 100 ||
+      requestData.title.length > 100 ||
       requestData.assignees.length > 30 ||
       requestData.description.length > 500
     ) {
       showToast(
-        `The task name, assignees, and description should be less than 100, 30, and 200 characters respectively`,
+        `The task name, assignees, and description should be less than 100, 30, and 500 characters respectively`,
         "error"
       )
       return
@@ -191,7 +191,6 @@ const showToast = (message, type) => {
         <input
           v-model.trim="formData.title"
           type="text"
-          maxlength="100"
           class="ml-6 bg-gray-300 rounded-md px-4 py-2 w-11/12 shadow-md"
         />
       </div>
@@ -204,7 +203,6 @@ const showToast = (message, type) => {
               v-model="formData.description"
               class="shadow-lg shadow-gray-500/50 p-8 resize-none bg-yellow-100 w-full rounded-lg"
               rows="8"
-              maxlength="500"
             ></textarea>
           </div>
         </div>
@@ -216,7 +214,6 @@ const showToast = (message, type) => {
               v-model.trim="formData.assignees"
               class="shadow-md p-4 bg-blue-200 w-full rounded-lg itbkk-assignees"
               rows="3"
-              maxlength="30"
             ></textarea>
           </div>
 
