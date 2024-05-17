@@ -88,6 +88,17 @@ const handleSubmit = async () => {
       assignees: formData.value.assignees.trim() || null,
       status: selectedStatus.value ? selectedStatus.value.id : null,
     }
+    if (
+      requestData.name.length > 100 ||
+      requestData.assignees.length > 30 ||
+      requestData.description.length > 500
+    ) {
+      showToast(
+        `The task name, assignees, and description should be less than 100, 30, and 200 characters respectively`,
+        "error"
+      )
+      return
+    }
 
     const response = isAddMode.value
       ? await fetch(`${import.meta.env.VITE_BASE_URL}/v2/tasks`, {

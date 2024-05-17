@@ -74,7 +74,13 @@ const handleSubmit = async () => {
       name: statusInput.value.name.trim(),
       description: statusInput.value.description.trim() || null,
     }
-
+    if (requestData.name.length > 50 || requestData.description.length > 200) {
+      showToast(
+        `The status name and description should be less than 50 and 200 characters respectively`,
+        "error"
+      )
+      return
+    }
     const response = isAddMode.value
       ? await fetch(`${import.meta.env.VITE_BASE_URL}/v2/statuses`, {
           method: "POST",
@@ -177,7 +183,6 @@ const existingNames = computed(() => {
           <input
             v-model.trim="statusInput.name"
             type="text"
-            maxlength="50"
             class="ml-4 bg-yellow-100 rounded-md shadow-gray-400 px-8 py-2 w-11/12 shadow-md"
           />
         </div>
@@ -189,7 +194,6 @@ const existingNames = computed(() => {
               v-model="statusInput.description"
               class="shadow-yellow-400 p-4 resize-none bg-yellow-950 w-full rounded-md"
               rows="6"
-              maxlength="200"
             ></textarea>
           </div>
         </div>
