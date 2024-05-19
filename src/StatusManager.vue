@@ -10,7 +10,6 @@ const selectedStatus = ref({})
 const statusId = computed(() => route.params.id || null)
 const isAddMode = computed(() => route.name === "statusadd")
 const isEditMode = computed(() => route.name === "statusedit")
-const isViewMode = computed(() => route.name === "statusview")
 const showModal = ref(false)
 const statuses = ref([])
 
@@ -71,7 +70,6 @@ const handleAddStatus = () => {
 </script>
 
 <template>
-  <PopupStatusModal v-if="isViewMode" :selectedStatusId="selectedStatus" />
   <StatusTable
     :statuses="statuses"
     @add-status="handleAddStatus"

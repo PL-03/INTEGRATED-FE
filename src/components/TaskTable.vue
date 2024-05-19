@@ -1,69 +1,78 @@
 <script setup>
-import { useRouter } from "vue-router"
-import { ref } from "vue"
-import ConfirmationModal from "./ConfirmationModal.vue"
-import { useToast, POSITION } from "vue-toastification"
-import { getStatusText } from "@/libs/util"
-
+import { useRouter } from "vue-router";
+import { computed, ref } from "vue";
+import { useToast, POSITION } from "vue-toastification";
+import { getStatusText } from "@/libs/util";
+import FilterDropdown from "./FilterDropdown.vue";
+import ConfirmationModal from "./ConfirmationModal.vue";
 const props = defineProps({
   sortableTasks: {
-    type: Object,
+    type: Array,
     required: true,
   },
-})
+});
 
 const handleSortData = (direction) => {
-  emit("direction", direction)
-}
+  emit("direction", direction);
+};
 const emit = defineEmits([
   "viewTask",
   "edit-task",
   "add-task",
   "taskDeleted",
   "direction",
-])
-const router = useRouter()
-const showConfirmationModal = ref(false)
-const taskToDelete = ref(null)
-const defaultStatuses = ["No Status", "To Do", "Doing", "Done"]
+]);
+const router = useRouter();
+const showConfirmationModal = ref(false);
+const taskToDelete = ref(null);
+const defaultStatuses = ["No Status", "To Do", "Doing", "Done"];
+const statusFiltered = ref([]);
 
 const statusColors = {
   "No Status": "#9ca3af",
   "To Do": "#ffd1d1",
   Doing: "#fde047",
   Done: "#5cd052",
-}
+};
 
 const getStatusColor = (statusText) => {
   if (defaultStatuses.includes(statusText)) {
-    return statusColors[statusText]
+    return statusColors[statusText];
   } else {
-    return "#D1FFFF" // New color for new status
+    return "#D1FFFF"; // New color for new status
   }
-}
+};
 
+const filteredItems = computed(() => {
+  let items = props.sortableTasks;
+  if (statusFiltered.value.length) {
+    items = items.filter((item) => statusFiltered.value.includes(item.status));
+  }
+  return items;
+  // return props.sortableTasks.filter((item) => item.status === "To Do")
+});
 const handleStatusList = () => {
-  router.push({ name: "statusList" })
-}
+  router.push({ name: "statusList" });
+};
 
 const handleAddTask = () => {
-  router.push({ name: "taskadd" })
-  emit("add-task") // Emit add-task event
-}
+  router.push({ name: "taskadd" });
+  emit("add-task"); // Emit add-task event
+};
 
 const handleViewTask = (task) => {
-  emit("viewTask", task)
-}
+  emit("viewTask", task);
+};
 
 const handleEditTask = (task) => {
-  router.push({ name: "taskedit", params: { taskId: task.id } })
-  emit("edit-task", task.id) // Emit edit-task event with task ID
-}
+  router.push({ name: "taskedit", params: { taskId: task.id } });
+  emit("edit-task", task.id); // Emit edit-task event with task ID
+};
 
 const handleDeleteTask = (task) => {
-  taskToDelete.value = task
-  showConfirmationModal.value = true
-}
+  taskToDelete.value = task;
+  showConfirmationModal.value = true;
+};
 
 const confirmDeleteTask = async () => {
   try {
@@ -72,65 +81,73 @@ const confirmDeleteTask = async () => {
       {
         method: "DELETE",
       }
-    )
+    );
 
     if (response.ok) {
       showToast(
         `The task "${taskToDelete.value.title}" has been successfully deleted`,
         "success-delete"
-      )
-      emit("taskDeleted") // Emit the "taskDeleted" event without the task ID
+      );
+      emit("taskDeleted"); // Emit the "taskDeleted" event without the task ID
     } else if (response.status === 404) {
-      showToast("An error has occurred, the task does not exist", "error")
+      showToast("An error has occurred, the task does not exist", "error");
     } else {
-      showToast("An error occurred while deleting the task", "error")
+      showToast("An error occurred while deleting the task", "error");
     }
   } catch (error) {
-    console.error("Error deleting task:", error)
-    showToast("An error occurred while deleting the task", "error")
+    console.error("Error deleting task:", error);
+    showToast("An error occurred while deleting the task", "error");
   } finally {
-    showConfirmationModal.value = false
-    taskToDelete.value = null
+    showConfirmationModal.value = false;
+    taskToDelete.value = null;
   }
-}
+};
+
+const handleFilterData = (selectedOptions) => {
+  if (selectedOptions.length === 0) {
+    statusFiltered.value = []; // Clear the statusFiltered array
+  } else {
+    statusFiltered.value = selectedOptions;
+  }
+};
 
 const closeConfirmationModal = () => {
-  showConfirmationModal.value = false
-  taskToDelete.value = null
-}
+  showConfirmationModal.value = false;
+  taskToDelete.value = null;
+};
 
 const showToast = (message, type) => {
-  const toast = useToast() // Create a toast instance
+  const toast = useToast(); // Create a toast instance
 
   switch (type) {
     case "success-add":
       toast.success(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      })
-      break
+      });
+      break;
     case "success-update":
       toast.success(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      })
-      break
+      });
+      break;
     case "success-delete":
       toast.success(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      })
-      break
+      });
+      break;
     case "error":
       toast.error(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      })
-      break
+      });
+      break;
     default:
-      toast(message)
+      toast(message);
   }
-}
+};
 </script>
 
 <template>
@@ -195,23 +212,7 @@ const showToast = (message, type) => {
     </div>
 
     <div class="h-32"></div>
-    <!-- <div>
-      <v-select
-        variant="outlined"
-        chips
-        clearable
-        label="Select"
-        :items="[
-          'California',
-          'Colorado',
-          'Florida',
-          'Georgia',
-          'Texas',
-          'Wyoming',
-        ]"
-        multiple
-      ></v-select>
-    </div> -->
+    <FilterDropdown :tasks="sortableTasks" @filter="handleFilterData" />
     <div class="flex justify-center items-center">
       <table class="table-auto w-9/12 m-2 rounded-2xl overflow-hidden">
         <thead class="bg-yellow-950 border-b py-4 text-white">
@@ -261,7 +262,7 @@ const showToast = (message, type) => {
         </thead>
         <tbody>
           <tr
-            v-for="(task, index) in sortableTasks"
+            v-for="(task, index) in filteredItems"
             :key="index"
             :class="index % 2 === 0 ? 'bg-yellow-50' : 'bg-orange-100'"
             class="font-mono text-center border itbkk-item"

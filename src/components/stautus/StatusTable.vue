@@ -10,7 +10,6 @@ const props = defineProps({
     required: true,
   },
 })
-
 const route = useRoute()
 const emit = defineEmits(["add-status", "edit-status", "status-deleted"])
 const router = useRouter()
@@ -20,7 +19,7 @@ const statusToDelete = ref(null)
 const showTransferModal = ref(false)
 
 const closeStatusPage = () => {
-  router.push({name: "tasklist"})
+  router.push({ name: "tasklist" })
 }
 
 const handleAddStatus = () => {
@@ -263,7 +262,7 @@ const showToast = (message, type) => {
         <tbody>
           <tr
             v-for="(status, index) in statuses"
-            :key="status.id"
+            :key="index"
             :class="index % 2 === 0 ? 'bg-yellow-50' : 'bg-orange-100'"
             class="itbkk-item font-mono border-b"
           >

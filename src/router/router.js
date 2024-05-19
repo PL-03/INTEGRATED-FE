@@ -31,11 +31,6 @@ const routes = [
     component: TaskManager,
   },
   {
-    path: "/status/:statusId",
-    name: "statusview",
-    component: StatusManager,
-  },
-  {
     path: "/status",
     name: "statusList",
     component: StatusManager,

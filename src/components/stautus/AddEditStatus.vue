@@ -57,6 +57,7 @@ const isFormModified = computed(() => {
 })
 
 const closeModal = () => {
+  console.log(props.status)
   emit("update:show", false)
   router.push({ name: "statusList" })
 }
@@ -74,7 +75,10 @@ const handleSubmit = async () => {
       name: statusInput.value.name.trim(),
       description: statusInput.value.description.trim() || null,
     }
-    if (requestData.name.length > 50 || requestData.description.length > 200) {
+    if (
+      requestData.name.length > 50 ||
+      (requestData.description != null && requestData.description.length > 200)
+    ) {
       showToast(
         `The status name and description should be less than 50 and 200 characters respectively`,
         "error"

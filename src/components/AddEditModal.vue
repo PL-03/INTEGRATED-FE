@@ -90,8 +90,8 @@ const handleSubmit = async () => {
     }
     if (
       requestData.title.length > 100 ||
-      requestData.assignees.length > 30 ||
-      requestData.description.length > 500
+      (requestData.assignees != null && requestData.assignees.length > 30) ||
+      (requestData.description != null && requestData.description.length > 500)
     ) {
       showToast(
         `The task name, assignees, and description should be less than 100, 30, and 500 characters respectively`,
