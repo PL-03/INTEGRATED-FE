@@ -45,37 +45,28 @@ const filter = () => {
 </script>
 
 <template>
-  <div class="relative inline-flex items-center">
-    <strong>Filter by status:</strong>
+  <div class="itbkk-status-filter relative inline-flex">
     <div
-      class="w-64 py-1 px-2 border border-gray-300 rounded-l focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-400"
-    >
-      <div
-        v-for="(option, index) in selectedOptions"
-        :key="index"
-        class="inline-flex items-center bg-gray-200 rounded-full px-2 py-1 mr-1 mb-1"
+      class="flex w-96  h-11 px-4 bg-white rounded-md border-gray-300 rounded-l focus-within:outline-none focus-within:ring-2 focus-within:ring-blue-400 overflow-x-scroll"
       >
+      <div class="m-2 mr-2 whitespace-nowrap text-gray-600 text-sm  "><strong>Filter by status</strong></div>
+      
+      <div v-for="(option, index) in selectedOptions" :key="index"
+        class=" flex items-center text-sm  bg-gray-200 rounded-full px-4 py-3 mt-2 text-sm whitespace-nowrap ">
         <span>{{ option }}</span>
-        <button
-          type="button"
-          class="ml-1 text-gray-500 hover:text-gray-700 focus:outline-none"
-          @click="removeOption(index)"
-        >
-          <svg
-            class="h-3 w-3 fill-current"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-          >
+        <button type="button" class="ml-1  text-gray-500 hover:text-red-700 focus:outline-none"
+          @click="removeOption(index)">
+          <svg class="h-3 w-3 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
             <path
-              d="M10 8.586L2.929 1.515 1.515 2.929 8.586 10l-7.071 7.071 1.414 1.414L10 11.414l7.071 7.071 1.414-1.414L11.414 10l7.071-7.071-1.414-1.414L10 8.586z"
-            />
+              d="M10 8.586L2.929 1.515 1.515 2.929 8.586 10l-7.071 7.071 1.414 1.414L10 11.414l7.071 7.071 1.414-1.414L11.414 10l7.071-7.071-1.414-1.414L10 8.586z" />
           </svg>
         </button>
       </div>
     </div>
+
     <div class="relative">
       <button
-        class="px-4 py-2 bg-blue-500 text-white rounded-l-none hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        class="h-11 px-4 py-2 bg-blue-500 text-white rounded-l-none hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
         @click="toggleDropdown"
       >
         <svg
