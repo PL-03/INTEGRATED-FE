@@ -1,6 +1,6 @@
 <script setup>
 import { useRouter } from "vue-router";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useToast, POSITION } from "vue-toastification";
 import { getStatusText } from "@/libs/util";
 import FilterDropdown from "./FilterDropdown.vue";
@@ -27,6 +27,7 @@ const showConfirmationModal = ref(false);
 const taskToDelete = ref(null);
 const defaultStatuses = ["No Status", "To Do", "Doing", "Done"];
 const statusFiltered = ref([]);
+const filteredTasks = ref([]);
 
 const statusColors = {
   "No Status": "#9ca3af",
@@ -42,15 +43,29 @@ const getStatusColor = (statusText) => {
     return "#D1FFFF"; // New color for new status
   }
 };
+const fetchFilteredTasks = async () => {
+  const selectedStatuses = statusFiltered.value.join(",");
+  const url = `${
+    import.meta.env.VITE_BASE_URL
+  }/v2/tasks?sortBy=status.name&filterStatuses=${selectedStatuses}`;
 
-const filteredItems = computed(() => {
-  let items = props.sortableTasks;
-  if (statusFiltered.value.length) {
-    items = items.filter((item) => statusFiltered.value.includes(item.status));
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+    filteredTasks.value = data;
+  } catch (error) {
+    console.error("Error fetching filtered tasks:", error);
   }
-  return items;
-  // return props.sortableTasks.filter((item) => item.status === "To Do")
-});
+};
+watch(statusFiltered, fetchFilteredTasks, { immediate: true });
+// const filteredItems = computed(() => {
+//   let items = props.sortableTasks;
+//   if (statusFiltered.value.length) {
+//     items = items.filter((item) => statusFiltered.value.includes(item.status));
+//   }
+//   return items;
+//   // return props.sortableTasks.filter((item) => item.status === "To Do")
+// });
 const handleStatusList = () => {
   router.push({ name: "statusList" });
 };
@@ -72,6 +87,10 @@ const handleEditTask = (task) => {
 const handleDeleteTask = (task) => {
   taskToDelete.value = task;
   showConfirmationModal.value = true;
+};
+const handleFilterData = (selectedOptions) => {
+  statusFiltered.value = selectedOptions;
+  fetchFilteredTasks();
 };
 
 const confirmDeleteTask = async () => {
@@ -100,14 +119,6 @@ const confirmDeleteTask = async () => {
   } finally {
     showConfirmationModal.value = false;
     taskToDelete.value = null;
-  }
-};
-
-const handleFilterData = (selectedOptions) => {
-  if (selectedOptions.length === 0) {
-    statusFiltered.value = []; // Clear the statusFiltered array
-  } else {
-    statusFiltered.value = selectedOptions;
   }
 };
 
@@ -262,7 +273,7 @@ const showToast = (message, type) => {
         </thead>
         <tbody>
           <tr
-            v-for="(task, index) in filteredItems"
+            v-for="(task, index) in filteredTasks"
             :key="index"
             :class="index % 2 === 0 ? 'bg-yellow-50' : 'bg-orange-100'"
             class="font-mono text-center border itbkk-item"

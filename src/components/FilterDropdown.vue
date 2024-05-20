@@ -24,12 +24,14 @@ const addOption = (option) => {
     selectedOptions.value.push(option);
     inputValue.value = "";
     console.log(selectedOptions.value);
+    filter(); // Call the filter function after adding an option
   }
   showDropdown.value = false;
 };
 
 const removeOption = (index) => {
   selectedOptions.value.splice(index, 1);
+  filter(); // Trigger the filter event after removing an option
 };
 
 const clearOptions = () => {
@@ -89,16 +91,14 @@ const filter = () => {
       <div
         v-if="showDropdown"
         class="absolute left-0 z-10 mt-2 bg-white rounded-lg shadow-lg"
+        @click="filter"
       >
         <ul class="py-2 text-sm">
           <li
             v-for="(status, index) in statuses"
             :key="index"
             class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-            @click="
-              addOption(status);
-              filter();
-            "
+            @click.stop="addOption(status)"
           >
             {{ status }}
           </li>
