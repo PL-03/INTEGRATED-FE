@@ -6,14 +6,29 @@ import { getStatusText } from "@/libs/util";
 import FilterDropdown from "./FilterDropdown.vue";
 import ConfirmationModal from "./ConfirmationModal.vue";
 const props = defineProps({
-  sortableTasks: {
+  tasks: {
     type: Array,
     required: true,
   },
 });
 
 const handleSortData = (direction) => {
-  emit("direction", direction);
+  if (direction === "Def") {
+    return filteredTasks.value.sort((a, b) => a.id - b.id);
+  }
+
+  filteredTasks.value.sort((a, b) => {
+    const statusA = getStatusText(a.status).toUpperCase();
+    const statusB = getStatusText(b.status).toUpperCase();
+
+    if (statusA < statusB) {
+      return direction === "Asc" ? -1 : 1;
+    }
+    if (statusA > statusB) {
+      return direction === "Asc" ? 1 : -1;
+    }
+    return 0;
+  });
 };
 const emit = defineEmits([
   "viewTask",
@@ -223,7 +238,7 @@ const showToast = (message, type) => {
     </div>
 
     <div class="h-32"></div>
-    <FilterDropdown :tasks="sortableTasks" @filter="handleFilterData" />
+    <FilterDropdown :tasks="tasks" @filter="handleFilterData" />
     <div class="flex justify-center items-center">
       <table class="table-auto w-9/12 m-2 rounded-2xl overflow-hidden">
         <thead class="bg-yellow-950 border-b py-4 text-white">

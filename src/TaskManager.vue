@@ -4,10 +4,8 @@ import TaskTable from "./components/TaskTable.vue";
 import PopupModal from "./components/PopupModal.vue";
 import AddEditModal from "./components/AddEditModal.vue";
 import { useRoute, useRouter } from "vue-router";
-import { getStatusText } from "./libs/util";
 
 const tasks = ref([]);
-const sortableTasks = tasks;
 const selectedTask = ref({});
 const route = useRoute();
 const router = useRouter();
@@ -62,24 +60,6 @@ const fetchStatuses = async () => {
     console.error("Error fetching statuses:", error);
   }
 };
-const sortData = (order) => {
-  if (order === "Def") {
-    return sortableTasks.value.sort((a, b) => a.id - b.id);
-  }
-
-  sortableTasks.value.sort((a, b) => {
-    const statusA = getStatusText(a.status).toUpperCase();
-    const statusB = getStatusText(b.status).toUpperCase();
-
-    if (statusA < statusB) {
-      return order === "Asc" ? -1 : 1;
-    }
-    if (statusA > statusB) {
-      return order === "Asc" ? 1 : -1;
-    }
-    return 0;
-  });
-};
 onMounted(async () => {
   await fetchTasks();
   await fetchStatuses();
@@ -116,12 +96,11 @@ const handleAddTask = () => {
 
 <template>
   <TaskTable
-    :sortableTasks="sortableTasks"
+    :tasks="tasks"
     @view-task="handleViewTask"
     @edit-task="handleEditTask"
     @add-task="handleAddTask"
     @task-deleted="fetchTasks"
-    @direction="sortData"
   />
   <AddEditModal
     v-if="isAddMode || isEditMode"
