@@ -1,115 +1,117 @@
 <script setup>
-import { ref, onMounted, watch, computed } from "vue"
-import TaskTable from "./components/TaskTable.vue"
-import PopupModal from "./components/PopupModal.vue"
-import AddEditModal from "./components/AddEditModal.vue"
-import { useRoute, useRouter } from "vue-router"
-import { getStatusText } from "./libs/util"
+import { ref, onMounted, watch, computed } from "vue";
+import TaskTable from "./components/TaskTable.vue";
+import PopupModal from "./components/PopupModal.vue";
+import AddEditModal from "./components/AddEditModal.vue";
+import { useRoute, useRouter } from "vue-router";
+import { getStatusText } from "./libs/util";
 
-const tasks = ref([])
-const sortableTasks = tasks
-const selectedTask = ref({})
-const route = useRoute()
-const router = useRouter()
-const taskId = computed(() => route.params.taskId || null)
-const isAddMode = computed(() => route.name === "taskadd")
-const isEditMode = computed(() => route.name === "taskedit")
-const isViewMode = computed(() => route.name === "taskdetail")
-const showModal = ref(false)
-const statuses = ref([])
+const tasks = ref([]);
+const sortableTasks = tasks;
+const selectedTask = ref({});
+const route = useRoute();
+const router = useRouter();
+const taskId = computed(() => route.params.taskId || null);
+const isAddMode = computed(() => route.name === "taskadd");
+const isEditMode = computed(() => route.name === "taskedit");
+const isViewMode = computed(() => route.name === "taskdetail");
+const showModal = ref(false);
+const statuses = ref([]);
 
 const fetchTasks = async () => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v2/tasks`)
-    const data = await response.json()
-    tasks.value = data
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v2/tasks`);
+    const data = await response.json();
+    tasks.value = data;
   } catch (error) {
-    console.error("Error fetching tasks:", error)
+    console.error("Error fetching tasks:", error);
   }
-}
+};
 
 const fetchTaskDetails = async (id) => {
   if (id) {
     try {
       const response = await fetch(
         `${import.meta.env.VITE_BASE_URL}/v2/tasks/${id}`
-      )
+      );
       if (response.ok) {
-        const data = await response.json()
-        selectedTask.value = data
+        const data = await response.json();
+        selectedTask.value = data;
       } else if (response.status === 404) {
-        alert("The requested task does not exist")
-        router.push({ name: "tasklist" })
+        alert("The requested task does not exist");
+        router.push({ name: "tasklist" });
       } else {
-        console.error("Error fetching task details:", response.statusText)
+        console.error("Error fetching task details:", response.statusText);
       }
     } catch (error) {
-      console.error("Error fetching task details:", error)
+      console.error("Error fetching task details:", error);
     }
   } else {
-    selectedTask.value = {}
+    selectedTask.value = {};
   }
-}
+};
 
 const fetchStatuses = async () => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v2/statuses`)
-    const data = await response.json()
-    statuses.value = data
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/v2/statuses`
+    );
+    const data = await response.json();
+    statuses.value = data;
   } catch (error) {
-    console.error("Error fetching statuses:", error)
+    console.error("Error fetching statuses:", error);
   }
-}
+};
 const sortData = (order) => {
   if (order === "Def") {
-    return sortableTasks.value.sort((a, b) => a.id - b.id)
+    return sortableTasks.value.sort((a, b) => a.id - b.id);
   }
 
   sortableTasks.value.sort((a, b) => {
-    const statusA = getStatusText(a.status).toUpperCase()
-    const statusB = getStatusText(b.status).toUpperCase()
+    const statusA = getStatusText(a.status).toUpperCase();
+    const statusB = getStatusText(b.status).toUpperCase();
 
     if (statusA < statusB) {
-      return order === "Asc" ? -1 : 1
+      return order === "Asc" ? -1 : 1;
     }
     if (statusA > statusB) {
-      return order === "Asc" ? 1 : -1
+      return order === "Asc" ? 1 : -1;
     }
-    return 0
-  })
-}
+    return 0;
+  });
+};
 onMounted(async () => {
-  await fetchTasks()
-  await fetchStatuses()
-  fetchTaskDetails(taskId.value)
-})
+  await fetchTasks();
+  await fetchStatuses();
+  fetchTaskDetails(taskId.value);
+});
 
 watch(
   taskId,
   (newTaskId) => {
-    fetchTaskDetails(newTaskId)
+    fetchTaskDetails(newTaskId);
   },
   { immediate: true }
-)
+);
 
 const handleViewTask = (task) => {
-  selectedTask.value = task
-  router.push({ name: "taskdetail", params: { taskId: task.id } })
-}
+  selectedTask.value = task;
+  router.push({ name: "taskdetail", params: { taskId: task.id } });
+};
 
 const handleEditTask = (taskId) => {
-  const task = tasks.value.find((t) => t.id === taskId)
+  const task = tasks.value.find((t) => t.id === taskId);
   if (task) {
-    selectedTask.value = { ...task }
-    showModal.value = true
+    selectedTask.value = { ...task };
+    showModal.value = true;
   }
-  console.log(showModal.value)
-}
+  console.log(showModal.value);
+};
 
 const handleAddTask = () => {
-  showModal.value = true
-  selectedTask.value = {}
-}
+  showModal.value = true;
+  selectedTask.value = {};
+};
 </script>
 
 <template>
