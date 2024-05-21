@@ -1,7 +1,7 @@
 <script setup>
-import { ref, watchEffect, computed, onMounted, inject } from "vue"
-import { useRouter } from "vue-router"
-import { useToast, POSITION } from "vue-toastification"
+import { ref, watchEffect, computed, onMounted, inject } from "vue";
+import { useRouter } from "vue-router";
+import { useToast, POSITION } from "vue-toastification";
 
 const props = defineProps({
   show: {
@@ -16,22 +16,22 @@ const props = defineProps({
     type: Array,
     required: true,
   },
-})
+});
 
-const emit = defineEmits(["update:show", "taskAdded", "taskUpdated"])
-const selectedStatus = ref(props.task.status || null)
-const router = useRouter()
-const isAddMode = computed(() => !props.task.id)
+const emit = defineEmits(["update:show", "task-added", "task-updated"]);
+const selectedStatus = ref(props.task.status || null);
+const router = useRouter();
+const isAddMode = computed(() => !props.task.id);
 
 const formData = ref({
   title: "",
   description: "",
   assignees: "",
   status: null,
-})
+});
 const isAddingTitleEmpty = computed(
   () => isAddMode.value && !formData.value.title.trim()
-)
+);
 
 onMounted(() => {
   if (props.task.id) {
@@ -40,45 +40,45 @@ onMounted(() => {
       description: props.task.description,
       assignees: props.task.assignees,
       status: (selectedStatus.value = props.task.status),
-    }
+    };
   }
-})
+});
 
 watchEffect(() => {
   if (props.show) {
-    const { title, description, assignees, status } = props.task
-    formData.value.title = title || ""
-    formData.value.description = description || ""
-    formData.value.assignees = assignees || ""
-    selectedStatus.value = status || null
+    const { title, description, assignees, status } = props.task;
+    formData.value.title = title || "";
+    formData.value.description = description || "";
+    formData.value.assignees = assignees || "";
+    selectedStatus.value = status || null;
   }
-})
+});
 
 const closeModal = () => {
-  emit("update:show", false)
-  router.push({ name: "tasklist" })
-}
+  emit("update:show", false);
+  router.push({ name: "tasklist" });
+};
 
 const isFormModified = computed(() => {
   if (isAddMode.value) {
-    return true // always true for add mode
+    return true; // always true for add mode
   }
 
-  const { title, description, assignees, status } = props.task
+  const { title, description, assignees, status } = props.task;
   const statusChanged =
-    selectedStatus.value && selectedStatus.value.id !== (status?.id || null)
+    selectedStatus.value && selectedStatus.value.id !== (status?.id || null);
   const otherFieldsChanged =
     formData.value.title !== (title || "") ||
     formData.value.description !== (description || "") ||
-    formData.value.assignees !== (assignees || "")
+    formData.value.assignees !== (assignees || "");
 
   // Return true if any field (including status) is changed
-  return statusChanged || otherFieldsChanged
-})
+  return statusChanged || otherFieldsChanged;
+});
 
 const filteredStatuses = computed(() => {
-  return props.statuses.filter((status) => status.id !== props.task.status?.id)
-})
+  return props.statuses.filter((status) => status.id !== props.task.status?.id);
+});
 
 const handleSubmit = async () => {
   try {
@@ -87,7 +87,7 @@ const handleSubmit = async () => {
       description: formData.value.description.trim() || null,
       assignees: formData.value.assignees.trim() || null,
       status: selectedStatus.value ? selectedStatus.value.id : null,
-    }
+    };
     if (
       requestData.title.length > 100 ||
       (requestData.assignees != null && requestData.assignees.length > 30) ||
@@ -96,8 +96,8 @@ const handleSubmit = async () => {
       showToast(
         `The task name, assignees, and description should be less than 100, 30, and 500 characters respectively`,
         "error"
-      )
-      return
+      );
+      return;
     }
 
     const response = isAddMode.value
@@ -117,62 +117,62 @@ const handleSubmit = async () => {
             },
             body: JSON.stringify(requestData),
           }
-        )
+        );
 
     if (response.ok) {
-      emit("update:show", false)
-      router.push({ name: "tasklist" })
-      isAddMode.value ? emit("task-added") : emit("task-updated")
+      emit("update:show", false);
+      router.push({ name: "tasklist" });
+      isAddMode.value ? emit("task-added") : emit("task-updated");
       showToast(
         `The task "${formData.value.title}" has been successfully ${
           isAddMode.value ? "added" : "updated"
         }`,
         isAddMode.value ? "success-add" : "success-update"
-      )
+      );
     } else {
       showToast(
         `An error occurred ${isAddMode.value ? "adding" : "updating"} the task`,
         "error"
-      )
+      );
     }
   } catch (error) {
     console.error(
       `Error ${isAddMode.value ? "adding" : "updating"} task:`,
       error
-    )
+    );
     showToast(
       `An error occurred ${isAddMode.value ? "adding" : "updating"} the task`,
       "error"
-    )
+    );
   }
-}
+};
 
 const showToast = (message, type) => {
-  const toast = useToast()
+  const toast = useToast();
 
   switch (type) {
     case "success-add":
       toast.success(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      })
-      break
+      });
+      break;
     case "success-update":
       toast.success(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      })
-      break
+      });
+      break;
     case "error":
       toast.error(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      })
-      break
+      });
+      break;
     default:
-      toast(message)
+      toast(message);
   }
-}
+};
 </script>
 
 <template>
