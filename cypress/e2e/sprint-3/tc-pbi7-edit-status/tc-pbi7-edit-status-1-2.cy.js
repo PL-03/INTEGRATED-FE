@@ -2,6 +2,7 @@ describe(`TC-PBI7-EDIT-STATUS-1-2\n
           Test Scenario : normal - edit "To Do", save should disabled and does not changed when canceling`, () => {
   
     beforeEach(()=> {
+        cy.viewport(1024, 768) ;
         cy.visit('/task') ;
         cy.wait(100) ;
     }) ;

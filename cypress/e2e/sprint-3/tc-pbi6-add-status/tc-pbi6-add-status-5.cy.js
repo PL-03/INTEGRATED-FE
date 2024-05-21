@@ -2,6 +2,7 @@ describe(`TC-PBI6-ADD-STATUS-5\n
           Test Scenario : normal - add 3 tasks with No Status and To Do status`, () => {
   
   beforeEach(()=> {
+    cy.viewport(1024, 768) ;
     cy.visit('/task') ;
     cy.wait(100) ;
   }) ;

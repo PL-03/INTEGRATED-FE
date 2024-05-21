@@ -1,6 +1,6 @@
 <script setup>
 import { useRouter } from "vue-router";
-import { computed, ref, watch } from "vue";
+import { onUpdated, ref, watch } from "vue";
 import { useToast, POSITION } from "vue-toastification";
 import { getStatusText } from "@/libs/util";
 import FilterDropdown from "./FilterDropdown.vue";
@@ -71,6 +71,9 @@ const fetchFilteredTasks = async () => {
     console.error("Error fetching filtered tasks:", error);
   }
 };
+onUpdated(() => {
+  fetchFilteredTasks();
+});
 watch(statusFiltered, fetchFilteredTasks, { immediate: true });
 // const filteredItems = computed(() => {
 //   let items = props.sortableTasks;

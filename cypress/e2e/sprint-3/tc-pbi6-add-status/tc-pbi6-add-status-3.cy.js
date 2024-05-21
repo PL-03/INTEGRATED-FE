@@ -2,6 +2,7 @@ describe(`TC-PBI6-ADD-STATUS-3\n
           Test Scenario : normal - add new status with max field size`, () => {
   
     beforeEach(()=> {
+        cy.viewport(1024, 768) ;
         cy.visit('/task') ;
         cy.wait(100) ;
     }) ;

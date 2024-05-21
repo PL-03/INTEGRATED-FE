@@ -2,6 +2,7 @@ describe(`TC-PBI6-ADD-STATUS-4\n
           Test Scenario : normal - all all fields with leading and trailling whitespace`, () => {
   
     beforeEach(()=> {
+        cy.viewport(1024, 768) ;
         cy.visit('/task') ;
         cy.wait(100) ;
     }) ;

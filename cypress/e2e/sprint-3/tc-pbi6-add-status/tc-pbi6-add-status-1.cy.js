@@ -2,6 +2,7 @@ describe(`TC-PBI6-ADD-STATUS-1\n
           Test Scenario : normal - add new status and cancel the operation`, () => {
   
     beforeEach(()=> {
+        cy.viewport(1024, 768) ;
         cy.visit('/task') ;
         cy.wait(100) ;
     }) ;
@@ -22,7 +23,7 @@ describe(`TC-PBI6-ADD-STATUS-1\n
         cy.contains('Action') ;
     })
 
-    it('Status table shoud contain "No Statu","To Do"," Doing" and "Done".',()=>{
+    it('Status table shoud contain "No Status","To Do"," Doing" and "Done".',()=>{
         cy.get('.itbkk-manage-status').should('exist').click() ;
         cy.wait(100) ;
 

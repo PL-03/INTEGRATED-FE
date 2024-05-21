@@ -2,6 +2,7 @@ describe(`TC-PBI7-EDIT-STATUS-1-1\n
           Test Scenario : normal - cannot edit 'No Status', enable Save on edit, cancel edit`, () => {
   
     beforeEach(()=> {
+        cy.viewport(1024, 768) ;
         cy.visit('/task') ;
         cy.wait(100) ;
     }) ;

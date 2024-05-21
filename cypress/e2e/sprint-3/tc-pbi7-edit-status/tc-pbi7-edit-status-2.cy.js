@@ -3,6 +3,7 @@ describe(`TC-PBI7-EDIT-STATUS-2\n
            -Name and Description with leading and trailing whitespace.`, () => {
   
     beforeEach(()=> {
+        cy.viewport(1024, 768) ;
         cy.visit('/task') ;
         cy.wait(100) ;
     }) ;
