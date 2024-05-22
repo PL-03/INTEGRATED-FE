@@ -96,6 +96,10 @@ const closeTransferModal = () => {
 
 const transferTasks = async (targetStatusId) => {
   try {
+    if (statusToDelete.value.name === "Done") {
+      showToast(`The status can not be deleted`, "error");
+      return;
+    }
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/v2/statuses/${
         statusToDelete.value.id
