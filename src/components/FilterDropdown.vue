@@ -1,29 +1,41 @@
 <script setup>
-import { computed, ref } from "vue";
-
-const props = defineProps({
-  tasks: {
-    type: Array,
-    required: true,
-  },
+import { computed, onMounted, ref, watch } from "vue";
+const fetchStatus = async () => {
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/v2/statuses`
+    );
+    statuses.value = await response.json();
+  } catch (error) {
+    console.error("Error fetching statuses:", error);
+  }
+};
+const statuses = ref([]);
+onMounted(async () => {
+  await fetchStatus();
 });
 
 const selectedOptions = ref([]);
 const inputValue = ref("");
 const showDropdown = ref(false);
 const emit = defineEmits(["filter"]);
-const statuses = computed(() => {
-  return [...new Set(props.tasks.map((task) => task.status))];
-});
+
+watch(
+  () => statuses,
+  (newVal) => {
+    console.log("Statuses updated:", newVal); // Log updated statuses
+  },
+  { immediate: true }
+);
+
 const toggleDropdown = () => {
   showDropdown.value = !showDropdown.value;
 };
 
 const addOption = (option) => {
-  if (option && !selectedOptions.value.includes(option)) {
-    selectedOptions.value.push(option);
+  if (option && !selectedOptions.value.includes(option.name)) {
+    selectedOptions.value.push(option.name);
     inputValue.value = "";
-    console.log(selectedOptions.value);
     filter(); // Call the filter function after adding an option
   }
   showDropdown.value = false;
@@ -60,7 +72,7 @@ const filter = () => {
         :key="index"
         class="itbkk-filter-item m-2 flex items-center text-sm bg-gray-300 rounded-full px-3 py-3 mt-2 text-sm whitespace-nowrap"
       >
-        <span>{{ option }}</span>
+        <span>{{ option.name }}</span>
         <button
           type="button"
           class="itbkk-filter-item ml-1 text-gray-500 hover:text-red-700 focus:outline-none"
@@ -106,7 +118,7 @@ const filter = () => {
             class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
             @click.stop="addOption(status)"
           >
-            {{ status }}
+            {{ status.name }}
           </li>
         </ul>
       </div>

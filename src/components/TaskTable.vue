@@ -23,7 +23,6 @@ const emit = defineEmits([
 const router = useRouter();
 const showConfirmationModal = ref(false);
 const taskToDelete = ref(null);
-const defaultStatuses = ["No Status", "To Do", "Doing", "Done"];
 const statusFiltered = ref([]);
 const filteredTasks = ref([...props.tasks]);
 
@@ -242,7 +241,7 @@ const showToast = (message, type) => {
     </nav>
     <div class="p-28">
       <div>
-        <FilterDropdown :tasks="tasks" @filter="handleFilterData" />
+        <FilterDropdown @filter="handleFilterData" />
       </div>
 
       <div class="flex justify-center items-center">
