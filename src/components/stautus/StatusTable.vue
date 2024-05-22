@@ -1,57 +1,57 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import { useToast, POSITION } from "vue-toastification";
-import ConfirmationModal from "../ConfirmationModal.vue";
+import { ref, onMounted } from "vue"
+import { useRouter, useRoute } from "vue-router"
+import { useToast, POSITION } from "vue-toastification"
+import ConfirmationModal from "../ConfirmationModal.vue"
 
 const props = defineProps({
   statuses: {
     type: Array,
     required: true,
   },
-});
-const route = useRoute();
-const emit = defineEmits(["add-status", "edit-status", "status-deleted"]);
-const router = useRouter();
-const showConfirmationModal = ref(false);
-const statusToDelete = ref(null);
-
-const showTransferModal = ref(false);
+})
+const route = useRoute()
+const emit = defineEmits(["add-status", "edit-status", "status-deleted"])
+const router = useRouter()
+const showConfirmationModal = ref(false)
+const statusToDelete = ref(null)
+const defaultStatus = ["No Status", "Done"]
+const showTransferModal = ref(false)
 
 const closeStatusPage = () => {
-  router.push({ name: "tasklist" });
-};
+  router.push({ name: "tasklist" })
+}
 
 const handleAddStatus = () => {
-  router.push({ name: "statusadd" });
-  emit("add-status"); // Emit add-status event
-};
+  router.push({ name: "statusadd" })
+  emit("add-status") // Emit add-status event
+}
 // name: "statusedit"
 const handleEditStatus = (status) => {
   if (status.id === 1) {
-    alert("The default status cannot be edited or deleted.");
-    return;
+    alert("The default status cannot be edited or deleted.")
+    return
   }
 
-  router.push({ name: "statusedit", params: { id: status.id } });
-  emit("edit-status", status.id);
-};
+  router.push({ name: "statusedit", params: { id: status.id } })
+  emit("edit-status", status.id)
+}
 
 const handleDeleteStatus = async (status) => {
-  statusToDelete.value = status;
-  const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v2/tasks`);
-  const tasks = await response.json();
+  statusToDelete.value = status
+  const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v2/tasks`)
+  const tasks = await response.json()
 
-  const associatedTasks = tasks.filter((task) => task.status === status.name);
-  const hasAssociatedTasks = associatedTasks.length > 0;
+  const associatedTasks = tasks.filter((task) => task.status === status.name)
+  const hasAssociatedTasks = associatedTasks.length > 0
 
   if (hasAssociatedTasks) {
-    showTransferModal.value = true;
-    statusToDelete.value.associatedTasksCount = associatedTasks.length;
+    showTransferModal.value = true
+    statusToDelete.value.associatedTasksCount = associatedTasks.length
   } else {
-    showConfirmationModal.value = true;
+    showConfirmationModal.value = true
   }
-};
+}
 
 const confirmDeleteStatus = async () => {
   try {
@@ -60,45 +60,45 @@ const confirmDeleteStatus = async () => {
       {
         method: "DELETE",
       }
-    );
+    )
 
     if (response.ok) {
       // Remove the deleted status from the statuses array
       props.statuses.splice(
         props.statuses.findIndex((s) => s.id === statusToDelete.value.id),
         1
-      );
-      emit("status-deleted");
+      )
+      emit("status-deleted")
       showToast(
         `The status "${statusToDelete.value.name}" has been successfully deleted`,
         "success-delete"
-      );
+      )
     } else {
-      console.error("Error deleting status:", response.statusText);
-      showToast("An error occurred while deleting the status", "error");
+      console.error("Error deleting status:", response.statusText)
+      showToast("An error occurred while deleting the status", "error")
     }
   } catch (error) {
-    console.error("Error deleting status:", error);
-    showToast("An error occurred while deleting the status", "error");
+    console.error("Error deleting status:", error)
+    showToast("An error occurred while deleting the status", "error")
   } finally {
-    showConfirmationModal.value = false;
-    showTransferModal.value = false;
+    showConfirmationModal.value = false
+    showTransferModal.value = false
   }
-};
+}
 
 const closeConfirmationModal = () => {
-  showConfirmationModal.value = false;
-};
+  showConfirmationModal.value = false
+}
 
 const closeTransferModal = () => {
-  showTransferModal.value = false;
-};
+  showTransferModal.value = false
+}
 
 const transferTasks = async (targetStatusId) => {
   try {
     if (statusToDelete.value.name === "Done") {
-      showToast(`The status can not be deleted`, "error");
-      return;
+      showToast(`The status can not be deleted`, "error")
+      return
     }
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/v2/statuses/${
@@ -107,73 +107,73 @@ const transferTasks = async (targetStatusId) => {
       {
         method: "DELETE",
       }
-    );
+    )
 
     if (response.ok) {
       // Remove the deleted status from the statuses array
       props.statuses.splice(
         props.statuses.findIndex((s) => s.id === statusToDelete.value.id),
         1
-      );
-      emit("status-deleted");
+      )
+      emit("status-deleted")
       showToast(
         `The status "${statusToDelete.value.name}" has been successfully deleted and associated tasks transferred`,
         "success-delete"
-      );
+      )
     } else {
       console.error(
         "Error deleting status and transferring tasks:",
         response.statusText
-      );
+      )
       showToast(
         "An error occurred while deleting the status and transferring associated tasks",
         "error"
-      );
+      )
     }
   } catch (error) {
-    console.error("Error deleting status and transferring tasks:", error);
+    console.error("Error deleting status and transferring tasks:", error)
     showToast(
       "An error occurred while deleting the status and transferring associated tasks",
       "error"
-    );
+    )
   } finally {
-    showConfirmationModal.value = false;
-    showTransferModal.value = false;
+    showConfirmationModal.value = false
+    showTransferModal.value = false
   }
-};
+}
 
 const showToast = (message, type) => {
-  const toast = useToast(); // Create a toast instance
+  const toast = useToast() // Create a toast instance
 
   switch (type) {
     case "success-add":
       toast.success(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      });
-      break;
+      })
+      break
     case "success-update":
       toast.success(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      });
-      break;
+      })
+      break
     case "success-delete":
       toast.success(message, {
         position: POSITION.TOP_CENTER,
         timeout: 5000,
-      });
-      break;
+      })
+      break
     case "error":
       toast.error(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      });
-      break;
+      })
+      break
     default:
-      toast(message);
+      toast(message)
   }
-};
+}
 </script>
 
 <template>
@@ -296,7 +296,7 @@ const showToast = (message, type) => {
               <button
                 class="text-blue-800 hover:text-blue-500 mb-2 e-btn edit-delete itbkk-button-edit"
                 @click="handleEditStatus(status)"
-                :disabled="status.id === 1"
+                :disabled="defaultStatus.includes(status.name)"
               >
                 <svg
                   class="itbkk-button-edit"
@@ -315,7 +315,7 @@ const showToast = (message, type) => {
               <button
                 class="text-red-700 hover:text-red-400 d-btn px-4 edit-delete itbkk-button-delete"
                 @click="handleDeleteStatus(status)"
-                :disabled="status.id === 1"
+                :disabled="defaultStatus.includes(status.name)"
               >
                 <svg
                   class="itbkk-button-delete"
