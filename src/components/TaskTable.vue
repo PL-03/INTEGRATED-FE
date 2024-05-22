@@ -211,7 +211,7 @@ const showToast = (message, type) => {
       </div>
     </nav>
     <div class="p-28">
-      <div class=" mb-2 br">
+      <div class="itbkk-status-filter mb-2 br">
         <FilterDropdown :tasks="tasks" @filter="handleFilterData" />
       </div>
 
