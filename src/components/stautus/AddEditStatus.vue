@@ -115,12 +115,18 @@ const handleSubmit = async () => {
         isAddMode.value ? "success-add" : "success-update"
       )
     } else {
-      showToast(
-        `An error occurred ${
-          isAddMode.value ? "adding" : "updating"
-        } the status`,
-        "error"
-      )
+      const errorData = await response.json()
+      if (response.status === 400) {
+        const firstError = errorData.errors[0] // first error object only for now
+        showToast(`Status ${firstError.field} ${firstError.message}`, "error")
+      } else {
+        showToast(
+          `An error occurred ${
+            isAddMode.value ? "adding" : "updating"
+          } the status`,
+          "error"
+        )
+      }
     }
   } catch (error) {
     console.error(
@@ -133,6 +139,7 @@ const handleSubmit = async () => {
     )
   }
 }
+
 const showToast = (message, type) => {
   const toast = useToast()
 
