@@ -72,7 +72,7 @@ const filter = () => {
         :key="index"
         class="itbkk-filter-item m-2 flex items-center text-sm bg-gray-300 rounded-full px-3 py-3 mt-2 text-sm whitespace-nowrap"
       >
-        <span>{{ option.name }}</span>
+        <span>{{ option }}</span>
         <button
           type="button"
           class="itbkk-filter-item ml-1 text-gray-500 hover:text-red-700 focus:outline-none"
