@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue"
+import { ref, computed } from "vue";
 
 const props = defineProps({
   show: {
@@ -8,7 +8,7 @@ const props = defineProps({
   },
   taskTitle: {
     type: String,
-    // required: true,
+    required: true,
   },
   isStatus: {
     type: Boolean,
@@ -22,48 +22,52 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-})
+  associatedTasksCount: {
+    type: Number,
+    default: 0,
+  },
+});
 
-const emit = defineEmits(["close", "confirm"])
+const emit = defineEmits(["close", "confirm", "transfer"]);
 
 const closeModal = () => {
-  emit("close")
-}
+  emit("close");
+};
 
 const confirmDelete = () => {
   if (props.tasksAssociated) {
-    emit("transfer", transferStatus.value.id)
+    emit("transfer", transferStatus.value.id);
   } else {
-    emit("confirm")
+    emit("confirm");
   }
-}
+};
 
 const modalTitle = computed(() => {
   return props.tasksAssociated
     ? "Transfer Tasks"
     : props.isStatus
     ? "Delete Status"
-    : "Delete Task"
-})
+    : "Delete Task";
+});
 
 const modalMessage = computed(() => {
   if (props.tasksAssociated) {
-    return `There are some tasks associated with the "${props.taskTitle}". Transfer to:`
+    return `There are ${props.associatedTasksCount} tasks associated with the "${props.taskTitle}". Transfer to:`;
   } else if (props.isStatus) {
-    return `Do you want to delete the status "${props.taskTitle}"?`
+    return `Do you want to delete the status "${props.taskTitle}"?`;
   } else {
-    return `Do you want to delete the task "${props.taskTitle}"?`
+    return `Do you want to delete the task "${props.taskTitle}"?`;
   }
-})
+});
 
-const transferStatus = ref(null)
+const transferStatus = ref(null);
 
 const filteredStatuses = computed(() => {
   return props.statuses.filter(
     (status) =>
       status.id !== props.statuses.find((s) => s.name === props.taskTitle).id
-  )
-})
+  );
+});
 </script>
 
 <template>
