@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useToast, POSITION } from "vue-toastification";
 import ConfirmationModal from "../ConfirmationModal.vue";
@@ -28,11 +28,6 @@ const handleAddStatus = () => {
 };
 // name: "statusedit"
 const handleEditStatus = (status) => {
-  if (status.id === 1) {
-    alert("The default status cannot be edited or deleted.");
-    return;
-  }
-
   router.push({ name: "statusedit", params: { id: status.id } });
   emit("edit-status", status.id);
 };
@@ -55,6 +50,13 @@ const handleDeleteStatus = async (status) => {
 
 const confirmDeleteStatus = async () => {
   try {
+    if (
+      statusToDelete.value.name === "No Status" ||
+      statusToDelete.value.name === "Done"
+    ) {
+      showToast(`The status can not be deleted`, "error");
+      return;
+    }
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/v2/statuses/${statusToDelete.value.id}`,
       {
@@ -96,7 +98,10 @@ const closeTransferModal = () => {
 
 const transferTasks = async (targetStatusId) => {
   try {
-    if (statusToDelete.value.name === "Done") {
+    if (
+      statusToDelete.value.name === "No Status" ||
+      statusToDelete.value.name === "Done"
+    ) {
       showToast(`The status can not be deleted`, "error");
       return;
     }

@@ -248,23 +248,6 @@ const showToast = (message, type) => {
               </option>
             </select>
           </div>
-
-          <!-- <div v-if="!isAddMode"
-            class="timeBox bg-blue-200 text-wrap box-content border shadow-md rounded-lg p-4 mt-10">
-            <div class="itbkk-timezone">
-              <strong>Time Zone</strong>
-              <textarea class="p-4 bg-gray-100 rounded-lg w-full" rows="2" disabled
-                v-model="Intl.DateTimeFormat().resolvedOptions().timeZone"></textarea>
-            </div>
-            <div class="itbkk-created-on mt-2">
-              <strong>Created Date:</strong>
-              {{ formatDate(props.task.createdOn) }}
-            </div>
-            <div class="itbkk-updated-on">
-              <strong>Updated Date:</strong>
-              {{ formatDate(props.task.updatedOn) }}
-            </div>
-          </div> -->
         </div>
       </div>
 

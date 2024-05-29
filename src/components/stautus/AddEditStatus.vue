@@ -1,7 +1,7 @@
 <script setup>
-import { ref, watchEffect, computed, onMounted } from "vue"
-import { useRouter } from "vue-router"
-import { useToast, POSITION } from "vue-toastification"
+import { ref, watchEffect, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useToast, POSITION } from "vue-toastification";
 const props = defineProps({
   show: {
     type: Boolean,
@@ -15,66 +15,66 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
-})
-const emit = defineEmits(["update:show", "statusAdded", "statusUpdated"])
-const router = useRouter()
-const isAddMode = computed(() => !props.status.id)
+});
+const emit = defineEmits(["update:show", "statusAdded", "statusUpdated"]);
+const router = useRouter();
+const isAddMode = computed(() => !props.status.id);
 const isAddingNameEmpty = computed(
   () => isAddMode.value && !statusInput.value.name.trim()
-)
+);
 const statusInput = ref({
   name: "",
   description: "",
-})
+});
 
 onMounted(() => {
   if (props.status.id) {
     statusInput.value = {
       name: props.status.name,
       description: props.status.description,
-    }
+    };
   }
-})
+});
 
 watchEffect(() => {
   if (props.show) {
-    const { name, description } = props.status
-    statusInput.value.name = name || ""
-    statusInput.value.description = description || ""
+    const { name, description } = props.status;
+    statusInput.value.name = name || "";
+    statusInput.value.description = description || "";
   }
-})
+});
 
 const isFormModified = computed(() => {
   if (isAddMode.value) {
-    return true // always true for add mode
+    return true; // always true for add mode
   }
 
-  const { name, description } = props.status
+  const { name, description } = props.status;
   return (
     statusInput.value.name !== name ||
     statusInput.value.description !== (description || "")
-  )
-})
+  );
+});
 
 const closeModal = () => {
-  console.log(props.status)
-  emit("update:show", false)
-  router.push({ name: "statusList" })
-}
+  console.log(props.status);
+  emit("update:show", false);
+  router.push({ name: "statusList" });
+};
 const handleSubmit = async () => {
   try {
-    const nameToAdd = statusInput.value.name.trim().toLowerCase()
+    const nameToAdd = statusInput.value.name.trim().toLowerCase();
     if (existingNames.value.includes(nameToAdd)) {
       showToast(
         `Can not add status that already exists with name "${statusInput.value.name}"`,
         "error"
-      )
-      return
+      );
+      return;
     }
     const requestData = {
       name: statusInput.value.name.trim(),
       description: statusInput.value.description.trim() || null,
-    }
+    };
     if (
       requestData.name.length > 50 ||
       (requestData.description != null && requestData.description.length > 200)
@@ -82,8 +82,8 @@ const handleSubmit = async () => {
       showToast(
         `The status name and description should be less than 50 and 200 characters respectively`,
         "error"
-      )
-      return
+      );
+      return;
     }
     const response = isAddMode.value
       ? await fetch(`${import.meta.env.VITE_BASE_URL}/v2/statuses`, {
@@ -102,78 +102,78 @@ const handleSubmit = async () => {
             },
             body: JSON.stringify(requestData),
           }
-        )
+        );
 
     if (response.ok) {
-      emit("update:show", false)
-      router.push({ name: "statusList" })
-      isAddMode.value ? emit("statusAdded") : emit("statusUpdated")
+      emit("update:show", false);
+      router.push({ name: "statusList" });
+      isAddMode.value ? emit("statusAdded") : emit("statusUpdated");
       showToast(
         `The status "${statusInput.value.name}" has been successfully ${
           isAddMode.value ? "added" : "updated"
         }`,
         isAddMode.value ? "success-add" : "success-update"
-      )
+      );
     } else {
-      const errorData = await response.json()
+      const errorData = await response.json();
       if (response.status === 400) {
-        const firstError = errorData.errors[0] // first error object only for now
-        showToast(`Status ${firstError.field} ${firstError.message}`, "error")
+        const firstError = errorData.errors[0]; // first error object only for now
+        showToast(`Status ${firstError.field} ${firstError.message}`, "error");
       } else {
         showToast(
           `An error occurred ${
             isAddMode.value ? "adding" : "updating"
           } the status`,
           "error"
-        )
+        );
       }
     }
   } catch (error) {
     console.error(
       `Error ${isAddMode.value ? "adding" : "updating"} status:`,
       error
-    )
+    );
     showToast(
       `An error occurred ${isAddMode.value ? "adding" : "updating"} the status`,
       "error"
-    )
+    );
   }
-}
+};
 
 const showToast = (message, type) => {
-  const toast = useToast()
+  const toast = useToast();
 
   switch (type) {
     case "success-add":
       toast.success(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      })
-      break
+      });
+      break;
     case "success-update":
       toast.success(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      })
-      break
+      });
+      break;
     case "error":
       toast.error(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      })
-      break
+      });
+      break;
     default:
-      toast(message)
+      toast(message);
   }
-}
+};
 const existingNames = computed(() => {
   if (!props.statuses) {
-    return []
+    return [];
   }
   return props.statuses
     .filter((s) => s.statusId !== props.status.statusId)
-    .map((statuses) => statuses.name.toLowerCase())
-})
+    .map((statuses) => statuses.name.toLowerCase());
+});
 </script>
 
 <template>

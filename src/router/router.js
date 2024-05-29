@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
 import TaskManager from "@/TaskManager.vue";
 import StatusManager from "@/StatusManager.vue";
+
 const routes = [
   {
     path: "/task",
@@ -8,22 +9,22 @@ const routes = [
     component: TaskManager,
   },
   {
-    path: "/task/:taskId",
-    name: "taskdetail",
-    component: TaskManager,
-  },
-  {
-    path: "/",
-    redirect: "/task",
-  },
-  {
-    path: "/task",
-    redirect: "/task",
-  },
-  {
     path: "/task/add",
     name: "taskadd",
     component: TaskManager,
+  },
+  {
+    path: "/task/:taskId",
+    name: "taskdetail",
+    component: TaskManager,
+    beforeEnter: (to, from, next) => {
+      if (to.params.taskId !== Number) {
+        alert("Page Not Found");
+        next({ name: "tasklist" });
+      } else {
+        next();
+      }
+    },
   },
   {
     path: "/task/:taskId/edit",
@@ -36,11 +37,16 @@ const routes = [
     component: StatusManager,
   },
   {
+    path: "/status/add",
+    name: "statusadd",
+    component: StatusManager,
+  },
+  {
     path: "/status/:id/edit",
     name: "statusedit",
     component: StatusManager,
-    beforeEnter: (to, next) => {
-      if (to.params.id === "1") {
+    beforeEnter: (to, from, next) => {
+      if (to.params.id === "1" || to.params.id === "7") {
         alert("The default status cannot be edited or deleted.");
         next({ name: "statusList" });
       } else {
@@ -49,9 +55,16 @@ const routes = [
     },
   },
   {
-    path: "/status/add",
-    name: "statusadd",
-    component: StatusManager,
+    path: "/",
+    redirect: "/task",
+  },
+  {
+    path: "/:catchNotMatchPath(.*)*",
+    name: "notFound",
+    beforeEnter: (to, from, next) => {
+      alert("Page Not Found");
+      next({ name: "tasklist" });
+    },
   },
 ];
 
