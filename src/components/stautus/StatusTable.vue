@@ -15,7 +15,7 @@ const emit = defineEmits(["add-status", "edit-status", "status-deleted"]);
 const router = useRouter();
 const showConfirmationModal = ref(false);
 const statusToDelete = ref(null);
-
+const defaultStatus = ["No Status", "Done"];
 const showTransferModal = ref(false);
 
 const closeStatusPage = () => {
@@ -296,7 +296,7 @@ const showToast = (message, type) => {
               <button
                 class="text-blue-800 hover:text-blue-500 mb-2 e-btn edit-delete itbkk-button-edit"
                 @click="handleEditStatus(status)"
-                :disabled="status.id === 1"
+                :disabled="defaultStatus.includes(status.name)"
               >
                 <svg
                   class="itbkk-button-edit"
@@ -315,7 +315,7 @@ const showToast = (message, type) => {
               <button
                 class="text-red-700 hover:text-red-400 d-btn px-4 edit-delete itbkk-button-delete"
                 @click="handleDeleteStatus(status)"
-                :disabled="status.id === 1"
+                :disabled="defaultStatus.includes(status.name)"
               >
                 <svg
                   class="itbkk-button-delete"
