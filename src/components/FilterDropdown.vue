@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 const fetchStatus = async () => {
   try {
     const response = await fetch(

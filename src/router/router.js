@@ -1,6 +1,6 @@
-import { createRouter, createWebHistory } from "vue-router"
-import TaskManager from "@/TaskManager.vue"
-import StatusManager from "@/StatusManager.vue"
+import { createRouter, createWebHistory } from "vue-router";
+import TaskManager from "@/TaskManager.vue";
+import StatusManager from "@/StatusManager.vue";
 const routes = [
   {
     path: "/task",
@@ -39,12 +39,12 @@ const routes = [
     path: "/status/:id/edit",
     name: "statusedit",
     component: StatusManager,
-    beforeEnter: (to, from, next) => {
+    beforeEnter: (to, next) => {
       if (to.params.id === "1") {
-        alert("The default status cannot be edited or deleted.")
-        next({ name: "statusList" })
+        alert("The default status cannot be edited or deleted.");
+        next({ name: "statusList" });
       } else {
-        next()
+        next();
       }
     },
   },
@@ -53,11 +53,11 @@ const routes = [
     name: "statusadd",
     component: StatusManager,
   },
-]
+];
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
-})
+});
 
-export default router
+export default router;

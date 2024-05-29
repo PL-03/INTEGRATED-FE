@@ -14,7 +14,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits([
-  "viewTask",
+  "view-task",
   "edit-task",
   "add-task",
   "taskDeleted",
@@ -101,7 +101,7 @@ const handleAddTask = () => {
 };
 
 const handleViewTask = (task) => {
-  emit("viewTask", task);
+  emit("view-task", task);
 };
 
 const handleEditTask = (task) => {
