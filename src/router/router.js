@@ -49,6 +49,9 @@ const routes = [
       if (to.params.id === "1" || to.params.id === "7") {
         alert("The default status cannot be edited or deleted.")
         next({ name: "statusList" })
+      } else if (!parseInt(to.params.id)) {
+        alert("Page Not Found")
+        next({ name: "statusList" })
       } else {
         next()
       }
