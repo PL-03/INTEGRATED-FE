@@ -1,6 +1,6 @@
-import { createRouter, createWebHistory } from "vue-router";
-import TaskManager from "@/TaskManager.vue";
-import StatusManager from "@/StatusManager.vue";
+import { createRouter, createWebHistory } from "vue-router"
+import TaskManager from "@/TaskManager.vue"
+import StatusManager from "@/StatusManager.vue"
 
 const routes = [
   {
@@ -18,11 +18,11 @@ const routes = [
     name: "taskdetail",
     component: TaskManager,
     beforeEnter: (to, from, next) => {
-      if (to.params.taskId !== Number) {
-        alert("Page Not Found");
-        next({ name: "tasklist" });
+      if (!parseInt(to.params.taskId)) {
+        alert("Page Not Found")
+        next({ name: "tasklist" })
       } else {
-        next();
+        next()
       }
     },
   },
@@ -47,10 +47,10 @@ const routes = [
     component: StatusManager,
     beforeEnter: (to, from, next) => {
       if (to.params.id === "1" || to.params.id === "7") {
-        alert("The default status cannot be edited or deleted.");
-        next({ name: "statusList" });
+        alert("The default status cannot be edited or deleted.")
+        next({ name: "statusList" })
       } else {
-        next();
+        next()
       }
     },
   },
@@ -62,15 +62,15 @@ const routes = [
     path: "/:catchNotMatchPath(.*)*",
     name: "notFound",
     beforeEnter: (to, from, next) => {
-      alert("Page Not Found");
-      next({ name: "tasklist" });
+      alert("Page Not Found")
+      next({ name: "tasklist" })
     },
   },
-];
+]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
-});
+})
 
-export default router;
+export default router
