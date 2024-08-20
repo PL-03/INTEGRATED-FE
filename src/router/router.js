@@ -1,6 +1,7 @@
-import { createRouter, createWebHistory } from "vue-router"
-import TaskManager from "@/TaskManager.vue"
-import StatusManager from "@/StatusManager.vue"
+import { createRouter, createWebHistory } from "vue-router";
+import TaskManager from "@/TaskManager.vue";
+import StatusManager from "@/StatusManager.vue";
+import LoginManager from "@/stores/LoginManager.vue";
 
 const routes = [
   {
@@ -19,10 +20,10 @@ const routes = [
     component: TaskManager,
     beforeEnter: (to, from, next) => {
       if (!parseInt(to.params.taskId)) {
-        alert("Page Not Found")
-        next({ name: "tasklist" })
+        alert("Page Not Found");
+        next({ name: "tasklist" });
       } else {
-        next()
+        next();
       }
     },
   },
@@ -47,33 +48,38 @@ const routes = [
     component: StatusManager,
     beforeEnter: (to, from, next) => {
       if (to.params.id === "1" || to.params.id === "7") {
-        alert("The default status cannot be edited or deleted.")
-        next({ name: "statusList" })
+        alert("The default status cannot be edited or deleted.");
+        next({ name: "statusList" });
       } else if (!parseInt(to.params.id)) {
-        alert("Page Not Found")
-        next({ name: "statusList" })
+        alert("Page Not Found");
+        next({ name: "statusList" });
       } else {
-        next()
+        next();
       }
     },
   },
   {
     path: "/",
-    redirect: "/task",
+    redirect: "/login",
   },
   {
     path: "/:catchNotMatchPath(.*)*",
     name: "notFound",
     beforeEnter: (to, from, next) => {
-      alert("Page Not Found")
-      next({ name: "tasklist" })
+      alert("Page Not Found");
+      next({ name: "tasklist" });
     },
   },
-]
+  {
+    path: "/login",
+    name: "login",
+    component: LoginManager,
+  },
+];
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
-})
+});
 
-export default router
+export default router;
