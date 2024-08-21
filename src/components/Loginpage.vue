@@ -67,9 +67,9 @@ const showToast = (message, type) => {
   <!-- ----------------------Login Page-------------------------------- -->
   <div class="flex items-center justify-center min-h-screen bg-[#3e3e44]">
     <div
-      class="bg-[#141226] rounded-2xl w-4/5 h-96 md:w-3/5 flex flex-col md:flex-row items-center justify-center gap-2 font-lilita fixed p-4 md:p-0">
+      class="bg-[#141226] shadow-inner	shadow-[#474974] rounded-2xl w-4/5 h-96 md:w-6/12 flex flex-col md:flex-row items-center justify-center gap-2 font-lilita fixed p-4 md:p-0">
       <div
-        class="w-full md:w-6/12 h-72 md:h-96 bg-[#fffc9c] mr-0 md:mr-16 rounded-2xl shadow-[6px_0_15px_0px_rgba(255,255,255,0.4)] flex items-center justify-center mt-4 md:mt-0">
+        class="w-full md:w-5/12 h-auto md:h-72 bg-[#fffc9c] ml-4 md:ml-4 mr-0 md:mr-14 rounded-2xl shadow-inner	shadow-[#373636] flex items-center justify-center mt-4 md:mt-0">
         <div class="text- m-0 md:m-4">
           <h1 class="text-xl md:text-4xl mb-2 text-[#313175] ">
             Welcome To
@@ -79,8 +79,8 @@ const showToast = (message, type) => {
         </div>
       </div>
 
-      <div class="w-full md:w-auto mt-4 md:mt-0 mx-4 md:mx-14">
-        <div class="flex flex-col items-center md:items-start gap-3 mr-12">
+      <div class="w-full md:w-auto mt-4 md:mt-0 mr-0 md:mr-4">
+        <div class="flex flex-col items-center md:items-start gap-3 ">
           <svg class="ml-24" xmlns="http://www.w3.org/2000/svg" width="72" height="72" viewBox="0 0 24 24">
             <path fill="#ffffff" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2m0 
               4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6m0 
