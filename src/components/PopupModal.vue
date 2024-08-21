@@ -34,16 +34,16 @@ const closeModal = () => {
 
 <template>
   <div v-if="Object.keys(selectedTaskId).length > 0" class="modal ">
-    <div class="modal-content bg-gradient-to-t from-slate-300 to-yellow-50 w-full ">
+    <div class="modal-content bg-gradient-to-t from-slate-300 to-yellow-50 w-full  font-lilita">
       <span class="close" @click="closeModal">&times;</span>
-      <h2 class="font-bold text-xl text-blue-800 m-2">Task Details</h2>
+      <h2 class=" text-xl text-blue-800 mt-2">Task Details</h2>
       <br />
-      <p class="break-words"><strong> Title:</strong> {{ selectedTaskId.title }}</p>
+      <p class="break-words"><span> Title:</span> {{ selectedTaskId.title }}</p>
 
       <div class="flex mt-2 justify-center">
         <p
           class="itbkk-description box-content border bg-yellow-100 shadow-slate-500/40 hover:shadow-blue-500/40 shadow-xl mr-2 mt-4 rounded-lg p-8 h-80 w-5/12">
-          <strong>Description</strong><br />
+          <span>Description</span><br />
           <span v-if="selectedTaskId.description != null">{{ selectedTaskId.description }}</span>
           <span v-else class="italic text-red-500">No Description Provided</span>
         </p>
@@ -53,7 +53,7 @@ const closeModal = () => {
             <div class="mr-2 ">
               <p
                 class="itbkk-assignees break-words box-content  h-28 w-40 mt-4 border bg-yellow-100 shadow-lg rounded-3xl px-4 py-4">
-                <strong>Assignees</strong><br />
+                <span>Assignees</span><br />
                 <span v-if="selectedTaskId.assignees != null">{{ selectedTaskId.assignees }}</span>
                 <span v-else class="italic text-gray-900">Unassigned</span>
               </p>
@@ -62,7 +62,7 @@ const closeModal = () => {
             <div>
               <p
                 class="itbkk-status  box-content h-28 w-full mt-4 border bg-yellow-100 drop-shadow-lg rounded-3xl px-8 py-4">
-                <strong>Status</strong><br />
+                <span>Status</span><br />
                 {{ selectedTaskId.status.name }}
               </p>
             </div>
@@ -71,19 +71,19 @@ const closeModal = () => {
           <div class="col-span-8 mt-4 ml-8">
             <p
               class="itbkk-timezone place-content-center box-content h-10 w-full  border bg-blue-200 shadow-md mb-3 mt-4 mr-2 rounded-full px-2  py-3">
-              <strong>Time Zone</strong><br />
+              <span>Time Zone</span><br />
               {{ Intl.DateTimeFormat().resolvedOptions().timeZone }}
             </p>
 
             <p
               class="itbkk-created-on place-content-center box-content h-10 w-full  border bg-sky-200 shadow-md mb-3 mr-2 rounded-full px-2  py-3">
-              <strong>Created Date</strong><br />
+              <span>Created Date</span><br />
               {{ formatDate(selectedTaskId.createdOn) }}
             </p>
 
             <p
               class="itbkk-updated-on place-content-center box-content h-10 w-full  border bg-cyan-100 shadow-md mr-2 rounded-full px-2  py-3">
-              <strong>Updated Date</strong><br />
+              <span>Updated Date</span><br />
               {{ formatDate(selectedTaskId.updatedOn) }}
             </p>
           </div>

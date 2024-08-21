@@ -178,60 +178,42 @@ const existingNames = computed(() => {
 
 <template>
   <div v-if="show" class="modal">
-    <div class="modal-content bg-gradient-to-t from-slate-300 to-yellow-50">
+    <div class="modal-content bg-gradient-to-t from-slate-300 to-yellow-50 font-lilita">
       <span class="close" @click="closeModal">&times;</span>
-      <h2 class="font-bold text-xl text-yellow-950">
+      <h2 class=" text-xl text-yellow-950">
         {{ isAddMode ? "Add" : "Edit" }} Status
       </h2>
       <br />
 
       <div class="itbkk-modal-status">
         <div class="itbkk-status-name text-black text-start">
-          <strong class="flex ml-8 text-gray-500 text-sm mb-1">
+          <p class="flex ml-8 text-gray-500 text-sm mb-1">
             Status Name
-            <strong v-if="isAddMode" class="text-red-700 ml-2"
-              >* Limit to 50 characters</strong
-            >
-            <span v-else class="text-gray-400 ml-2 text-xs"
-              >* Limit to 50 characters</span
-            >
-          </strong>
-          <input
-            v-model.trim="statusInput.name"
-            type="text"
-            class="ml-4 bg-yellow-100 rounded-md shadow-gray-400 px-8 py-2 w-11/12 shadow-md"
-          />
+            <span v-if="isAddMode" class="text-red-700 ml-2">* Limit to 50 characters</span>
+            <span v-else class="text-gray-400 ml-2 text-xs">* Limit to 50 characters</span>
+          </p>
+          <input v-model.trim="statusInput.name" type="text"
+            class="ml-4 bg-yellow-100 rounded-md shadow-gray-400 px-8 py-2 w-11/12 shadow-md" />
         </div>
 
         <div class="w-full pr-4 mt-4 ml-2">
           <div class="itbkk-status-description text-white text-start">
-            <strong class="ml-4 text-gray-500 text-sm mb-1">Description</strong>
-            <span class="text-gray-400 ml-2 text-xs"
-              >* Limit to 500 characters</span
-            >
-            <textarea
-              v-model="statusInput.description"
-              class="shadow-yellow-400 p-4 resize-none bg-yellow-950 w-full rounded-md"
-              rows="6"
-            ></textarea>
+            <p class="flex ml-4 text-gray-500 text-sm mb-1">Description
+            <span class="text-gray-400 ml-2 text-xs">* Limit to 500 characters</span></p>
+            <textarea v-model="statusInput.description"
+              class="shadow-yellow-400 p-4 resize-none bg-yellow-950 w-full rounded-md" rows="6"></textarea>
           </div>
         </div>
 
         <div class="flex justify-end mt-2">
           <div class="m-2">
-            <button
-              class="save bg-green-500 text-white font-bold py-2 px-6 rounded itbkk-button-confirm disabled"
-              @click="handleSubmit"
-              :disabled="isAddingNameEmpty || (!isAddMode && !isFormModified)"
-            >
+            <button class="save bg-green-500 text-white  py-2 px-6 rounded itbkk-button-confirm disabled"
+              @click="handleSubmit" :disabled="isAddingNameEmpty || (!isAddMode && !isFormModified)">
               Save
             </button>
           </div>
           <div class="m-2">
-            <button
-              class="bg-red-700 text-white font-bold py-2 px-4 rounded itbkk-button-cancel"
-              @click="closeModal"
-            >
+            <button class="bg-red-700 text-white py-2 px-4 rounded itbkk-button-cancel" @click="closeModal">
               Cancel
             </button>
           </div>

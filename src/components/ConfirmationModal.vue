@@ -72,40 +72,27 @@ const filteredStatuses = computed(() => {
 
 <template>
   <div v-if="show" class="modal-overlay">
-    <div class="modal-content">
+    <div class="modal-content  font-lilita">
       <span class="close" @click="closeModal">&times;</span>
-      <h2 class="font-bold text-xl text-yellow-950">{{ modalTitle }}</h2>
+      <h2 class=" text-xl text-yellow-950">{{ modalTitle }}</h2>
       <p class="itbkk-message">{{ modalMessage }}</p>
       <div v-if="tasksAssociated" class="mt-4">
-        <select
-          id="transfer-status"
-          v-model="transferStatus"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md"
-        >
-          <option
-            v-for="status in filteredStatuses"
-            :key="status.id"
-            :value="status"
-          >
+        <select id="transfer-status" v-model="transferStatus"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md">
+          <option v-for="status in filteredStatuses" :key="status.id" :value="status">
             {{ status.name }}
           </option>
         </select>
       </div>
       <div class="flex flex-row justify-center itbkk-button-action mt-4">
         <div class="m-4">
-          <button
-            class="bg-green-500 text-white font-bold py-2 px-4 rounded itbkk-button-confirm"
-            @click="confirmDelete"
-            :disabled="tasksAssociated && !transferStatus"
-          >
+          <button class="bg-green-500 text-white py-2 px-4 rounded itbkk-button-confirm"
+            @click="confirmDelete" :disabled="tasksAssociated && !transferStatus">
             {{ tasksAssociated ? "Transfer" : "Save" }}
           </button>
         </div>
         <div class="m-4">
-          <button
-            class="bg-red-500 text-white font-bold py-2 px-4 rounded itbkk-button-cancel"
-            @click="closeModal"
-          >
+          <button class="bg-red-500 text-white  py-2 px-4 rounded itbkk-button-cancel" @click="closeModal">
             Cancel
           </button>
         </div>
