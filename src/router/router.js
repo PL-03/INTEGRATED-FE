@@ -8,6 +8,12 @@ const routes = [
     path: "/task",
     name: "tasklist",
     component: TaskManager,
+    beforeEnter: () => {
+      if (!localStorage.getItem("jwtToken")) {
+        alert("Please login first");
+        return { name: "login" };
+      }
+    },
   },
   {
     path: "/task/add",
@@ -74,6 +80,11 @@ const routes = [
     path: "/login",
     name: "login",
     component: LoginManager,
+    beforeEnter: () => {
+      if (localStorage.getItem("jwtToken")) {
+        return { name: "tasklist" };
+      }
+    },
   },
 ];
 
