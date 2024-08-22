@@ -1,12 +1,12 @@
-<script setup>
+<!-- <script setup>
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useToast, POSITION } from "vue-toastification";
-const router = useRouter();
+import {jwtDecode} from "jwt-decode";
 
-// password and username
-// const username = ref("");
-// const password = ref("");
+const router = useRouter();
+const toast = useToast(); // Initialize toast here
+
 const loginInfo = ref({
   userName: "",
   password: "",
@@ -18,13 +18,9 @@ const isFormValid = computed(() => {
     loginInfo.value.password.trim() !== ""
   );
 });
+
 const handleSignIn = async () => {
   try {
-    // const requestData = {
-    //   userName: loginInfo.value.userName.trim(),
-    //   password: loginInfo.value.password.trim(),
-    // }
-
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/login`, {
       method: "POST",
       headers: {
@@ -32,18 +28,103 @@ const handleSignIn = async () => {
       },
       body: JSON.stringify(loginInfo.value),
     });
+
     if (response.ok) {
+      const data = await response.json();
+      const token = data.token;
+      localStorage.setItem("token", token);
+
+      const decodedToken = jwtDecode(token);
+      const username = decodedToken.username; // Ensure this field exists in the token
+      localStorage.setItem("username", username);
+
+      showToast("Login successful!", "success-login");
       router.push({ name: "tasklist" });
+      console.log(response)
     } else {
       showToast("Invalid username or password", "error");
     }
   } catch (error) {
     console.error(error);
+    showToast("An error occurred during login.", "error");
   }
 };
-const showToast = (message, type) => {
-  const toast = useToast();
 
+const showToast = (message, type) => {
+  switch (type) {
+    case "success-login":
+      toast.success(message, {
+        position: POSITION.TOP_CENTER,
+        timeout: 3000,
+      });
+      break;
+    case "error":
+      toast.error(message, {
+        position: POSITION.TOP_CENTER,
+        timeout: 3000,
+      });
+      break;
+    default:
+      toast(message);
+  }
+};
+</script> -->
+<script setup>
+import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
+import { useToast, POSITION } from "vue-toastification";
+import VueJwtDecode from "vue-jwt-decode"
+
+const router = useRouter();
+const toast = useToast();
+
+const loginInfo = ref({
+  userName: "",
+  password: "",
+});
+
+const isFormValid = computed(() => {
+  return (
+    loginInfo.value.userName.trim() !== "" &&
+    loginInfo.value.password.trim() !== ""
+  );
+});
+
+const handleSignIn = async () => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(loginInfo.value),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      const token = data.access_token;
+
+      // Validate token before proceeding
+      if (typeof token === 'string' && token.trim() !== '') {
+        localStorage.setItem("token", token);
+  
+        // Show success message and navigate
+        // showToast(`Welcome, ${username}!`, "success-login");
+        router.push({ name: "tasklist" });
+
+      } else {
+        throw new Error('Invalid token received from server');
+      }
+    } else {
+      showToast("Invalid username or password", "error");
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    showToast(`An error occurred during login: ${error.message}`, "error");
+  }
+};
+
+const showToast = (message, type) => {
   switch (type) {
     case "success-login":
       toast.success(message, {
@@ -62,6 +143,10 @@ const showToast = (message, type) => {
   }
 };
 </script>
+
+
+
+
 
 <template>
   <!-- ----------------------Login Page-------------------------------- -->
