@@ -105,15 +105,13 @@ const showToast = (message, type) => {
               14c-2.03 0-4.43-.82-6.14-2.88a9.95 9.95 0 0 1 12.28 0C16.43 19.18 14.03 20 12 20"
             />
           </svg>
-          <div
-            class="itbkk-username flex flex-col items-center md:items-start gap-1 w-full"
-          >
+          <div class="flex flex-col items-center md:items-start gap-1 w-full">
             <label for="username" class="text-white text-sm">USERNAME</label>
             <input
               v-model="loginInfo.userName"
               maxlength="50"
               type="text"
-              class="bg-white w-full md:w-72 h-9 rounded-lg py-2 px-3"
+              class="bg-white w-full md:w-72 h-9 rounded-lg py-2 px-3 itbkk-username"
               placeholder="Enter your username"
             />
           </div>
@@ -132,7 +130,7 @@ const showToast = (message, type) => {
           <button
             :disabled="!isFormValid"
             type="submit"
-            class="itbkk-button-signin w-full md:w-8/12 h-9 mt-4 ml-0 md:ml-12 bg-[#fffc9c] rounded-xl text-[#75483b] text-lg"
+            class="itbkk-button-signin w-full md:w-8/12 h-9 mt-4 ml-0 md:ml-12 bg-[#fffc9c] rounded-xl text-[#75483b] text-lg disabled"
             @click="handleSignIn"
           >
             Sign In
