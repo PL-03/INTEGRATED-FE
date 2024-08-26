@@ -45,7 +45,7 @@ const handleSignIn = async () => {
       router.push({ name: "tasklist" })
       showToast("Successfully signed in!", "success-login")
     } else {
-      showToast("Username or password is in correct!", "error")
+      showToast("Username or Password is incorrect", "error")
     }
   } catch (error) {
     console.error(error)
@@ -59,12 +59,14 @@ const showToast = (message, type) => {
       toast.success(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
+        bodyClassName: "itbkk-message",
       })
       break
     case "error":
       toast.error(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
+        bodyClassName: "itbkk-message",
       })
       break
     default:
