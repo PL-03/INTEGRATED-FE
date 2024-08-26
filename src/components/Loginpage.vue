@@ -1,9 +1,9 @@
 <script setup>
-import { ref, computed } from "vue";
-import { useRouter } from "vue-router";
-import { useToast, POSITION } from "vue-toastification";
-import VueJwtDecode from "vue-jwt-decode";
-const router = useRouter();
+import { ref, computed } from "vue"
+import { useRouter } from "vue-router"
+import { useToast, POSITION } from "vue-toastification"
+import VueJwtDecode from "vue-jwt-decode"
+const router = useRouter()
 
 // password and username
 // const username = ref("");
@@ -11,14 +11,14 @@ const router = useRouter();
 const loginInfo = ref({
   userName: "",
   password: "",
-});
+})
 
 const isFormValid = computed(() => {
   return (
     loginInfo.value.userName.trim() !== "" &&
     loginInfo.value.password.trim() !== ""
-  );
-});
+  )
+})
 const handleSignIn = async () => {
   try {
     // const requestData = {
@@ -36,41 +36,41 @@ const handleSignIn = async () => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(loginInfo.value),
-    });
+    })
     if (response.ok) {
-      const data = await response.json();
-      const token = data.access_token;
-      localStorage.setItem("jwtToken", token);
+      const data = await response.json()
+      const token = data.access_token
+      localStorage.setItem("jwtToken", token)
 
-      router.push({ name: "tasklist" });
-      showToast("Successfully signed in!", "success-login");
+      router.push({ name: "tasklist" })
+      showToast("Successfully signed in!", "success-login")
     } else {
-      showToast("Username or password is in correct!", "error");
+      showToast("Username or password is in correct!", "error")
     }
   } catch (error) {
-    console.error(error);
+    console.error(error)
   }
-};
+}
 const showToast = (message, type) => {
-  const toast = useToast();
+  const toast = useToast()
 
   switch (type) {
     case "success-login":
       toast.success(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      });
-      break;
+      })
+      break
     case "error":
       toast.error(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      });
-      break;
+      })
+      break
     default:
-      toast(message);
+      toast(message)
   }
-};
+}
 </script>
 
 <template>
@@ -129,8 +129,9 @@ const showToast = (message, type) => {
 
           <button
             :disabled="!isFormValid"
+            :class="{ disabled: !isFormValid }"
             type="submit"
-            class="itbkk-button-signin w-full md:w-8/12 h-9 mt-4 ml-0 md:ml-12 bg-[#fffc9c] rounded-xl text-[#75483b] text-lg disabled"
+            class="itbkk-button-signin w-full md:w-8/12 h-9 mt-4 ml-0 md:ml-12 bg-[#fffc9c] rounded-xl text-[#75483b] text-lg"
             @click="handleSignIn"
           >
             Sign In
