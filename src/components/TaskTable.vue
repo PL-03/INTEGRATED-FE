@@ -6,6 +6,7 @@ import { getStatusText } from "@/libs/util";
 import FilterDropdown from "./FilterDropdown.vue";
 import ConfirmationModal from "./ConfirmationModal.vue";
 import VueJwtDecode from "vue-jwt-decode";
+import { isTokenExpired } from "@/libs/util";
 
 const props = defineProps({
   tasks: {
@@ -28,12 +29,24 @@ const statusFiltered = ref([]);
 const filteredTasks = ref([...props.tasks]);
 const username = ref("");
 const showDropdown = ref(false);
+const isTokenValid = ref(true);
 
 const statusColors = {
   "No Status": "#9ca3af",
   "To Do": "#ffd1d1",
   Doing: "#fde047",
   Done: "#5cd052",
+};
+const getToken = () => {
+  const token = localStorage.getItem("jwtToken");
+  if (!token || isTokenExpired(token)) {
+    isTokenValid.value = false;
+    localStorage.removeItem("jwtToken");
+    alert("Your session has expired. Please login again.");
+    router.push({ name: "login" });
+    return null;
+  }
+  return token;
 };
 
 const getStatusColor = (statusText) => {
@@ -46,8 +59,15 @@ const fetchFilteredTasks = async () => {
     import.meta.env.VITE_BASE_URL
   }/v2/tasks?sortBy=status.name&filterStatuses=${selectedStatuses}`;
 
+  const token = getToken();
+  if(!token) return;
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      }
+    });
     const data = await response.json();
     filteredTasks.value = data;
   } catch (error) {
@@ -56,7 +76,14 @@ const fetchFilteredTasks = async () => {
 };
 const decodedToken = () => {
   const token = localStorage.getItem("jwtToken");
-  if (token) {
+  if(!token || isTokenExpired(token)){
+    isTokenValid.value = false
+    localStorage.removeItem("jwtToken");
+    alert("Your session has expired. Please login again.");
+    router.push({ name: "login" });
+    return
+  }
+  else if (token) {
     const decodedToken = VueJwtDecode.decode(token);
     username.value = decodedToken.name;
     console.log("Username is: ", username.value);
@@ -69,6 +96,8 @@ const logout = () => {
 
 onMounted(() => {
   decodedToken();
+  console.log(isTokenValid.value);
+  
   
 });
 
@@ -140,11 +169,17 @@ const handleFilterData = (selectedOptions) => {
 };
 
 const confirmDeleteTask = async () => {
+  const token = getToken();
+  if(!token) return;
   try {
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/v2/tasks/${taskToDelete.value.id}`,
       {
         method: "DELETE",
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        }
       }
     );
 
@@ -154,7 +189,7 @@ const confirmDeleteTask = async () => {
         "success-delete"
       );
       emit("taskDeleted");
-      fetchFilteredTasks(); // Refresh tasks after deletion
+      fetchFilteredTasks(); 
     } else if (response.status === 404) {
       showToast("An error has occurred, the task does not exist", "error");
     } else {
