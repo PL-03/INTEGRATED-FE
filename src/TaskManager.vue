@@ -4,6 +4,7 @@ import TaskTable from "./components/TaskTable.vue";
 import PopupModal from "./components/PopupModal.vue";
 import AddEditModal from "./components/AddEditModal.vue";
 import { useRoute, useRouter } from "vue-router";
+import { isTokenExpired } from "./libs/util";
 
 const tasks = ref([]);
 const selectedTask = ref({});
@@ -16,9 +17,28 @@ const isViewMode = computed(() => route.name === "taskdetail");
 const showModal = ref(false);
 const statuses = ref([]);
 
+const getToken = () => {
+  const token = localStorage.getItem("jwtToken");
+  if (!token || isTokenExpired(token)) {
+    isTokenValid.value = false;
+    localStorage.removeItem("jwtToken");
+    alert("Your session has expired. Please login again.");
+    router.push({ name: "login" });
+    return null;
+  }
+  return token;
+};
+
 const fetchTasks = async () => {
+  const token = getToken();
+  if (!token) return;
   try {
-    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v2/tasks`);
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v2/tasks`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
     const data = await response.json();
     tasks.value = data;
   } catch (error) {
@@ -27,10 +47,18 @@ const fetchTasks = async () => {
 };
 
 const fetchTaskDetails = async (id) => {
+  const token = getToken();
+  if (!token) return;
   if (id) {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/v2/tasks/${id}`
+        `${import.meta.env.VITE_BASE_URL}/v2/tasks/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
       );
       if (response.ok) {
         const data = await response.json();
@@ -50,9 +78,17 @@ const fetchTaskDetails = async (id) => {
 };
 
 const fetchStatuses = async () => {
+  const token = getToken();
+  if (!token) return;
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/v2/statuses`
+      `${import.meta.env.VITE_BASE_URL}/v2/statuses`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
     );
     const data = await response.json();
     statuses.value = data;

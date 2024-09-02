@@ -2,6 +2,7 @@
 import { ref, watchEffect, computed, onMounted, inject } from "vue";
 import { useRouter } from "vue-router";
 import { useToast, POSITION } from "vue-toastification";
+import { isTokenExpired } from "../libs/util";
 
 const props = defineProps({
   show: {
@@ -32,7 +33,17 @@ const formData = ref({
 const isAddingTitleEmpty = computed(
   () => isAddMode.value && !formData.value.title.trim()
 );
-
+const getToken = () => {
+  const token = localStorage.getItem("jwtToken");
+  if (!token || isTokenExpired(token)) {
+    isTokenValid.value = false;
+    localStorage.removeItem("jwtToken");
+    alert("Your session has expired. Please login again.");
+    router.push({ name: "login" });
+    return null;
+  }
+  return token;
+};
 onMounted(() => {
   if (props.task.id) {
     formData.value = {
@@ -100,10 +111,13 @@ const handleSubmit = async () => {
       return;
     }
 
+    const token = getToken();
+    if (!token) return;
     const response = isAddMode.value
       ? await fetch(`${import.meta.env.VITE_BASE_URL}/v2/tasks`, {
           method: "POST",
           headers: {
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify(requestData),
@@ -113,6 +127,7 @@ const handleSubmit = async () => {
           {
             method: "PUT",
             headers: {
+              Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
             body: JSON.stringify(requestData),
@@ -177,7 +192,9 @@ const showToast = (message, type) => {
 
 <template>
   <div v-if="show" class="modal">
-    <div class="itbkk-modal-task bg-gradient-to-t from-slate-300 to-yellow-50  font-lilita">
+    <div
+      class="itbkk-modal-task bg-gradient-to-t from-slate-300 to-yellow-50 font-lilita"
+    >
       <span class="close" @click="closeModal">&times;</span>
       <h2 class="font-bold text-xl text-blue-800 mt-2">
         {{ isAddMode ? "Add" : "Edit" }} Task
@@ -187,43 +204,67 @@ const showToast = (message, type) => {
       <div class="itbkk-title mb-2 text-start">
         <p class="flex text-gray-500 text-sm ml-10 mb-1">
           Title
-          <span v-if="isAddMode" class="text-red-700 ml-2 text-xs">* Limit to 100 characters
+          <span v-if="isAddMode" class="text-red-700 ml-2 text-xs"
+            >* Limit to 100 characters
           </span>
-          <span v-else class="text-gray-400 ml-2 text-xs">* Limit to 100 characters</span>
+          <span v-else class="text-gray-400 ml-2 text-xs"
+            >* Limit to 100 characters</span
+          >
         </p>
-        <input v-model.trim="formData.title" type="text"
-          class="ml-6 bg-gray-300 rounded-md px-4 py-2 w-11/12 shadow-md" />
+        <input
+          v-model.trim="formData.title"
+          type="text"
+          class="ml-6 bg-gray-300 rounded-md px-4 py-2 w-11/12 shadow-md"
+        />
       </div>
 
       <div class="flex justify-between mt-4">
         <div class="w-3/5 pr-4 mb-4 ml-4">
           <div class="itbkk-description text-start">
-            <p class="flex text-gray-500 text-sm ml-4">Description
-              <span class="text-gray-400 ml-2 text-xs">* Limit to 500 characters</span>
+            <p class="flex text-gray-500 text-sm ml-4">
+              Description
+              <span class="text-gray-400 ml-2 text-xs"
+                >* Limit to 500 characters</span
+              >
             </p>
-            <textarea v-model="formData.description"
-              class="shadow-lg shadow-gray-500/50 p-8 resize-none bg-yellow-100 w-full rounded-lg" rows="8"></textarea>
+            <textarea
+              v-model="formData.description"
+              class="shadow-lg shadow-gray-500/50 p-8 resize-none bg-yellow-100 w-full rounded-lg"
+              rows="8"
+            ></textarea>
           </div>
         </div>
 
         <div class="w-2/5 pl-4 mr-8">
           <div class="mt-2 mb-2 text-start">
-            <p class="text-gray-500 text-sm ml-4 flex">Assignees
-              <span class="text-gray-400 ml-2 text-xs">* Limit to 30 characters</span>
+            <p class="text-gray-500 text-sm ml-4 flex">
+              Assignees
+              <span class="text-gray-400 ml-2 text-xs"
+                >* Limit to 30 characters</span
+              >
             </p>
-            <textarea v-model.trim="formData.assignees"
-              class="shadow-md p-4 bg-blue-200 w-full rounded-lg itbkk-assignees" rows="3"></textarea>
+            <textarea
+              v-model.trim="formData.assignees"
+              class="shadow-md p-4 bg-blue-200 w-full rounded-lg itbkk-assignees"
+              rows="3"
+            ></textarea>
           </div>
 
           <div class="itbkk-status mt-2 text-start">
             <p class="text-gray-500 text-sm ml-4">Status</p>
 
-            <select v-model="selectedStatus"
-              class="itbkk-status shadow-md bg-blue-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+            <select
+              v-model="selectedStatus"
+              class="itbkk-status shadow-md bg-blue-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            >
               <option :value="props.task.status" selected>
                 {{ props.task.status?.name }}
               </option>
-              <option v-for="status in filteredStatuses" :key="status.id" :value="status">
+              <option
+                v-for="status in filteredStatuses"
+                :key="status.id"
+                :value="status"
+              >
                 {{ status.name }}
               </option>
             </select>
@@ -233,13 +274,19 @@ const showToast = (message, type) => {
 
       <div class="flex justify-end">
         <div class="m-2">
-          <button class="save bg-green-500 text-white py-2 px-6 rounded itbkk-button-confirm disabled"
-            @click="handleSubmit" :disabled="isAddingTitleEmpty || (!isAddMode && !isFormModified)">
+          <button
+            class="save bg-green-500 text-white py-2 px-6 rounded itbkk-button-confirm disabled"
+            @click="handleSubmit"
+            :disabled="isAddingTitleEmpty || (!isAddMode && !isFormModified)"
+          >
             Save
           </button>
         </div>
         <div class="m-2">
-          <button class="bg-red-700 text-white py-2 px-4 rounded itbkk-button-cancel" @click="closeModal">
+          <button
+            class="bg-red-700 text-white py-2 px-4 rounded itbkk-button-cancel"
+            @click="closeModal"
+          >
             Cancel
           </button>
         </div>

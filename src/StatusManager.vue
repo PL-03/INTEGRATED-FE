@@ -3,6 +3,7 @@ import { ref, onMounted, watch, computed } from "vue";
 import StatusTable from "./components/stautus/StatusTable.vue";
 import { useRoute, useRouter } from "vue-router";
 import AddEditStatus from "./components/stautus/AddEditStatus.vue";
+import { isTokenExpired } from "./libs/util";
 
 const route = useRoute();
 const router = useRouter();
@@ -12,11 +13,29 @@ const isAddMode = computed(() => route.name === "statusadd");
 const isEditMode = computed(() => route.name === "statusedit");
 const showModal = ref(false);
 const statuses = ref([]);
-
+const getToken = () => {
+  const token = localStorage.getItem("jwtToken");
+  if (!token || isTokenExpired(token)) {
+    isTokenValid.value = false;
+    localStorage.removeItem("jwtToken");
+    alert("Your session has expired. Please login again.");
+    router.push({ name: "login" });
+    return null;
+  }
+  return token;
+};
 const fetchStatus = async () => {
+  const token = getToken();
+  if (!token) return;
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/v2/statuses`
+      `${import.meta.env.VITE_BASE_URL}/v2/statuses`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
     );
     statuses.value = await response.json();
   } catch (error) {
@@ -25,10 +44,18 @@ const fetchStatus = async () => {
 };
 
 const fetchStatusDetails = async (statusId) => {
+  const token = getToken();
+  if (!token) return;
   if (statusId) {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/v2/statuses/${statusId}`
+        `${import.meta.env.VITE_BASE_URL}/v2/statuses/${statusId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
       );
       if (response.ok) {
         const data = await response.json();

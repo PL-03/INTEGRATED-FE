@@ -2,6 +2,7 @@
 import { ref, watchEffect, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useToast, POSITION } from "vue-toastification";
+import { isTokenExpired } from "../../libs/util";
 const props = defineProps({
   show: {
     type: Boolean,
@@ -26,7 +27,17 @@ const statusInput = ref({
   name: "",
   description: "",
 });
-
+const getToken = () => {
+  const token = localStorage.getItem("jwtToken");
+  if (!token || isTokenExpired(token)) {
+    isTokenValid.value = false;
+    localStorage.removeItem("jwtToken");
+    alert("Your session has expired. Please login again.");
+    router.push({ name: "login" });
+    return null;
+  }
+  return token;
+};
 onMounted(() => {
   if (props.status.id) {
     statusInput.value = {
@@ -85,10 +96,13 @@ const handleSubmit = async () => {
       );
       return;
     }
+    const token = getToken();
+    if (!token) return;
     const response = isAddMode.value
       ? await fetch(`${import.meta.env.VITE_BASE_URL}/v2/statuses`, {
           method: "POST",
           headers: {
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
           body: JSON.stringify(requestData),
@@ -98,6 +112,7 @@ const handleSubmit = async () => {
           {
             method: "PUT",
             headers: {
+              Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
             body: JSON.stringify(requestData),
@@ -178,9 +193,11 @@ const existingNames = computed(() => {
 
 <template>
   <div v-if="show" class="modal">
-    <div class="modal-content bg-gradient-to-t from-slate-300 to-yellow-50 font-lilita">
+    <div
+      class="modal-content bg-gradient-to-t from-slate-300 to-yellow-50 font-lilita"
+    >
       <span class="close" @click="closeModal">&times;</span>
-      <h2 class=" text-xl text-yellow-950">
+      <h2 class="text-xl text-yellow-950">
         {{ isAddMode ? "Add" : "Edit" }} Status
       </h2>
       <br />
@@ -189,31 +206,51 @@ const existingNames = computed(() => {
         <div class="itbkk-status-name text-black text-start">
           <p class="flex ml-8 text-gray-500 text-sm mb-1">
             Status Name
-            <span v-if="isAddMode" class="text-red-700 ml-2">* Limit to 50 characters</span>
-            <span v-else class="text-gray-400 ml-2 text-xs">* Limit to 50 characters</span>
+            <span v-if="isAddMode" class="text-red-700 ml-2"
+              >* Limit to 50 characters</span
+            >
+            <span v-else class="text-gray-400 ml-2 text-xs"
+              >* Limit to 50 characters</span
+            >
           </p>
-          <input v-model.trim="statusInput.name" type="text"
-            class="ml-4 bg-yellow-100 rounded-md shadow-gray-400 px-8 py-2 w-11/12 shadow-md" />
+          <input
+            v-model.trim="statusInput.name"
+            type="text"
+            class="ml-4 bg-yellow-100 rounded-md shadow-gray-400 px-8 py-2 w-11/12 shadow-md"
+          />
         </div>
 
         <div class="w-full pr-4 mt-4 ml-2">
           <div class="itbkk-status-description text-white text-start">
-            <p class="flex ml-4 text-gray-500 text-sm mb-1">Description
-            <span class="text-gray-400 ml-2 text-xs">* Limit to 500 characters</span></p>
-            <textarea v-model="statusInput.description"
-              class="shadow-yellow-400 p-4 resize-none bg-yellow-950 w-full rounded-md" rows="6"></textarea>
+            <p class="flex ml-4 text-gray-500 text-sm mb-1">
+              Description
+              <span class="text-gray-400 ml-2 text-xs"
+                >* Limit to 500 characters</span
+              >
+            </p>
+            <textarea
+              v-model="statusInput.description"
+              class="shadow-yellow-400 p-4 resize-none bg-yellow-950 w-full rounded-md"
+              rows="6"
+            ></textarea>
           </div>
         </div>
 
         <div class="flex justify-end mt-2">
           <div class="m-2">
-            <button class="save bg-green-500 text-white  py-2 px-6 rounded itbkk-button-confirm disabled"
-              @click="handleSubmit" :disabled="isAddingNameEmpty || (!isAddMode && !isFormModified)">
+            <button
+              class="save bg-green-500 text-white py-2 px-6 rounded itbkk-button-confirm disabled"
+              @click="handleSubmit"
+              :disabled="isAddingNameEmpty || (!isAddMode && !isFormModified)"
+            >
               Save
             </button>
           </div>
           <div class="m-2">
-            <button class="bg-red-700 text-white py-2 px-4 rounded itbkk-button-cancel" @click="closeModal">
+            <button
+              class="bg-red-700 text-white py-2 px-4 rounded itbkk-button-cancel"
+              @click="closeModal"
+            >
               Cancel
             </button>
           </div>
