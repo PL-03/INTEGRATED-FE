@@ -1,5 +1,5 @@
 <script setup>
-import Table from './components/TaskTable.vue';
+import Table from './components/task/TaskTable.vue';
 </script>
 
 <template>

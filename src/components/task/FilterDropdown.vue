@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref, watch } from "vue";
-import { isTokenExpired } from "../libs/util";
+import { isTokenExpired } from "../../libs/util";
 
 const getToken = () => {
   const token = localStorage.getItem("jwtToken");
@@ -114,7 +114,7 @@ const filter = () => {
 
     <div class="relative">
       <button
-        class="h-11 px-4 py-2 bg-blue-500 text-white rounded-l-none hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+        class="h-11 px-4 py- rounded-r-lg bg-blue-500 text-white rounded-l-none hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
         @click="toggleDropdown"
       >
         <svg

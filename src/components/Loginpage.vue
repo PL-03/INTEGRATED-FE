@@ -80,19 +80,22 @@ const showToast = (message, type) => {
 <template>
   <!-- ----------------------Login Page-------------------------------- -->
   <div
-    class="background flex flex-col md:flex-row min-h-screen bg-gradient-to-b from-[#3e3e44] to-[#f8f8f7] md:bg-gradient-to-r from-[#3e3e44] to-[#f8f8f7] font-lilita">
+    class="allBG background flex flex-col md:flex-row min-h-screen font-lilita ">
 
-    <div class="hidden md:flex mt-8 items-center justify-center w-full md:w-3/5  p-2">
+    <!-- bg-gradient-to-b from-[#3e3e44] to-[#f8f8f7] md:bg-gradient-to-r from-[#3e3e44] to-[#f8f8f7] -->
+
+    <div class="hidden md:flex mt-2 items-center justify-center w-full md:w-3/5  p-2">
       <div class="text-center md:text-left ">
-        <h1 class="text-3xl md:text-5xl mb-4 text-center text-white">Welcome</h1>
-        <p class="text-md md:text-2xl text-[#fff8ad]">IT - Bangmod Kradan Kanban</p>
+        <h1 class="text-4xl md:text-6xl mb-2 text-center text-black animate-bounce">Welcome</h1>
+        <!-- <p class="text-md md:text-2xl text-[#fff8ad]">IT - Bangmod Kradan Kanban</p> -->
+        <p class="text-md md:text-2xl text-[#5d5d5d]">IT - Bangmod Kradan Kanban</p>
       </div>
     </div>
 
     <div
-      class="flex items-center justify-center  md:w-3/5 bg-[#141226] shadow-inner shadow-[#5c5b53] rounded-l-full md:rounded-r-none p-8 md:p-0">
+      class="flex  items-center justify-center w-4/6 md:w-3/5 bg-[#141226] shadow-inner shadow-[#5c5b53] rounded-l-full md:rounded-r-none p-8 md:p-0">
       <div class="w-full max-w-sm mx-auto p-8 md:p-0 rounded-2xl md:rounded-none">
-        <div class="w-full flex flex-col items-center gap-6">
+        <div class="w-full flex flex-col items-center gap-4 ">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-20 h-20" viewBox="0 0 24 24">
             <path fill="#ffffff" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2m0 
               4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6m0 
@@ -128,6 +131,12 @@ const showToast = (message, type) => {
   background: rgb(205, 205, 205);
   color: rgb(146, 145, 145);
   cursor: not-allowed;
+
+  
+}
+
+.allBG{
+  background: linear-gradient(135deg, rgb(198, 227, 255) 5%, rgb(255, 248, 204) 40%, #d2d2d2 70%);
 }
 
 @media (max-width: 767px) {
@@ -139,6 +148,15 @@ const showToast = (message, type) => {
     border-radius: 1rem;
     margin: 2rem;
   }
+
+    .flex {
+      flex-direction: column;
+      /* จัดเรียงเป็นแนวตั้งสำหรับจอเล็ก */
+      align-items: center;
+      /* จัดให้อยู่ตรงกลางตามแนวแกนแนวตั้ง */
+      justify-content: center;
+      /* จัดให้อยู่ตรงกลางตามแนวแกนแนวนอน */
+    }
 
   .hidden.md\:flex {
     display: inline-block;

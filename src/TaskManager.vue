@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, watch, computed } from "vue";
-import TaskTable from "./components/TaskTable.vue";
-import PopupModal from "./components/PopupModal.vue";
+import TaskTable from "./components/task/TaskTable.vue";
+import PopupModal from "./components/task/PopupModal.vue";
 import AddEditModal from "./components/AddEditModal.vue";
 import { useRoute, useRouter } from "vue-router";
 import { isTokenExpired } from "./libs/util";
