@@ -89,39 +89,22 @@ const showToast = (message, type) => {
 </script>
 
 <template>
-  <div
-    v-if="show"
-    class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50"
-  >
-    <div class="bg-white rounded-lg shadow-xl w-1/3">
+  <div v-if="show"
+    class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 backdrop-blur-sm font-lilita">
+    <div class="bg-white rounded-lg shadow-xl w-1/3 tracking-wide">
       <div class="border-b px-4 py-3">
-        <h2 class="text-xl font-semibold text-gray-800">New Board</h2>
+        <h2 class="text-xl font-medium text-gray-800">New Board</h2>
       </div>
       <div class="px-4 py-5">
-        <label
-          class="block text-gray-700 text-sm font-bold mb-2"
-          for="board-name"
-          >Name</label
-        >
-        <input
-          type="text"
-          v-model="boardName.name"
-          id="board-name"
-          class="border rounded w-full py-2 px-3 text-gray-700"
-          placeholder="Enter board name"
-        />
+        <label class="block text-gray-700 text-sm font-medium mb-2" for="board-name">Name</label>
+        <input type="text" v-model="boardName.name" id="board-name"
+          class="border rounded w-full py-2 px-3 text-gray-700" placeholder="Enter board name" />
       </div>
       <div class="flex justify-end px-4 py-3 bg-gray-50 border-t">
-        <button
-          @click="closeModal"
-          class="bg-gray-500 text-white py-2 px-4 rounded mr-2"
-        >
+        <button @click="closeModal" class="bg-gray-500 text-white py-2 px-4 rounded mr-2">
           Cancel
         </button>
-        <button
-          @click="handleSubmit"
-          class="bg-green-500 text-white py-2 px-4 rounded"
-        >
+        <button @click="handleSubmit" class="bg-green-500 text-white py-2 px-4 rounded">
           Save
         </button>
       </div>
