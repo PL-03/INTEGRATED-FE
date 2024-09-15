@@ -18,6 +18,7 @@ const props = defineProps({
     required: true,
   },
 });
+const token = getToken();
 
 const emit = defineEmits(["update:show", "task-added", "task-updated"]);
 const selectedStatus = ref(props.task.status || null);
@@ -29,6 +30,7 @@ const formData = ref({
   description: "",
   assignees: "",
   status: null,
+  token: token,
 });
 const isAddingTitleEmpty = computed(
   () => isAddMode.value && !formData.value.title.trim()
@@ -111,7 +113,6 @@ const handleSubmit = async () => {
       return;
     }
 
-    const token = getToken();
     if (!token) return;
     const response = isAddMode.value
       ? await fetch(`${import.meta.env.VITE_BASE_URL}/v2/tasks`, {

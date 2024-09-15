@@ -1,19 +1,30 @@
 import { createRouter, createWebHistory } from "vue-router";
+import BoardManager from "@/stores/BoardManager.vue";
 import TaskManager from "@/TaskManager.vue";
 import StatusManager from "@/StatusManager.vue";
 import LoginManager from "@/stores/LoginManager.vue";
 
 const routes = [
   {
-    path: "/task",
-    name: "tasklist",
-    component: TaskManager,
+    path: "/board",
+    name: "boardslist",
+    component: BoardManager,
     beforeEnter: () => {
       if (!localStorage.getItem("jwtToken")) {
         alert("Please login first");
         return { name: "login" };
       }
     },
+  },
+  {
+    path: "/board/:boardId",
+    name: "tasklist",
+    component: TaskManager,
+  },
+  {
+    path: "/board/add",
+    name: "boardadd",
+    component: BoardManager,
   },
   {
     path: "/task/add",
@@ -27,7 +38,7 @@ const routes = [
     beforeEnter: (to, from, next) => {
       if (!parseInt(to.params.taskId)) {
         alert("Page Not Found");
-        next({ name: "tasklist" });
+        next({ name: "board" });
       } else {
         next();
       }
@@ -73,7 +84,7 @@ const routes = [
     name: "notFound",
     beforeEnter: (to, from, next) => {
       alert("Page Not Found");
-      next({ name: "tasklist" });
+      next({ name: "boardslist" });
     },
   },
   {
@@ -82,7 +93,7 @@ const routes = [
     component: LoginManager,
     beforeEnter: () => {
       if (localStorage.getItem("jwtToken")) {
-        return { name: "tasklist" };
+        return { name: "boardslist" };
       }
     },
   },
