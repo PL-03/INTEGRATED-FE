@@ -3,6 +3,7 @@ import { ref, onMounted, watch, computed } from "vue";
 import TaskTable from "./components/task/TaskTable.vue";
 import PopupModal from "./components/task/PopupModal.vue";
 import AddEditModal from "./components/AddEditModal.vue";
+
 import { useRoute, useRouter } from "vue-router";
 import { isTokenExpired } from "./libs/util";
 
@@ -16,6 +17,8 @@ const isEditMode = computed(() => route.name === "taskedit");
 const isViewMode = computed(() => route.name === "taskdetail");
 const showModal = ref(false);
 const statuses = ref([]);
+const isTokenValid = ref(true);
+const boardId = route.params.boardId;
 
 const getToken = () => {
   const token = localStorage.getItem("jwtToken");
@@ -33,12 +36,15 @@ const fetchTasks = async () => {
   const token = getToken();
   if (!token) return;
   try {
-    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v2/tasks`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/tasks`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
     const data = await response.json();
     tasks.value = data;
   } catch (error) {
@@ -52,7 +58,7 @@ const fetchTaskDetails = async (id) => {
   if (id) {
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/v2/tasks/${id}`,
+        `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/tasks/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -82,7 +88,7 @@ const fetchStatuses = async () => {
   if (!token) return;
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/v2/statuses`,
+      `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/statuses`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

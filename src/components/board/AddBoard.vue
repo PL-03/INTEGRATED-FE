@@ -37,29 +37,30 @@ const closeModal = () => {
   router.push({ name: "boardslist" });
 };
 
-// const handleSubmit = async () => {
-//   try {
-//     const requestData = {
-//       name: boardName.value.name,
-//     };
-//     if (!token) return;
-//     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v3/boards`, {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//         Authorization: `Bearer ${token}`,
-//       },
-//       body: JSON.stringify(requestData),
-//     });
-//     if (response.ok) {
-//       emit("board-added");
-//       router.push({ name: "tasklist" });
-//       showToast("Board created successfully", "success-add");
-//     }
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
+const handleSubmit = async () => {
+  try {
+    const requestData = {
+      name: boardName.value.name,
+    };
+    if (!token) return;
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v3/boards`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(requestData),
+    });
+    if (response.ok) {
+      const newBoard = await response.json(); // Get the newly created board data from the response
+      emit("update:show", false);
+      emit("board-added", newBoard); // Emit the new board data
+      showToast("Board created successfully", "success-add");
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
 const showToast = (message, type) => {
   const toast = useToast();
 
@@ -105,7 +106,7 @@ const showToast = (message, type) => {
         >
         <input
           type="text"
-          v-model="boardName"
+          v-model="boardName.name"
           id="board-name"
           class="border rounded w-full py-2 px-3 text-gray-700"
           placeholder="Enter board name"

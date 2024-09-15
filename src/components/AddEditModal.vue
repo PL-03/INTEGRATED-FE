@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watchEffect, computed, onMounted, inject } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { useToast, POSITION } from "vue-toastification";
 import { isTokenExpired } from "../libs/util";
 
@@ -18,23 +18,8 @@ const props = defineProps({
     required: true,
   },
 });
-const token = getToken();
-
-const emit = defineEmits(["update:show", "task-added", "task-updated"]);
-const selectedStatus = ref(props.task.status || null);
-const router = useRouter();
-const isAddMode = computed(() => !props.task.id);
-
-const formData = ref({
-  title: "",
-  description: "",
-  assignees: "",
-  status: null,
-  token: token,
-});
-const isAddingTitleEmpty = computed(
-  () => isAddMode.value && !formData.value.title.trim()
-);
+const route = useRoute();
+const boardId = route.params.boardId;
 const getToken = () => {
   const token = localStorage.getItem("jwtToken");
   if (!token || isTokenExpired(token)) {
@@ -46,6 +31,24 @@ const getToken = () => {
   }
   return token;
 };
+
+const emit = defineEmits(["update:show", "task-added", "task-updated"]);
+const selectedStatus = ref(props.task.status || null);
+const router = useRouter();
+const isAddMode = computed(() => !props.task.id);
+const isTokenValid = ref(true);
+const token = getToken();
+const formData = ref({
+  title: "",
+  description: "",
+  assignees: "",
+  status: null,
+  token: token,
+});
+const isAddingTitleEmpty = computed(
+  () => isAddMode.value && !formData.value.title.trim()
+);
+
 onMounted(() => {
   if (props.task.id) {
     formData.value = {
@@ -115,16 +118,21 @@ const handleSubmit = async () => {
 
     if (!token) return;
     const response = isAddMode.value
-      ? await fetch(`${import.meta.env.VITE_BASE_URL}/v2/tasks`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestData),
-        })
+      ? await fetch(
+          `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/tasks`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestData),
+          }
+        )
       : await fetch(
-          `${import.meta.env.VITE_BASE_URL}/v2/tasks/${props.task.id}`,
+          `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/tasks/${
+            props.task.id
+          }`,
           {
             method: "PUT",
             headers: {

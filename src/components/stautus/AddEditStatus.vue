@@ -1,6 +1,6 @@
 <script setup>
 import { ref, watchEffect, computed, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { useToast, POSITION } from "vue-toastification";
 import { isTokenExpired } from "../../libs/util";
 const props = defineProps({
@@ -17,9 +17,12 @@ const props = defineProps({
     default: () => [],
   },
 });
+const route = useRoute();
+const boardId = route.params.boardId;
 const emit = defineEmits(["update:show", "statusAdded", "statusUpdated"]);
 const router = useRouter();
 const isAddMode = computed(() => !props.status.id);
+const isTokenValid = ref(true);
 const isAddingNameEmpty = computed(
   () => isAddMode.value && !statusInput.value.name.trim()
 );
@@ -99,16 +102,21 @@ const handleSubmit = async () => {
     const token = getToken();
     if (!token) return;
     const response = isAddMode.value
-      ? await fetch(`${import.meta.env.VITE_BASE_URL}/v2/statuses`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestData),
-        })
+      ? await fetch(
+          `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/statuses`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestData),
+          }
+        )
       : await fetch(
-          `${import.meta.env.VITE_BASE_URL}/v2/statuses/${props.status.id}`,
+          `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/statuses/${
+            props.status.id
+          }`,
           {
             method: "PUT",
             headers: {

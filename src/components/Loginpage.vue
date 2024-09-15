@@ -21,15 +21,6 @@ const isFormValid = computed(() => {
 });
 const handleSignIn = async () => {
   try {
-    // const requestData = {
-    //   userName: loginInfo.value.userName.trim(),
-    //   password: loginInfo.value.password.trim(),
-    // };
-    // if (requestData.userName.length > 50 || requestData.password.length > 14) {
-    //   showToast("Username or Password is incorrect.", "error");
-    //   return;
-    // }
-
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/login`, {
       method: "POST",
       headers: {
@@ -41,6 +32,20 @@ const handleSignIn = async () => {
       const data = await response.json();
       const token = data.access_token;
       localStorage.setItem("jwtToken", token);
+      // const boardResponse = await fetch(
+      //   `${import.meta.env.VITE_BASE_URL}/boards`,
+      //   {
+      //     method: "GET",
+      //     headers: {
+      //       "Content-Type": "application/json",
+      //       Authorization: `Bearer ${token}`,
+      //     },
+      //   }
+      // );
+      // if (boardResponse.ok) {
+      //   const boardData = await boardResponse.json();
+      //   console.log(boardData);
+      // }
 
       router.push({ name: "boardslist" });
       showToast("Successfully signed in!", "success-login");

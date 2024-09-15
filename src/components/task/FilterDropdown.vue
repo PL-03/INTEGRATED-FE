@@ -1,7 +1,12 @@
 <script setup>
 import { onMounted, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { isTokenExpired } from "../../libs/util";
 
+const route = useRoute();
+const router = useRouter();
+const boardId = route.params.boardId;
+const isTokenValid = ref(true);
 const getToken = () => {
   const token = localStorage.getItem("jwtToken");
   if (!token || isTokenExpired(token)) {
@@ -18,7 +23,7 @@ const fetchStatus = async () => {
   if (!token) return;
   try {
     const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/v2/statuses`,
+      `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/statuses`,
       {
         headers: {
           Authorization: `Bearer ${token}`,

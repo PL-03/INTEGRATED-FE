@@ -27,40 +27,40 @@ const routes = [
     component: BoardManager,
   },
   {
-    path: "/task/add",
+    path: "/board/:boardId/task/add",
     name: "taskadd",
     component: TaskManager,
   },
   {
-    path: "/task/:taskId",
+    path: "/board/:boardId/task/:taskId",
     name: "taskdetail",
     component: TaskManager,
     beforeEnter: (to, from, next) => {
       if (!parseInt(to.params.taskId)) {
         alert("Page Not Found");
-        next({ name: "board" });
+        next({ name: "boardslist" });
       } else {
         next();
       }
     },
   },
   {
-    path: "/task/:taskId/edit",
+    path: "/board/:boardId/task/:taskId/edit",
     name: "taskedit",
     component: TaskManager,
   },
   {
-    path: "/status",
+    path: "/board/:boardId/status",
     name: "statusList",
     component: StatusManager,
   },
   {
-    path: "/status/add",
+    path: "/board/:boardId/status/add",
     name: "statusadd",
     component: StatusManager,
   },
   {
-    path: "/status/:id/edit",
+    path: "/board/:boardId/status/:id/edit",
     name: "statusedit",
     component: StatusManager,
     beforeEnter: (to, from, next) => {
