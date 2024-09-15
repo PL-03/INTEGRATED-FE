@@ -19,6 +19,7 @@ const showModal = ref(false);
 const statuses = ref([]);
 const isTokenValid = ref(true);
 const boardId = route.params.boardId;
+const boardDetail = ref({});
 
 const getToken = () => {
   const token = localStorage.getItem("jwtToken");
@@ -31,7 +32,26 @@ const getToken = () => {
   }
   return token;
 };
-
+const fetchBoardsById = async () => {
+  const token = getToken();
+  if (!token) return;
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const data = await response.json();
+    boardDetail.value = data;
+    return data;
+  } catch (error) {
+    console.error("Error fetching boards:", error);
+  }
+};
 const fetchTasks = async () => {
   const token = getToken();
   if (!token) return;
@@ -103,6 +123,7 @@ const fetchStatuses = async () => {
   }
 };
 onMounted(async () => {
+  await fetchBoardsById();
   await fetchTasks();
   await fetchStatuses();
   fetchTaskDetails(taskId.value);
@@ -139,6 +160,7 @@ const handleAddTask = () => {
 <template>
   <TaskTable
     :tasks="tasks"
+    :boardDetail="boardDetail"
     @view-task="handleViewTask"
     @edit-task="handleEditTask"
     @add-task="handleAddTask"
