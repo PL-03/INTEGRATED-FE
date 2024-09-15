@@ -32,20 +32,6 @@ const handleSignIn = async () => {
       const data = await response.json();
       const token = data.access_token;
       localStorage.setItem("jwtToken", token);
-      // const boardResponse = await fetch(
-      //   `${import.meta.env.VITE_BASE_URL}/boards`,
-      //   {
-      //     method: "GET",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //       Authorization: `Bearer ${token}`,
-      //     },
-      //   }
-      // );
-      // if (boardResponse.ok) {
-      //   const boardData = await boardResponse.json();
-      //   console.log(boardData);
-      // }
 
       router.push({ name: "boardslist" });
       showToast("Successfully signed in!", "success-login");

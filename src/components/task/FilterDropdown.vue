@@ -12,7 +12,6 @@ const getToken = () => {
   if (!token || isTokenExpired(token)) {
     isTokenValid.value = false;
     localStorage.removeItem("jwtToken");
-    alert("Your session has expired. Please login again.");
     router.push({ name: "login" });
     return null;
   }

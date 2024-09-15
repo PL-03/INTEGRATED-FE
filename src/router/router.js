@@ -20,23 +20,44 @@ const routes = [
     path: "/board/:boardId",
     name: "tasklist",
     component: TaskManager,
+    beforeEnter: () => {
+      if (!localStorage.getItem("jwtToken")) {
+        alert("Please login first");
+        return { name: "login" };
+      }
+    },
   },
   {
     path: "/board/add",
     name: "boardadd",
     component: BoardManager,
+    beforeEnter: () => {
+      if (!localStorage.getItem("jwtToken")) {
+        alert("Please login first");
+        return { name: "login" };
+      }
+    },
   },
   {
     path: "/board/:boardId/task/add",
     name: "taskadd",
     component: TaskManager,
+    beforeEnter: () => {
+      if (!localStorage.getItem("jwtToken")) {
+        alert("Please login first");
+        return { name: "login" };
+      }
+    },
   },
   {
     path: "/board/:boardId/task/:taskId",
     name: "taskdetail",
     component: TaskManager,
     beforeEnter: (to, from, next) => {
-      if (!parseInt(to.params.taskId)) {
+      if (!localStorage.getItem("jwtToken")) {
+        alert("Please login first");
+        return { name: "login" };
+      } else if (!parseInt(to.params.taskId)) {
         alert("Page Not Found");
         next({ name: "boardslist" });
       } else {
@@ -48,16 +69,34 @@ const routes = [
     path: "/board/:boardId/task/:taskId/edit",
     name: "taskedit",
     component: TaskManager,
+    beforeEnter: () => {
+      if (!localStorage.getItem("jwtToken")) {
+        alert("Please login first");
+        return { name: "login" };
+      }
+    },
   },
   {
     path: "/board/:boardId/status",
     name: "statusList",
     component: StatusManager,
+    beforeEnter: () => {
+      if (!localStorage.getItem("jwtToken")) {
+        alert("Please login first");
+        return { name: "login" };
+      }
+    },
   },
   {
     path: "/board/:boardId/status/add",
     name: "statusadd",
     component: StatusManager,
+    beforeEnter: () => {
+      if (!localStorage.getItem("jwtToken")) {
+        alert("Please login first");
+        return { name: "login" };
+      }
+    },
   },
   {
     path: "/board/:boardId/status/:id/edit",
@@ -82,9 +121,14 @@ const routes = [
   {
     path: "/:catchNotMatchPath(.*)*",
     name: "notFound",
-    beforeEnter: (to, from, next) => {
+    beforeEnter: () => {
       alert("Page Not Found");
-      next({ name: "boardslist" });
+      if (!localStorage.getItem("jwtToken")) {
+        alert("Please login first");
+        return { name: "login" };
+      } else {
+        next({ name: "boardslist" });
+      }
     },
   },
   {

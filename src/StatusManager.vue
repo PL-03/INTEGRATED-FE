@@ -51,9 +51,9 @@ const fetchStatusDetails = async (statusId) => {
   if (statusId) {
     try {
       const response = await fetch(
-        `${
-          import.meta.env.VITE_BASE_URL
-        }/v3/boards/${boardId}/statuses/${statusId}`,
+        `${import.meta.env.VITE_BASE_URL}/v3/boards/${
+          boardId.value
+        }/statuses/${statusId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
