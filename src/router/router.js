@@ -1,8 +1,8 @@
-import { createRouter, createWebHistory } from "vue-router";
-import BoardManager from "@/stores/BoardManager.vue";
-import TaskManager from "@/TaskManager.vue";
-import StatusManager from "@/StatusManager.vue";
-import LoginManager from "@/stores/LoginManager.vue";
+import { createRouter, createWebHistory } from "vue-router"
+import BoardManager from "@/stores/BoardManager.vue"
+import TaskManager from "@/TaskManager.vue"
+import StatusManager from "@/StatusManager.vue"
+import LoginManager from "@/stores/LoginManager.vue"
 
 const routes = [
   {
@@ -11,8 +11,8 @@ const routes = [
     component: BoardManager,
     beforeEnter: () => {
       if (!localStorage.getItem("jwtToken")) {
-        alert("Please login first");
-        return { name: "login" };
+        alert("Please login first")
+        return { name: "login" }
       }
     },
   },
@@ -22,8 +22,8 @@ const routes = [
     component: TaskManager,
     beforeEnter: () => {
       if (!localStorage.getItem("jwtToken")) {
-        alert("Please login first");
-        return { name: "login" };
+        alert("Please login first")
+        return { name: "login" }
       }
     },
   },
@@ -33,8 +33,8 @@ const routes = [
     component: BoardManager,
     beforeEnter: () => {
       if (!localStorage.getItem("jwtToken")) {
-        alert("Please login first");
-        return { name: "login" };
+        alert("Please login first")
+        return { name: "login" }
       }
     },
   },
@@ -44,8 +44,8 @@ const routes = [
     component: TaskManager,
     beforeEnter: () => {
       if (!localStorage.getItem("jwtToken")) {
-        alert("Please login first");
-        return { name: "login" };
+        alert("Please login first")
+        return { name: "login" }
       }
     },
   },
@@ -55,13 +55,13 @@ const routes = [
     component: TaskManager,
     beforeEnter: (to, from, next) => {
       if (!localStorage.getItem("jwtToken")) {
-        alert("Please login first");
-        return { name: "login" };
+        alert("Please login first")
+        return { name: "login" }
       } else if (!parseInt(to.params.taskId)) {
-        alert("Page Not Found");
-        next({ name: "boardslist" });
+        alert("Page Not Found")
+        next({ name: "boardslist" })
       } else {
-        next();
+        next()
       }
     },
   },
@@ -71,8 +71,8 @@ const routes = [
     component: TaskManager,
     beforeEnter: () => {
       if (!localStorage.getItem("jwtToken")) {
-        alert("Please login first");
-        return { name: "login" };
+        alert("Please login first")
+        return { name: "login" }
       }
     },
   },
@@ -82,8 +82,8 @@ const routes = [
     component: StatusManager,
     beforeEnter: () => {
       if (!localStorage.getItem("jwtToken")) {
-        alert("Please login first");
-        return { name: "login" };
+        alert("Please login first")
+        return { name: "login" }
       }
     },
   },
@@ -93,8 +93,8 @@ const routes = [
     component: StatusManager,
     beforeEnter: () => {
       if (!localStorage.getItem("jwtToken")) {
-        alert("Please login first");
-        return { name: "login" };
+        alert("Please login first")
+        return { name: "login" }
       }
     },
   },
@@ -103,14 +103,11 @@ const routes = [
     name: "statusedit",
     component: StatusManager,
     beforeEnter: (to, from, next) => {
-      if (to.params.id === "1" || to.params.id === "7") {
-        alert("The default status cannot be edited or deleted.");
-        next({ name: "statusList" });
-      } else if (!parseInt(to.params.id)) {
-        alert("Page Not Found");
-        next({ name: "statusList" });
+      if (!parseInt(to.params.id)) {
+        alert("Page Not Found")
+        next({ name: "statusList" })
       } else {
-        next();
+        next()
       }
     },
   },
@@ -122,12 +119,12 @@ const routes = [
     path: "/:catchNotMatchPath(.*)*",
     name: "notFound",
     beforeEnter: () => {
-      alert("Page Not Found");
+      alert("Page Not Found")
       if (!localStorage.getItem("jwtToken")) {
-        alert("Please login first");
-        return { name: "login" };
+        alert("Please login first")
+        return { name: "login" }
       } else {
-        next({ name: "boardslist" });
+        next({ name: "boardslist" })
       }
     },
   },
@@ -137,15 +134,20 @@ const routes = [
     component: LoginManager,
     beforeEnter: () => {
       if (localStorage.getItem("jwtToken")) {
-        return { name: "boardslist" };
+        return { name: "boardslist" }
       }
     },
   },
-];
+]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes,
-});
+})
 
-export default router;
+export default router
+
+// if (to.params.id === "1" || to.params.id === "7") {
+//   alert("The default status cannot be edited or deleted.");
+//   next({ name: "statusList" });
+// } else
