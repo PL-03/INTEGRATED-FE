@@ -76,7 +76,7 @@ const toggleDropdown = () => {
       <div class="flex m-4 items-center space-x-6">
         <button class="flex items-center text-md text-black hover:text-blue-600 transition duration-300"
           @click="handleAddBoard">
-          Create Personal Board
+          Create New Board
         </button>
 
         <!-- <button @click="handleAddTask"
@@ -84,10 +84,10 @@ const toggleDropdown = () => {
                     Add Task
                 </button> -->
 
-        <button @click="handleStatusList"
+        <!-- <button @click="handleStatusList"
           class="flex items-center text-md text-black hover:text-blue-600 transition duration-300">
           Manage Status
-        </button>
+        </button> -->
 
         <div class="relative text-black">
           <button @click="toggleDropdown" class="flex items-center hover:text-[#4d5fcb] itbkk-fullname">
@@ -115,8 +115,10 @@ const toggleDropdown = () => {
       </div>
     </nav>
 
-    
-    <div v-if="boards.length !== 0" class="flex flex-col justify-center items-center p-28">
+    <div>
+
+    </div>    
+    <!-- <div v-if="boards.length !== 0" class="flex flex-col justify-center items-center p-28">
       <div class="text-3xl drop-shadow-lg p-4">
         Board <span class="text-[#2b4483] ml-2">{{ username }}</span>
       </div>
@@ -138,17 +140,18 @@ const toggleDropdown = () => {
           </tr>
         </tbody>
       </table>
-    </div>
+    </div> -->
 
 
-    <div v-else class="flex flex-col justify-center items-center text-center gap-4  min-h-screen">
+    <!-- v-else -->
+    <div  class="flex flex-col justify-center items-center text-center gap-4  min-h-screen">
 
       <img src="/empty-box.png" alt="no board" class="w-48 h-48  object-cover opacity-90 drop-shadow-xl " />
       <span class="text-xl italic text-[#838395]">No Board!</span>
       <span class="text-base text-[#8f8f96]">You don't have any board, Please Create your first board.</span>
       <button @click="handleAddBoard"
-        class="bg-[#2b4483] m-2 text-white text-sm py-2 px-2 rounded drop-shadow-xl hover:bg-[#4d5fcb]">
-        Create Personal Board </button>
+        class="itbkk-button-create bg-[#2b4483] m-2 text-white text-sm py-2 px-2 rounded drop-shadow-xl hover:bg-[#4d5fcb]">
+        Create New Board </button>
     </div>
   </div>
 

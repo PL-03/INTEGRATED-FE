@@ -110,44 +110,33 @@ const showToast = (message, type) => {
 </script>
 
 <template>
-  <div
-    v-if="show"
-    class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 backdrop-blur-sm font-lilita"
-  >
-    <div class="bg-white rounded-lg shadow-xl w-1/3 tracking-wide">
+  <div v-if="show"
+    class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 backdrop-blur-sm font-lilita">
+    <div class="itbkk-modal-new bg-white rounded-lg shadow-xl w-1/3 tracking-wide">
       <div class="border-b px-4 py-3">
-        <h2 class="text-xl font-medium text-gray-800">New Board</h2>
+        <h2 class="text-xl font-medium text-[#232f96]">New Board</h2>
       </div>
       <div class="px-4 py-5">
-        <label
-          class="block text-gray-700 text-sm font-medium mb-2"
-          for="board-name"
-          >Name</label
-        >
-        <input
-          type="text"
-          v-model="boardName.name"
-          id="board-name"
-          class="border rounded w-full py-2 px-3 text-gray-700"
-          placeholder="Enter board name"
-        />
+        <label class="block text-gray-700 text-md font-medium mb-2" for="board-name">Name</label>
+        <input type="text" v-model="boardName.name" id="board-name"
+          class="itbkk-board-name border rounded w-full py-2 px-3 text-gray-700" maxlength="120" placeholder="Enter board name" />
       </div>
-      <div class="flex justify-end px-4 py-3 bg-gray-50 border-t">
-        <button
-          @click="closeModal"
-          class="bg-gray-500 text-white py-2 px-4 rounded mr-2"
-        >
-          Cancel
+      <div class="flex justify-end px-4 py-3 gap-1 bg-gray-50 border-t">
+        <button @click="handleSubmit" class="itbkk-button-ok save bg-green-500 text-white py-2 px-4 rounded"
+          :disabled="!boardName.name">
+          Ok
         </button>
-        <button
-          @click="handleSubmit"
-          class="bg-green-500 text-white py-2 px-4 rounded"
-        >
-          Save
+        <button @click="closeModal" class="itbkk-button-cancel bg-[#de5858] text-white py-2 px-4 rounded mr-2">
+          Cancel
         </button>
       </div>
     </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+  .save:disabled {
+    background-color: #686c6dd4;
+      color: #fefefe;
+  }
+</style>

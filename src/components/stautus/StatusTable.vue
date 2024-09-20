@@ -238,7 +238,7 @@ const showToast = (message, type) => {
       <!-- bg-green-700 hover:bg-emerald-500 -->
       <div class="flex m-4">
         <button
-          class="flex text-sm px-3 py-1 mt-4 mr-8 hover:text-[#44bd6a] text-black rounded itbkk-button-add font-lilita tracking-wide"
+          class="flex text-md px-3 py-1 mt-2 mr-8 hover:text-[#44bd6a] text-black rounded itbkk-button-add font-lilita tracking-wide"
           @click="handleAddStatus"
         >
           <svg
@@ -265,7 +265,7 @@ const showToast = (message, type) => {
           class="ml-48 mt-2 p-2 rounded itbkk-button-home"
         >
           <p
-            class="text-[#aa5b36] decoration-2 hover:underline decoration-[#f8993a]"
+            class="text-[#2d3697] decoration-2 hover:underline decoration-[#3b6ac0]"
           >
             Home
           </p>
