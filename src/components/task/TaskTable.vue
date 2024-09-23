@@ -37,6 +37,7 @@ const showDropdown = ref(false);
 const isTokenValid = ref(true);
 const boardId = route.params.boardId;
 const boardName = ref("");
+const isToggled = ref(false);
 const statusColors = {
   "No Status": "#9ca3af",
   "To Do": "#ffd1d1",
@@ -252,8 +253,24 @@ const showToast = (message, type) => {
       </div>
 
       <div class="flex m-4 items-center space-x-6">
+
+        <!-- Toggle public/private -->
+        <!-- <div class="flex items-center justify-end">
+          <label class="itbkk-board-visibility inline-flex relative items-center cursor-pointer">
+            <input type="checkbox" value="" class="itbkk-board-visibility sr-only peer" v-model="isToggled">
+            <div class="itbkk-board-visibility w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 
+              peer-focus:ring-blue-500 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full 
+              peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] 
+              after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 
+              after:transition-all dark:border-gray-600 peer-checked:bg-blue-600">
+            </div>
+            <span class="ml-3 text-sm font-medium text-[#878a9c]">
+              {{ isToggled ? 'Public' : 'Private' }}
+            </span>
+          </label>
+        </div> -->
         <button @click="handleAddTask"
-          class="itbkk-add-task flex items-center text-md text-black hover:text-blue-600 transition duration-300">
+          class="itbkk-button-add flex items-center text-md text-black hover:text-blue-600 transition duration-300">
           Add Task
         </button>
 
@@ -278,8 +295,9 @@ const showToast = (message, type) => {
           <div v-if="showDropdown" class="absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-lg py-2">
             <ul>
               <li>
-                <button @click="logout" class="block w-full text-center px-4 py-2 hover:text-[#ba493f]">
-                  Logout
+                <button @click="logout" class="flex flex-row text-center px-4 py-2 hover:text-[#ba493f]">
+                  <img src="/public/SignOut.png" width="22" height="10" class="mr-2 mt-1" />
+                  Sign out
                 </button>
               </li>
             </ul>
@@ -289,15 +307,16 @@ const showToast = (message, type) => {
     </nav>
 
     <div class="p-28">
-      <div class="text-3xl drop-shadow-lg p-4 mb-4">
+      <!-- border-b-2 border-[#9e9ea8] -->
+      <div class="mb-2 text-3xl drop-shadow-lg p-4 ">
         <span class="text-[#2b4483] ml-2">{{ boardName }}</span>
       </div>
-      <div>
+      <div class="flex">
+
         <FilterDropdown @filter="handleFilterData" />
       </div>
-
       <div class="flex justify-center items-center">
-        <table class="table-auto w-5/12 md:w-10/12 m-2 rounded-2xl overflow-hidden">
+        <table class="table-auto w-5/12 md:w-10/12 mx-2 mb-2 rounded-2xl overflow-hidden">
           <thead class="bg-yellow-950 border-b text-white ml-8 tracking-wider">
             <th>#</th>
             <th>Title</th>
@@ -330,7 +349,7 @@ const showToast = (message, type) => {
           </thead>
           <tbody v-for="(task, index) in filteredTasks" :key="index"
             :class="index % 2 === 0 ? 'bg-yellow-50' : 'bg-orange-100'"
-            class="text-center border itbkk-item font-lilita">
+            class="itbkk-item text-center border  font-lilita">
             <td class="px-4 border whitespace-nowrap text-m font-medium text-gray-900 border-r">
               {{ index + 1 }}
             </td>

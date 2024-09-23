@@ -41,7 +41,7 @@ const decodedToken = () => {
     const decodedToken = VueJwtDecode.decode(token);
     username.value = decodedToken.name;
     oid.value = decodedToken.oid;
-    console.log("Username is: ", username.value);
+    // console.log("Username is: ", username.value);
   }
 };
 onMounted(() => {
@@ -105,8 +105,9 @@ const toggleDropdown = () => {
           <div v-if="showDropdown" class="absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-lg py-2">
             <ul>
               <li>
-                <button @click="logout" class="block w-full text-center px-4 py-2 hover:text-[#ba493f]">
-                  Logout
+                <button @click="logout" class="flex flex-row text-center px-4 py-2 hover:text-[#ba493f]">
+                  <img src="/public/SignOut.png" width="22" height="10" class="mr-2 mt-1" />
+                  Sign out
                 </button>
               </li>
             </ul>
@@ -117,7 +118,7 @@ const toggleDropdown = () => {
 
     <div>
 
-    </div>    
+    </div>
     <!-- <div v-if="boards.length !== 0" class="flex flex-col justify-center items-center p-28">
       <div class="text-3xl drop-shadow-lg p-4">
         Board <span class="text-[#2b4483] ml-2">{{ username }}</span>
@@ -144,7 +145,7 @@ const toggleDropdown = () => {
 
 
     <!-- v-else -->
-    <div  class="flex flex-col justify-center items-center text-center gap-4  min-h-screen">
+    <div class="flex flex-col justify-center items-center text-center gap-4  min-h-screen">
 
       <img src="/empty-box.png" alt="no board" class="w-48 h-48  object-cover opacity-90 drop-shadow-xl " />
       <span class="text-xl italic text-[#838395]">No Board!</span>

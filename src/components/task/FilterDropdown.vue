@@ -82,7 +82,7 @@ const filter = () => {
 </script>
 
 <template>
-  <div class="container mx-auto px-28 py-4">
+  <div class="container  px-28 py-2">
     <!-- Container สำหรับ Filter by status และปุ่ม Clear All -->
     <div class="flex flex-wrap items-center ">
       <!-- Filter by status -->
