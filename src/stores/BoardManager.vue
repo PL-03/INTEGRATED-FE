@@ -43,7 +43,7 @@ const fetchBoards = async () => {
       // Redirect to the first board the user owns
       router.push({
         name: "tasklist",
-        params: { boardId: boards.value[0].boardId },
+        params: { boardId: boards.value[0].id },
       });
     } else {
       // Redirect to the boards list if no boards are found

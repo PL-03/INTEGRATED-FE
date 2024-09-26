@@ -7,6 +7,7 @@ import FilterDropdown from "./FilterDropdown.vue";
 import ConfirmationModal from "../ConfirmationModal.vue";
 import VueJwtDecode from "vue-jwt-decode";
 import { isTokenExpired } from "@/libs/util";
+import ModalPublicPrivate from "../ModalAlertToggle.vue";
 
 const props = defineProps({
   tasks: {
@@ -37,7 +38,27 @@ const showDropdown = ref(false);
 const isTokenValid = ref(true);
 const boardId = route.params.boardId;
 const boardName = ref("");
-const isToggled = ref(false);
+
+const showModal = ref(false);
+const isToggled = ref(false); // to track the toggle status
+
+const handleToggle = (event) => {
+  if (event.target.checked) {
+    showModal.value = true; // Show modal before changing to public
+  } else {
+    isToggled.value = false; // Set it back to private
+  }
+};
+
+const closeModal = () => {
+  showModal.value = false;
+};
+
+const confirmToggle = () => {
+  isToggled.value = true; // Confirm changing to public
+  showModal.value = false;
+};
+
 const statusColors = {
   "No Status": "#9ca3af",
   "To Do": "#ffd1d1",
@@ -255,9 +276,10 @@ const showToast = (message, type) => {
       <div class="flex m-4 items-center space-x-6">
 
         <!-- Toggle public/private -->
-        <!-- <div class="flex items-center justify-end">
+        <div class="flex items-center justify-end">
           <label class="itbkk-board-visibility inline-flex relative items-center cursor-pointer">
-            <input type="checkbox" value="" class="itbkk-board-visibility sr-only peer" v-model="isToggled">
+            <input type="checkbox" value="" class="itbkk-board-visibility sr-only peer" v-model="isToggled"
+              @change="handleToggle">
             <div class="itbkk-board-visibility w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 
               peer-focus:ring-blue-500 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full 
               peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] 
@@ -268,7 +290,22 @@ const showToast = (message, type) => {
               {{ isToggled ? 'Public' : 'Private' }}
             </span>
           </label>
-        </div> -->
+        </div>
+        <ModalPublicPrivate v-if="showModal" :show="showModal" @confirm="confirmToggle" @close="closeModal" />
+        <!-- <Modal v-if="showModal" :show="showModal" @close="closeModal">
+          <div class="bg-white rounded-lg p-4 w-2/4 h-48 items-center">
+            <div>
+              <span class="text-lg ">Board visibility changed!</span>
+            </div>
+            <p class="itbkk-message text-wrap p-2 bg-[#fcfcdd] m-1">In public,any one can view the board, task list and task detail of tasks in the board. Do you want to change the visibility to public?</p>
+            <button class="bg-green-500 text-white mr-2 py-2 px-4 rounded itbkk-button-confirm"
+              @click="confirmToggle">Confirm</button>
+            <button class="bg-red-500 text-white py-2 px-4 rounded itbkk-button-cancel"
+              @click="closeModal">Cancel</button>
+          </div>
+
+        </Modal> -->
+
         <button @click="handleAddTask"
           class="itbkk-button-add flex items-center text-md text-black hover:text-blue-600 transition duration-300">
           Add Task
