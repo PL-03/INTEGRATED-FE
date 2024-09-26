@@ -46,8 +46,18 @@ const fetchBoardsById = async () => {
       }
     );
     const data = await response.json();
-    boardDetail.value = data;
-    return data;
+    if (response.ok) {
+      boardDetail.value = data;
+    } else if (response.status === 404) {
+      alert("The requested board does not exist");
+      router.push({ name: "boardslist" });
+    } else if (response.status === 401) {
+      alert("Unauthorized");
+      router.push({ name: "login" });
+    } else if (response.status === 403) {
+      alert("You don't have permission to access this board");
+      router.push({ name: "boardslist" });
+    }
   } catch (error) {
     console.error("Error fetching boards:", error);
   }
