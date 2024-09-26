@@ -43,7 +43,7 @@ const fetchBoards = async () => {
       // Redirect to the first board the user owns
       router.push({
         name: "tasklist",
-        params: { boardId: boards.value[0].boardId },
+        params: { boardId: boards.value[0].id },
       });
     } else {
       // Redirect to the boards list if no boards are found
@@ -85,7 +85,9 @@ const handleBoardAdded = () => {
 const handleBoardUpdated = (newBoard) => {
   boards.value.push(newBoard); // Add the new board to the list
   selectedBoard.value = newBoard; // Set the new board as selected
-  router.push({ name: "tasklist", params: { boardId: newBoard.boardId } });
+  console.log(newBoard);
+
+  router.push({ name: "tasklist", params: { boardId: newBoard.id } });
 };
 </script>
 
