@@ -82,18 +82,18 @@ const filter = () => {
 </script>
 
 <template>
-  <div class="container  px-28 py-2">
+  <div class="">
     <!-- Container สำหรับ Filter by status และปุ่ม Clear All -->
     <div class="flex flex-wrap items-center ">
       <!-- Filter by status -->
-      <div class="flex items-center space-x-2">
+      <div class="flex items-center">
         <div v-if="selectedOptions.length > 0" class="text-[#4f4f50] text-sm">
           <p>Filter by status:</p>
         </div>
 
         <!-- แสดงตัวเลือกที่ถูกเลือก -->
         <div v-for="(option, index) in selectedOptions" :key="index"
-          class="flex items-center text-sm bg-[#bfc0c2] rounded-full px-3 py-1 text-sm">
+          class="flex items-center text-sm bg-[#bfc0c2] rounded-full px-3 h-7 text-sm mx-1">
           <span>{{ option }}</span>
           <button type="button" class="ml-1 text-[#77797a] hover:text-red-700 focus:outline-none"
             @click="removeOption(index)">
@@ -108,15 +108,16 @@ const filter = () => {
       <!-- ปุ่ม Clear All -->
       <div v-if="selectedOptions.length > 0" class="flex items-center">
         <button type="button"
-          class="ml-8 h-9 px-4 py-1 bg-[#cf362b] text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
+          class="ml-8 h-9 px-4 text-sm bg-[#cf362b] text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
           @click="clearOptions">
           Clear All
         </button>
       </div>
 
       <!-- ปุ่ม Filter Status -->
-      <div class="relative">
-        <button class="ml-2 h-9 px-4 py-1 bg-[#2c62ea] text-white rounded-lg hover:bg-[#345aba]" @click="toggleDropdown">
+      <div class="relative ">
+        <button class="h-9 px-2 ml-1 bg-[#2c62ea] text-sm text-white rounded-lg hover:bg-[#345aba]"
+          @click="toggleDropdown">
           Filter Status
         </button>
         <div v-if="showDropdown" class="absolute left-0 z-10 mt-2 bg-white rounded-lg shadow-lg w-48">
