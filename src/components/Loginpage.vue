@@ -3,6 +3,7 @@ import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useToast, POSITION } from "vue-toastification";
 import VueJwtDecode from "vue-jwt-decode";
+import { storeToken } from "@/services/tokenService";
 const router = useRouter();
 
 // password and username
@@ -31,7 +32,8 @@ const handleSignIn = async () => {
     if (response.ok) {
       const data = await response.json();
       const token = data.access_token;
-      localStorage.setItem("jwtToken", token);
+      const refreshToken = data.refresh_token;
+      storeToken(token, refreshToken);
 
       router.push({ name: "boardslist" });
       showToast("Successfully signed in!", "success-login");

@@ -2,7 +2,7 @@
 import { ref, watchEffect, computed, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useToast, POSITION } from "vue-toastification";
-import { isTokenExpired } from "../../libs/util";
+import { isTokenExpired, getToken } from "@/services/tokenService";
 const props = defineProps({
   show: {
     type: Boolean,
@@ -22,7 +22,7 @@ const boardId = route.params.boardId;
 const emit = defineEmits(["update:show", "statusAdded", "statusUpdated"]);
 const router = useRouter();
 const isAddMode = computed(() => !props.status.id);
-const isTokenValid = ref(true);
+
 const isAddingNameEmpty = computed(
   () => isAddMode.value && !statusInput.value.name.trim()
 );
@@ -30,16 +30,6 @@ const statusInput = ref({
   name: "",
   description: "",
 });
-const getToken = () => {
-  const token = localStorage.getItem("jwtToken");
-  if (!token || isTokenExpired(token)) {
-    isTokenValid.value = false;
-    localStorage.removeItem("jwtToken");
-    router.push({ name: "login" });
-    return null;
-  }
-  return token;
-};
 onMounted(() => {
   if (props.status.id) {
     statusInput.value = {

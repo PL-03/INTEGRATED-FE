@@ -2,7 +2,11 @@
 import { ref, onMounted, watchEffect, onUpdated } from "vue";
 import { useToast, POSITION } from "vue-toastification";
 import { useRouter } from "vue-router";
-import { isTokenExpired } from "../../libs/util";
+import {
+  isTokenExpired,
+  getToken,
+  decodedToken,
+} from "@/services/tokenService";
 import VueJwtDecode from "vue-jwt-decode";
 
 const props = defineProps({
@@ -14,37 +18,26 @@ const props = defineProps({
 const router = useRouter();
 const toast = useToast();
 const username = ref("");
+const tokenDecoded = ref({});
+// const decodedToken = () => {
+//   const token = localStorage.getItem("jwtToken");
+//   const refreshToken = localStorage.getItem("refreshToken");
+//   if (!token || isTokenExpired(token)) {
+//     if (!refreshToken || isTokenExpired(refreshToken)) {
+//       removeTokens();
+//       router.push({ name: "login" });
+//       return;
+//     }
+//   }
+//   const decodedToken = VueJwtDecode.decode(token);
+//   username.value = decodedToken.name;
 
-const isTokenValid = ref(true);
-
-const getToken = () => {
-  const token = localStorage.getItem("jwtToken");
-  if (!token || isTokenExpired(token)) {
-    isTokenValid.value = false;
-    localStorage.removeItem("jwtToken");
-    router.push({ name: "login" });
-    return null;
-  }
-  return token;
-};
-const decodedToken = () => {
-  const token = localStorage.getItem("jwtToken");
-  if (!token || isTokenExpired(token)) {
-    alert("Your session has expired. Please login again.");
-    router.push({ name: "login" });
-    return;
-  }
-
-  // Decode the token and extract username
-  const decodedToken = VueJwtDecode.decode(token);
-  username.value = decodedToken.name;
-
-  // Update the board name after username is set
-  boardName.value.name = `${username.value}'s personal board`;
-};
+//   boardName.value.name = `${username.value}'s personal board`;
+// };
 
 onMounted(() => {
-  decodedToken();
+  tokenDecoded.value = decodedToken();
+  username.value = tokenDecoded.value.name;
 });
 
 const boardName = ref({
@@ -110,23 +103,43 @@ const showToast = (message, type) => {
 </script>
 
 <template>
-  <div v-if="show"
-    class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 backdrop-blur-sm font-lilita">
-    <div class="itbkk-modal-new bg-white rounded-lg shadow-xl w-1/3 tracking-wide">
+  <div
+    v-if="show"
+    class="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 backdrop-blur-sm font-lilita"
+  >
+    <div
+      class="itbkk-modal-new bg-white rounded-lg shadow-xl w-1/3 tracking-wide"
+    >
       <div class="border-b px-4 py-3">
         <h2 class="text-xl font-medium text-[#232f96]">New Board</h2>
       </div>
       <div class="px-4 py-5">
-        <label class="block text-gray-700 text-md font-medium mb-2" for="board-name">Name</label>
-        <input type="text" v-model="boardName.name" id="board-name"
-          class="itbkk-board-name border rounded w-full py-2 px-3 text-gray-700" maxlength="120" placeholder="Enter board name" />
+        <label
+          class="block text-gray-700 text-md font-medium mb-2"
+          for="board-name"
+          >Name</label
+        >
+        <input
+          type="text"
+          v-model="boardName.name"
+          id="board-name"
+          class="itbkk-board-name border rounded w-full py-2 px-3 text-gray-700"
+          maxlength="120"
+          placeholder="Enter board name"
+        />
       </div>
       <div class="flex justify-end px-4 py-3 gap-1 bg-gray-50 border-t">
-        <button @click="handleSubmit" class="itbkk-button-ok save bg-green-500 text-white py-2 px-4 rounded"
-          :disabled="!boardName.name">
+        <button
+          @click="handleSubmit"
+          class="itbkk-button-ok save bg-green-500 text-white py-2 px-4 rounded"
+          :disabled="!boardName.name"
+        >
           Ok
         </button>
-        <button @click="closeModal" class="itbkk-button-cancel bg-[#de5858] text-white py-2 px-4 rounded mr-2">
+        <button
+          @click="closeModal"
+          class="itbkk-button-cancel bg-[#de5858] text-white py-2 px-4 rounded mr-2"
+        >
           Cancel
         </button>
       </div>
@@ -135,8 +148,8 @@ const showToast = (message, type) => {
 </template>
 
 <style scoped>
-  .save:disabled {
-    background-color: #686c6dd4;
-      color: #fefefe;
-  }
+.save:disabled {
+  background-color: #686c6dd4;
+  color: #fefefe;
+}
 </style>

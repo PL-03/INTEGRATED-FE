@@ -2,7 +2,7 @@
 import { ref, watchEffect, computed, onMounted, inject } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useToast, POSITION } from "vue-toastification";
-import { isTokenExpired } from "../libs/util";
+import { isTokenExpired, getToken } from "@/services/tokenService";
 
 const props = defineProps({
   show: {
@@ -20,16 +20,6 @@ const props = defineProps({
 });
 const route = useRoute();
 const boardId = route.params.boardId;
-const getToken = () => {
-  const token = localStorage.getItem("jwtToken");
-  if (!token || isTokenExpired(token)) {
-    isTokenValid.value = false;
-    localStorage.removeItem("jwtToken");
-    router.push({ name: "login" });
-    return null;
-  }
-  return token;
-};
 
 const emit = defineEmits(["update:show", "task-added", "task-updated"]);
 const selectedStatus = ref(props.task.status || null);
@@ -154,6 +144,16 @@ const handleSubmit = async () => {
           isAddMode.value ? "added" : "updated"
         }`,
         isAddMode.value ? "success-add" : "success-update"
+      );
+    } else if (response.status === 401) {
+      localStorage.removeItem("jwtToken");
+      router.push({ name: "login" });
+    } else if (response.status === 403) {
+      showToast(
+        `You don't have permission to ${
+          isAddMode.value ? "add" : "update"
+        } the task`,
+        "error"
       );
     } else {
       showToast(

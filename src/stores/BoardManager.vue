@@ -3,7 +3,11 @@ import { ref, onMounted, watch, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import createBoard from "@/components/board/createBoard.vue";
 import AddBoard from "@/components/board/AddBoard.vue";
-import { isTokenExpired } from "@/libs/util";
+import {
+  isTokenExpired,
+  getToken,
+  decodedToken,
+} from "@/services/tokenService";
 import VueJwtDecode from "vue-jwt-decode";
 
 const route = useRoute();
@@ -13,21 +17,10 @@ const showModal = ref(false);
 const boards = ref([]);
 const isTokenValid = ref(true);
 
-const getToken = () => {
-  const token = localStorage.getItem("jwtToken");
-  if (!token || isTokenExpired(token)) {
-    isTokenValid.value = false;
-    localStorage.removeItem("jwtToken");
-    alert("Your session has expired. Please login again.");
-    router.push({ name: "login" });
-    return null;
-  }
-  return token;
-};
 const token = getToken();
 const fetchBoards = async () => {
   if (!token) return;
-  const decodedToken = VueJwtDecode.decode(token);
+  const decodedToken = decodedToken();
   const userOid = decodedToken.oid; // Adjust based on your token structure
   try {
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v3/boards`, {

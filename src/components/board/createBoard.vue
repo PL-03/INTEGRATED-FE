@@ -2,7 +2,11 @@
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useToast, POSITION } from "vue-toastification";
-import { isTokenExpired } from "@/libs/util";
+import {
+  isTokenExpired,
+  decodedToken,
+  removeTokens,
+} from "@/services/tokenService";
 import VueJwtDecode from "vue-jwt-decode";
 
 const props = defineProps({
@@ -13,39 +17,28 @@ const props = defineProps({
 });
 const showDropdown = ref(false);
 const router = useRouter();
-const toast = useToast();
 // const token = getToken();
 const username = ref("");
 const oid = ref("");
-const isTokenValid = ref(true);
 const emit = defineEmits(["board-added"]);
-const getToken = () => {
-  const token = localStorage.getItem("jwtToken");
-  if (!token || isTokenExpired(token)) {
-    isTokenValid.value = false;
-    localStorage.removeItem("jwtToken");
-
-    return null;
-  }
-  return token;
-};
-const decodedToken = () => {
-  const token = localStorage.getItem("jwtToken");
-  if (!token || isTokenExpired(token)) {
-    isTokenValid.value = false;
-    localStorage.removeItem("jwtToken");
-    alert("Your session has expired. Please login again.");
-    router.push({ name: "login" });
-    return;
-  } else if (token) {
-    const decodedToken = VueJwtDecode.decode(token);
-    username.value = decodedToken.name;
-    oid.value = decodedToken.oid;
-    // console.log("Username is: ", username.value);
-  }
-};
+const tokenDecoded = ref({});
+// const decodedToken = () => {
+//   const token = localStorage.getItem("jwtToken");
+//   if (!token || isTokenExpired(token)) {
+//     removeTokens();
+//     router.push({ name: "login" });
+//     return;
+//   } else if (token) {
+//     const decodedToken = VueJwtDecode.decode(token);
+//     username.value = decodedToken.name;
+//     oid.value = decodedToken.oid;
+//     // console.log("Username is: ", username.value);
+//   }
+// };
 onMounted(() => {
-  decodedToken();
+  tokenDecoded.value = decodedToken();
+  username.value = tokenDecoded.value.name;
+  oid.value = tokenDecoded.value.oid;
 });
 
 const handleAddBoard = () => {
@@ -56,7 +49,7 @@ const handleViewBoard = (id) => {
   router.push({ name: "tasklist", params: { boardId: id } });
 };
 const logout = () => {
-  localStorage.removeItem("jwtToken");
+  removeTokens();
   router.push({ name: "login" });
 };
 const toggleDropdown = () => {

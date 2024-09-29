@@ -5,7 +5,7 @@ import PopupModal from "./components/task/PopupModal.vue";
 import AddEditModal from "./components/AddEditModal.vue";
 
 import { useRoute, useRouter } from "vue-router";
-import { isTokenExpired } from "./libs/util";
+import { isTokenExpired, getToken } from "./services/tokenService";
 
 const tasks = ref([]);
 const selectedTask = ref({});
@@ -17,21 +17,9 @@ const isEditMode = computed(() => route.name === "taskedit");
 const isViewMode = computed(() => route.name === "taskdetail");
 const showModal = ref(false);
 const statuses = ref([]);
-const isTokenValid = ref(true);
 const boardId = route.params.boardId;
 const boardDetail = ref({});
 
-const getToken = () => {
-  const token = localStorage.getItem("jwtToken");
-  if (!token || isTokenExpired(token)) {
-    isTokenValid.value = false;
-    localStorage.removeItem("jwtToken");
-    alert("Your session has expired. Please login again.");
-    router.push({ name: "login" });
-    return null;
-  }
-  return token;
-};
 const fetchBoardsById = async () => {
   const token = getToken();
   if (!token) return;
@@ -52,11 +40,10 @@ const fetchBoardsById = async () => {
       alert("The requested board does not exist");
       router.push({ name: "boardslist" });
     } else if (response.status === 401) {
-      alert("Unauthorized");
+      localStorage.removeItem("jwtToken");
       router.push({ name: "login" });
     } else if (response.status === 403) {
-      alert("You don't have permission to access this board");
-      router.push({ name: "boardslist" });
+      router.push({ name: "denial" });
     }
   } catch (error) {
     console.error("Error fetching boards:", error);
@@ -76,7 +63,14 @@ const fetchTasks = async () => {
       }
     );
     const data = await response.json();
-    tasks.value = data;
+    if (response.ok) {
+      tasks.value = data;
+    } else if (response.status === 401) {
+      localStorage.removeItem("jwtToken");
+      router.push({ name: "login" });
+    } else if (response.status === 403) {
+      router.push({ name: "denial" });
+    }
   } catch (error) {
     console.error("Error fetching tasks:", error);
   }
@@ -127,7 +121,14 @@ const fetchStatuses = async () => {
       }
     );
     const data = await response.json();
-    statuses.value = data;
+    if (response.ok) {
+      statuses.value = data;
+    } else if (response.status === 401) {
+      localStorage.removeItem("jwtToken");
+      router.push({ name: "login" });
+    } else if (response.status === 403) {
+      router.push({ name: "denial" });
+    }
   } catch (error) {
     console.error("Error fetching statuses:", error);
   }

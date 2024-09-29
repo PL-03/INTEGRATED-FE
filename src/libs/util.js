@@ -8,19 +8,5 @@ const getStatusText = (status) => {
     return "Unknown Status";
   }
 };
-const isTokenExpired = (token) => {
-  if (!token) return true;
-  try {
-    const decoded = VueJwtDecode.decode(token);
-    if (decoded.exp) {
-      const expirationDate = decoded.exp * 1000;
-      return Date.now() > expirationDate;
-    }
-    return true;
-  } catch (err) {
-    console.log("Invalid token: ", err);
-    return true;
-  }
-};
 
-export { getStatusText, isTokenExpired };
+export { getStatusText };

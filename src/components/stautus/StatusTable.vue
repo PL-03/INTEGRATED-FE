@@ -3,7 +3,9 @@ import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useToast, POSITION } from "vue-toastification";
 import ConfirmationModal from "../ConfirmationModal.vue";
-import { isTokenExpired } from "../../libs/util";
+import { isTokenExpired } from "@/services/tokenService";
+import { getToken, decodedToken } from "@/services/tokenService";
+import VueJwtDecode from "vue-jwt-decode";
 const props = defineProps({
   statuses: {
     type: Array,
@@ -17,18 +19,22 @@ const showConfirmationModal = ref(false);
 const statusToDelete = ref(null);
 const defaultStatus = ["No Status", "Done"];
 const showTransferModal = ref(false);
-const isTokenValid = ref(true);
+const board = ref({});
+const currentId = ref("");
 const boardId = route.params.boardId;
-const getToken = () => {
-  const token = localStorage.getItem("jwtToken");
-  if (!token || isTokenExpired(token)) {
-    isTokenValid.value = false;
-    localStorage.removeItem("jwtToken");
-
-    return null;
-  }
-  return token;
-};
+const isOwner = ref("");
+const tokenDecoded = ref({});
+// const decodedToken = () => {
+//   const token = getToken();
+//   if (!token || isTokenExpired(token)) {
+//     removeTokens();
+//     router.push({ name: "login" });
+//     return;
+//   } else if (token) {
+//     const decodedToken = VueJwtDecode.decode(token);
+//     currentId.value = decodedToken.oid;
+//   }
+// };
 const closeStatusPage = () => {
   router.push({ name: "tasklist" });
 };
@@ -42,7 +48,42 @@ const handleEditStatus = (status) => {
   router.push({ name: "statusedit", params: { id: status.id } });
   emit("edit-status", status.id);
 };
-
+const fetchBoard = async () => {
+  const token = getToken();
+  if (!token) return;
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const data = await response.json();
+    if (response.ok) {
+      board.value = data;
+    } else if (response.status === 404) {
+      alert("The requested board does not exist");
+      router.push({ name: "boardslist" });
+    } else if (response.status === 401) {
+      localStorage.removeItem("jwtToken");
+      router.push({ name: "login" });
+    } else if (response.status === 403) {
+      router.push({ name: "boardslist" });
+    }
+  } catch (error) {
+    console.error("Error fetching boards:", error);
+  }
+};
+onMounted(async () => {
+  await fetchBoard();
+  tokenDecoded.value = decodedToken();
+  currentId.value = tokenDecoded.value.oid;
+  isOwner.value = board.value.owner.oid === currentId.value;
+  console.log(isOwner.value);
+});
 const handleDeleteStatus = async (status) => {
   const token = getToken();
   if (!token) return;
@@ -238,8 +279,9 @@ const showToast = (message, type) => {
       <!-- bg-green-700 hover:bg-emerald-500 -->
       <div class="flex m-4">
         <button
-          class="flex text-md px-3 py-1 mt-2 mr-8 hover:text-[#44bd6a] text-black rounded itbkk-button-add font-lilita tracking-wide"
+          class="addBtn flex text-md px-3 py-1 mt-2 mr-8 hover:text-[#44bd6a] text-black rounded itbkk-button-add font-lilita tracking-wide"
           @click="handleAddStatus"
+          :disabled="!isOwner"
         >
           <svg
             class="mr-1 mt-1"
@@ -325,9 +367,9 @@ const showToast = (message, type) => {
             </td>
             <td class="px-4 py-2">
               <button
-                class="text-blue-800 hover:text-blue-500 mb-2 e-btn edit-delete itbkk-button-edit"
+                class="editBtn text-blue-800 hover:text-blue-500 mb-2 e-btn edit-delete itbkk-button-edit"
                 @click="handleEditStatus(status)"
-                :disabled="defaultStatus.includes(status.name)"
+                :disabled="defaultStatus.includes(status.name) || !isOwner"
               >
                 <svg
                   class="itbkk-button-edit"
@@ -344,9 +386,9 @@ const showToast = (message, type) => {
                 </svg>
               </button>
               <button
-                class="text-red-700 hover:text-red-400 d-btn px-4 edit-delete itbkk-button-delete"
+                class="deleteBtn text-red-700 hover:text-red-400 d-btn px-4 edit-delete itbkk-button-delete"
                 @click="handleDeleteStatus(status)"
-                :disabled="defaultStatus.includes(status.name)"
+                :disabled="defaultStatus.includes(status.name) || !isOwner"
               >
                 <svg
                   class="itbkk-button-delete"
@@ -402,5 +444,12 @@ const showToast = (message, type) => {
     rgb(152, 217, 255) 40%,
     rgb(255, 221, 216) 100%
   );
+}
+
+.addBtn:disabled,
+.editBtn:disabled,
+.deleteBtn:disabled {
+  color: #665f5f;
+  cursor: not-allowed;
 }
 </style>
