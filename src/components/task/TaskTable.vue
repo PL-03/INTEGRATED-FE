@@ -366,8 +366,7 @@ const showToast = (message, type) => {
       </div>
 
       <div class="flex m-4 items-center space-x-6">
-        <!-- Toggle public/private -->
-        <div class="flex items-center justify-end">
+        <!-- <div class="flex items-center justify-end">
           <label
             class="visibilityBtn itbkk-board-visibility inline-flex relative items-center cursor-pointer"
           >
@@ -393,20 +392,7 @@ const showToast = (message, type) => {
           :boardVisible="boardVisible"
           @confirm="confirmToggle"
           @close="closeModal"
-        />
-        <!-- <Modal v-if="showModal" :show="showModal" @close="closeModal">
-          <div class="bg-white rounded-lg p-4 w-2/4 h-48 items-center">
-            <div>
-              <span class="text-lg ">Board visibility changed!</span>
-            </div>
-            <p class="itbkk-message text-wrap p-2 bg-[#fcfcdd] m-1">In public,any one can view the board, task list and task detail of tasks in the board. Do you want to change the visibility to public?</p>
-            <button class="bg-green-500 text-white mr-2 py-2 px-4 rounded itbkk-button-confirm"
-              @click="confirmToggle">Confirm</button>
-            <button class="bg-red-500 text-white py-2 px-4 rounded itbkk-button-cancel"
-              @click="closeModal">Cancel</button>
-          </div>
-
-        </Modal> -->
+        /> -->
 
         <button
           @click="handleAddTask"
@@ -493,14 +479,15 @@ const showToast = (message, type) => {
           <FilterDropdown @filter="handleFilterData" />
           <!-- </div> -->
           <label
-            class="itbkk-board-visibility relative flex items-center cursor-pointer"
+            class="visibilityBtn itbkk-board-visibility relative flex items-center cursor-pointer"
+            :disabled="!isOwner"
           >
             <input
               type="checkbox"
               value=""
               class="itbkk-board-visibility sr-only peer"
               v-model="isToggled"
-              @change="handleToggle"
+              @change="openModal"
             />
             <div
               class="itbkk-board-visibility w-11 h-6 bg-gray-400 border border-[#535459] peer-focus:outline-none peer-focus:ring-2 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
@@ -513,6 +500,7 @@ const showToast = (message, type) => {
         <ModalPublicPrivate
           v-if="showModal"
           :show="showModal"
+          :boardVisible="boardVisible"
           @confirm="confirmToggle"
           @close="closeModal"
         />
@@ -617,8 +605,9 @@ const showToast = (message, type) => {
                 </td>
                 <td class="px-4">
                   <button
-                    class="text-blue-800 hover:text-blue-500 ml-2 e-btn itbkk-button-edit"
+                    class="editBtn text-blue-800 hover:text-blue-500 ml-2 e-btn itbkk-button-edit"
                     @click="handleEditTask(task)"
+                    :disabled="!isOwner"
                   >
                     <svg
                       class="itbkk-button-edit"
@@ -635,8 +624,9 @@ const showToast = (message, type) => {
                     </svg>
                   </button>
                   <button
-                    class="text-red-700 hover:text-red-400 d-btn px-4"
+                    class="deleteBtn text-red-700 hover:text-red-400 d-btn px-4"
                     @click="handleDeleteTask(task)"
+                    :disabled="!isOwner"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -692,6 +682,9 @@ border-r {
 .editBtn:disabled,
 .deleteBtn:disabled {
   color: #665f5f;
+  cursor: not-allowed;
+}
+.visibilityBtn:disabled {
   cursor: not-allowed;
 }
 

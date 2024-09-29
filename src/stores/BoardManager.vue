@@ -20,8 +20,8 @@ const isTokenValid = ref(true);
 const token = getToken();
 const fetchBoards = async () => {
   if (!token) return;
-  const decodedToken = decodedToken();
-  const userOid = decodedToken.oid; // Adjust based on your token structure
+  const tokenDecoded = decodedToken();
+  const userOid = tokenDecoded.oid; // Adjust based on your token structure
   try {
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v3/boards`, {
       headers: {
