@@ -73,7 +73,7 @@ const filteredStatuses = computed(() => {
 <template>
   <div v-if="show" class="modal-overlay">
     <div class="modal-content  font-lilita">
-      <span class="close" @click="closeModal">&times;</span>
+      <button class="close hover:text-red-500 " @click="closeModal">&times;</button>
       <h2 class=" text-xl text-yellow-950">{{ modalTitle }}</h2>
       <p class="itbkk-message">{{ modalMessage }}</p>
       <div v-if="tasksAssociated" class="mt-4">
@@ -85,10 +85,10 @@ const filteredStatuses = computed(() => {
         </select>
       </div>
       <div class="flex flex-row justify-center itbkk-button-action mt-4">
-        <div class="m-4">
-          <button class="bg-green-500 text-white py-2 px-4 rounded itbkk-button-confirm"
+        <div class="mt-4">
+          <button class="bg-green-500 text-white w-20 h-10 rounded itbkk-button-confirm"
             @click="confirmDelete" :disabled="tasksAssociated && !transferStatus">
-            {{ tasksAssociated ? "Transfer" : "Save" }}
+            {{ tasksAssociated ? "Transfer" : "OK" }}
           </button>
         </div>
         <div class="m-4">
