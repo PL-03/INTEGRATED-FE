@@ -1,16 +1,15 @@
 <script setup>
-import router from "@/router/router"
+import router from "@/router/router";
 
 const props = defineProps({
   selectedTaskId: {
     type: Object,
     required: true,
   },
-  
-})
+});
 
 const formatDate = (dateString) => {
-  if (!dateString) return "Date is undefined"
+  if (!dateString) return "Date is undefined";
 
   const options = {
     day: "2-digit",
@@ -21,69 +20,83 @@ const formatDate = (dateString) => {
     second: "2-digit",
     timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     hourCycle: "h24",
-  }
-  const utcDate = new Date(dateString)
-  const formatter = new Intl.DateTimeFormat("en-GB", options)
-  const formattedDate = formatter.format(utcDate)
-  return formattedDate
-}
+  };
+  const utcDate = new Date(dateString);
+  const formatter = new Intl.DateTimeFormat("en-GB", options);
+  const formattedDate = formatter.format(utcDate);
+  return formattedDate;
+};
 
 const closeModal = () => {
-  router.push({name: "tasklist"})
-}
+  router.push({ name: "tasklist" });
+};
 </script>
 
 <template>
-  <div v-if="Object.keys(selectedTaskId).length > 0" class="modal ">
-    <div class="modal-content bg-gradient-to-t from-slate-300 to-yellow-50 w-full  font-lilita">
+  <div v-if="Object.keys(selectedTaskId).length > 0" class="modal">
+    <div
+      class="modal-content bg-gradient-to-t from-slate-300 to-yellow-50 w-full font-lilita"
+    >
       <span class="close" @click="closeModal">&times;</span>
-      <h2 class=" text-xl text-blue-800 mt-2">Task Details</h2>
+      <h2 class="text-xl text-blue-800 mt-2">Task Details</h2>
       <br />
       <p class="break-words"><span> Title:</span> {{ selectedTaskId.title }}</p>
 
       <div class="flex mt-2 justify-center">
         <p
-          class="itbkk-description box-content border bg-yellow-100 shadow-slate-500/40 hover:shadow-blue-500/40 shadow-xl mr-2 mt-4 rounded-lg p-8 h-80 w-5/12">
+          class="itbkk-description box-content border bg-yellow-100 shadow-slate-500/40 hover:shadow-blue-500/40 shadow-xl mr-2 mt-4 rounded-lg p-8 h-80 w-5/12"
+        >
           <span>Description</span><br />
-          <span v-if="selectedTaskId.description != null">{{ selectedTaskId.description }}</span>
-          <span v-else class="italic text-red-500">No Description Provided</span>
+          <span v-if="selectedTaskId.description != null">{{
+            selectedTaskId.description
+          }}</span>
+          <span v-else class="italic text-red-500"
+            >No Description Provided</span
+          >
         </p>
 
         <div class="mr-10 pl-4">
           <div class="flex mr-8">
-            <div class="mr-2 ">
+            <div class="mr-2">
               <p
-                class="itbkk-assignees break-words box-content  h-28 w-40 mt-4 border bg-yellow-100 shadow-lg rounded-3xl px-4 py-4">
+                class="itbkk-assignees break-words box-content h-28 w-40 mt-4 border bg-yellow-100 shadow-lg rounded-3xl px-4 py-4"
+              >
                 <span>Assignees</span><br />
-                <span v-if="selectedTaskId.assignees != null">{{ selectedTaskId.assignees }}</span>
+                <span v-if="selectedTaskId.assignees != null">{{
+                  selectedTaskId.assignees
+                }}</span>
                 <span v-else class="italic text-gray-900">Unassigned</span>
               </p>
             </div>
 
             <div>
               <p
-                class="itbkk-status  box-content h-28 w-full mt-4 border bg-yellow-100 drop-shadow-lg rounded-3xl px-8 py-4">
+                class="itbkk-status box-content h-28 w-full mt-4 border bg-yellow-100 drop-shadow-lg rounded-3xl px-8 py-4"
+              >
                 <span>Status</span><br />
-                {{ selectedTaskId.status.name }}
+                {{ selectedTaskId.status }}
               </p>
             </div>
           </div>
 
           <div class="col-span-8 mt-4 ml-8">
             <p
-              class="itbkk-timezone place-content-center box-content h-10 w-full  border bg-blue-200 shadow-md mb-3 mt-4 mr-2 rounded-full px-2  py-3">
+              class="itbkk-timezone place-content-center box-content h-10 w-full border bg-blue-200 shadow-md mb-3 mt-4 mr-2 rounded-full px-2 py-3"
+            >
               <span>Time Zone</span><br />
               {{ Intl.DateTimeFormat().resolvedOptions().timeZone }}
             </p>
 
             <p
-              class="itbkk-created-on place-content-center box-content h-10 w-full  border bg-sky-200 shadow-md mb-3 mr-2 rounded-full px-2  py-3">
+              class="itbkk-created-on place-content-center box-content h-10 w-full border bg-sky-200 shadow-md mb-3 mr-2 rounded-full px-2 py-3"
+            >
               <span>Created Date</span><br />
               {{ formatDate(selectedTaskId.createdOn) }}
             </p>
 
             <p
-              class="itbkk-updated-on place-content-center box-content h-10 w-full  border bg-cyan-100 shadow-md mr-2 rounded-full px-2  py-3">
+              class="itbkk-updated-on place-content-center box-content h-10 w-full border bg-cyan-100 shadow-md mr-2 rounded-full px-2 py-3"
+            >
               <span>Updated Date</span><br />
               {{ formatDate(selectedTaskId.updatedOn) }}
             </p>
@@ -93,7 +106,6 @@ const closeModal = () => {
     </div>
   </div>
 </template>
-
 
 <style scoped>
 .modal {

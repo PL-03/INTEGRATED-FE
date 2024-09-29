@@ -23,8 +23,10 @@ const routes = [
     component: TaskManager,
     beforeEnter: () => {
       if (!localStorage.getItem("jwtToken")) {
-        alert("Please login first");
-        return { name: "login" };
+        if (!localStorage.getItem("refreshToken")) {
+          alert("Please login first");
+          return { name: "login" };
+        }
       }
     },
   },
@@ -34,8 +36,10 @@ const routes = [
     component: BoardManager,
     beforeEnter: () => {
       if (!localStorage.getItem("jwtToken")) {
-        alert("Please login first");
-        return { name: "login" };
+        if (!localStorage.getItem("refreshToken")) {
+          alert("Please login first");
+          return { name: "login" };
+        }
       }
     },
   },
@@ -45,8 +49,10 @@ const routes = [
     component: TaskManager,
     beforeEnter: () => {
       if (!localStorage.getItem("jwtToken")) {
-        alert("Please login first");
-        return { name: "login" };
+        if (!localStorage.getItem("refreshToken")) {
+          alert("Please login first");
+          return { name: "login" };
+        }
       }
     },
   },
@@ -56,8 +62,10 @@ const routes = [
     component: TaskManager,
     beforeEnter: (to, from, next) => {
       if (!localStorage.getItem("jwtToken")) {
-        alert("Please login first");
-        return { name: "login" };
+        if (!localStorage.getItem("refreshToken")) {
+          alert("Please login first");
+          return { name: "login" };
+        }
       } else if (!parseInt(to.params.taskId)) {
         alert("Page Not Found");
         next({ name: "boardslist" });
@@ -72,8 +80,10 @@ const routes = [
     component: TaskManager,
     beforeEnter: () => {
       if (!localStorage.getItem("jwtToken")) {
-        alert("Please login first");
-        return { name: "login" };
+        if (!localStorage.getItem("refreshToken")) {
+          alert("Please login first");
+          return { name: "login" };
+        }
       }
     },
   },
@@ -83,8 +93,10 @@ const routes = [
     component: StatusManager,
     beforeEnter: () => {
       if (!localStorage.getItem("jwtToken")) {
-        alert("Please login first");
-        return { name: "login" };
+        if (!localStorage.getItem("refreshToken")) {
+          alert("Please login first");
+          return { name: "login" };
+        }
       }
     },
   },
@@ -94,8 +106,10 @@ const routes = [
     component: StatusManager,
     beforeEnter: () => {
       if (!localStorage.getItem("jwtToken")) {
-        alert("Please login first");
-        return { name: "login" };
+        if (!localStorage.getItem("refreshToken")) {
+          alert("Please login first");
+          return { name: "login" };
+        }
       }
     },
   },
@@ -122,8 +136,10 @@ const routes = [
     beforeEnter: () => {
       alert("Page Not Found");
       if (!localStorage.getItem("jwtToken")) {
-        alert("Please login first");
-        return { name: "login" };
+        if (!localStorage.getItem("refreshToken")) {
+          alert("Please login first");
+          return { name: "login" };
+        }
       } else {
         next({ name: "boardslist" });
       }
@@ -134,7 +150,10 @@ const routes = [
     name: "login",
     component: LoginManager,
     beforeEnter: () => {
-      if (localStorage.getItem("jwtToken")) {
+      if (
+        localStorage.getItem("jwtToken") ||
+        localStorage.getItem("refreshToken")
+      ) {
         return { name: "boardslist" };
       }
     },
