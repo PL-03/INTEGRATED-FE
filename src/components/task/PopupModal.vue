@@ -6,6 +6,7 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  
 })
 
 const formatDate = (dateString) => {
