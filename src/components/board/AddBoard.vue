@@ -19,6 +19,9 @@ const router = useRouter();
 const toast = useToast();
 const username = ref("");
 const tokenDecoded = ref({});
+const boardName = ref({
+  name: "",
+});
 // const decodedToken = () => {
 //   const token = localStorage.getItem("jwtToken");
 //   const refreshToken = localStorage.getItem("refreshToken");
@@ -38,11 +41,9 @@ const tokenDecoded = ref({});
 onMounted(() => {
   tokenDecoded.value = decodedToken();
   username.value = tokenDecoded.value.name;
+  boardName.value.name = `${username.value}'s personal board`;
 });
 
-const boardName = ref({
-  name: "",
-});
 const token = getToken();
 const emit = defineEmits(["update:show", "board-added"]);
 const closeModal = () => {

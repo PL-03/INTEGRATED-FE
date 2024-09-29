@@ -1,6 +1,5 @@
 import VueJwtDecode from "vue-jwt-decode";
-import { useRouter, useRoute } from "vue-router";
-const router = useRouter();
+import router from "@/router/router";
 
 // Store the token in localStorage
 export const storeToken = (token, refreshToken) => {
