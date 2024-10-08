@@ -5,7 +5,11 @@ import PopupModal from "./components/task/PopupModal.vue";
 import AddEditModal from "./components/AddEditModal.vue";
 
 import { useRoute, useRouter } from "vue-router";
-import { isTokenExpired, getToken } from "./services/tokenService";
+import {
+  isTokenExpired,
+  getToken,
+  useRefreshToken,
+} from "./services/tokenService";
 
 const tasks = ref([]);
 const selectedTask = ref({});
@@ -22,7 +26,10 @@ const boardDetail = ref({});
 
 const fetchBoardsById = async () => {
   const token = getToken();
-  if (!token) return;
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
   try {
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}`,
@@ -51,7 +58,10 @@ const fetchBoardsById = async () => {
 };
 const fetchTasks = async () => {
   const token = getToken();
-  if (!token) return;
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
   try {
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/tasks`,
@@ -78,7 +88,10 @@ const fetchTasks = async () => {
 
 const fetchTaskDetails = async (id) => {
   const token = getToken();
-  if (!token) return;
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
   if (id) {
     try {
       const response = await fetch(
@@ -109,7 +122,10 @@ const fetchTaskDetails = async (id) => {
 
 const fetchStatuses = async () => {
   const token = getToken();
-  if (!token) return;
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
   try {
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/statuses`,

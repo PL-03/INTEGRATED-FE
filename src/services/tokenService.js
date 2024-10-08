@@ -12,20 +12,25 @@ export const storeToken = (token, refreshToken) => {
 // Retrieve the JWT token from localStorage
 export const getToken = () => {
   const token = localStorage.getItem("jwtToken");
-  const refreshToken = localStorage.getItem("refreshToken");
   if (!token || isTokenExpired(token)) {
-    if (!refreshToken || isTokenExpired(refreshToken)) {
-      alert("Your session has expired. Please login again.");
-      router.push({ name: "login" });
-      return null;
-    }
+    return null; // Return null if token is expired or missing
   }
-  return token || refreshToken;
+  return token;
 };
 
-// Retrieve the Refresh token from localStorage
-export const getRefreshToken = () => {
-  return localStorage.getItem("refreshToken");
+// A separate function to handle token refresh logic
+export const handleTokenRefresh = async () => {
+  let token = getToken();
+
+  // If token is expired, attempt to refresh
+  if (!token) {
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (refreshToken && !isTokenExpired(refreshToken)) {
+      token = await useRefreshToken(); // Refresh the token
+    }
+  }
+
+  return token;
 };
 
 // Remove tokens from localStorage (for logout)
@@ -61,37 +66,35 @@ export const decodedToken = () => {
   }
 };
 
-// // Refresh the token using a refresh token
-// export const refreshToken = async () => {
-//   const refreshToken = getRefreshToken();
-//   if (!refreshToken) {
-//     console.error("No refresh token available");
-//     return;
-//   }
+// Refresh the token using a refresh token
+export const useRefreshToken = async () => {
+  const refreshToken = localStorage.getItem("refreshToken");
 
-//   try {
-//     const response = await fetch(
-//       `${import.meta.env.VITE_BASE_URL}/auth/refresh`,
-//       {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//         },
-//         body: JSON.stringify({ refreshToken }),
-//       }
-//     );
+  if (!refreshToken && !isTokenExpired(refreshToken)) {
+    console.error("No refresh token available");
+    router.push({ name: "login" });
+    return null;
+  }
 
-//     if (response.ok) {
-//       const data = await response.json();
-//       // Update the JWT token and refresh token
-//       storeToken(data.accessToken, data.refreshToken);
-//       return data.accessToken;
-//     } else {
-//       console.error("Failed to refresh token");
-//       return null;
-//     }
-//   } catch (error) {
-//     console.error("Error refreshing token:", error);
-//     return null;
-//   }
-// };
+  try {
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/token`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${refreshToken}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      const token = data.access_token;
+      storeToken(token, refreshToken); // Update tokens
+    } else {
+      console.error("Failed to refresh token");
+      return null;
+    }
+  } catch (error) {
+    console.error("Error refreshing token:", error);
+    return null;
+  }
+};

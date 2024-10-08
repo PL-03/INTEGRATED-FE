@@ -6,6 +6,7 @@ import {
   isTokenExpired,
   getToken,
   decodedToken,
+  useRefreshToken,
 } from "@/services/tokenService";
 import VueJwtDecode from "vue-jwt-decode";
 
@@ -41,10 +42,9 @@ const boardName = ref({
 onMounted(() => {
   tokenDecoded.value = decodedToken();
   username.value = tokenDecoded.value.name;
-  boardName.value.name = `${username.value}'s personal board`;
+  boardName.value.name = `${username.value} personal board`;
 });
 
-const token = getToken();
 const emit = defineEmits(["update:show", "board-added"]);
 const closeModal = () => {
   emit("update:show", false);
@@ -56,7 +56,11 @@ const handleSubmit = async () => {
     const requestData = {
       name: boardName.value.name,
     };
-    if (!token) return;
+    const token = getToken();
+    if (!token) {
+      await useRefreshToken();
+      token = getToken();
+    }
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v3/boards`, {
       method: "POST",
       headers: {

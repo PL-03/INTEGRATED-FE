@@ -11,6 +11,7 @@ import {
   getToken,
   decodedToken,
   removeTokens,
+  useRefreshToken,
 } from "@/services/tokenService";
 import ModalPublicPrivate from "../ModalAlertToggle.vue";
 
@@ -73,7 +74,10 @@ const confirmToggle = async () => {
   showModal.value = false;
 
   const token = getToken();
-  if (!token) return;
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
   try {
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}`,
@@ -128,7 +132,10 @@ const fetchFilteredTasks = async () => {
   }/v3/boards/${boardId}/tasks?sortBy=statusV3.name&filterStatuses=${selectedStatuses}`;
 
   const token = getToken();
-  if (!token) return;
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
   try {
     const response = await fetch(url, {
       headers: {
@@ -144,7 +151,10 @@ const fetchFilteredTasks = async () => {
 };
 const fetchBoard = async () => {
   const token = getToken();
-  if (!token) return;
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
   try {
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}`,
@@ -280,7 +290,10 @@ const handleFilterData = (selectedOptions) => {
 
 const confirmDeleteTask = async () => {
   const token = getToken();
-  if (!token) return;
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
   try {
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/tasks/${

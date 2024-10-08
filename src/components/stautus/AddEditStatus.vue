@@ -2,7 +2,11 @@
 import { ref, watchEffect, computed, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useToast, POSITION } from "vue-toastification";
-import { isTokenExpired, getToken } from "@/services/tokenService";
+import {
+  isTokenExpired,
+  getToken,
+  useRefreshToken,
+} from "@/services/tokenService";
 const props = defineProps({
   show: {
     type: Boolean,
@@ -89,7 +93,10 @@ const handleSubmit = async () => {
       return;
     }
     const token = getToken();
-    if (!token) return;
+    if (!token) {
+      await useRefreshToken();
+      token = getToken();
+    }
     const response = isAddMode.value
       ? await fetch(
           `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/statuses`,

@@ -11,7 +11,10 @@ const routes = [
     name: "boardslist",
     component: BoardManager,
     beforeEnter: () => {
-      if (!localStorage.getItem("jwtToken")) {
+      if (
+        !localStorage.getItem("jwtToken") &&
+        !localStorage.getItem("refreshToken")
+      ) {
         alert("Please login first");
         return { name: "login" };
       }
@@ -22,11 +25,12 @@ const routes = [
     name: "tasklist",
     component: TaskManager,
     beforeEnter: () => {
-      if (!localStorage.getItem("jwtToken")) {
-        if (!localStorage.getItem("refreshToken")) {
-          alert("Please login first");
-          return { name: "login" };
-        }
+      if (
+        !localStorage.getItem("jwtToken") &&
+        !localStorage.getItem("refreshToken")
+      ) {
+        alert("Please login first");
+        return { name: "login" };
       }
     },
   },
@@ -35,11 +39,12 @@ const routes = [
     name: "boardadd",
     component: BoardManager,
     beforeEnter: () => {
-      if (!localStorage.getItem("jwtToken")) {
-        if (!localStorage.getItem("refreshToken")) {
-          alert("Please login first");
-          return { name: "login" };
-        }
+      if (
+        !localStorage.getItem("jwtToken") &&
+        !localStorage.getItem("refreshToken")
+      ) {
+        alert("Please login first");
+        return { name: "login" };
       }
     },
   },
@@ -48,11 +53,12 @@ const routes = [
     name: "taskadd",
     component: TaskManager,
     beforeEnter: () => {
-      if (!localStorage.getItem("jwtToken")) {
-        if (!localStorage.getItem("refreshToken")) {
-          alert("Please login first");
-          return { name: "login" };
-        }
+      if (
+        !localStorage.getItem("jwtToken") &&
+        !localStorage.getItem("refreshToken")
+      ) {
+        alert("Please login first");
+        return { name: "login" };
       }
     },
   },
@@ -61,11 +67,12 @@ const routes = [
     name: "taskdetail",
     component: TaskManager,
     beforeEnter: (to, from, next) => {
-      if (!localStorage.getItem("jwtToken")) {
-        if (!localStorage.getItem("refreshToken")) {
-          alert("Please login first");
-          return { name: "login" };
-        }
+      if (
+        !localStorage.getItem("jwtToken") &&
+        !localStorage.getItem("refreshToken")
+      ) {
+        alert("Please login first");
+        return { name: "login" };
       } else if (!parseInt(to.params.taskId)) {
         alert("Page Not Found");
         next({ name: "boardslist" });
@@ -79,11 +86,12 @@ const routes = [
     name: "taskedit",
     component: TaskManager,
     beforeEnter: () => {
-      if (!localStorage.getItem("jwtToken")) {
-        if (!localStorage.getItem("refreshToken")) {
-          alert("Please login first");
-          return { name: "login" };
-        }
+      if (
+        !localStorage.getItem("jwtToken") &&
+        !localStorage.getItem("refreshToken")
+      ) {
+        alert("Please login first");
+        return { name: "login" };
       }
     },
   },
@@ -92,11 +100,12 @@ const routes = [
     name: "statusList",
     component: StatusManager,
     beforeEnter: () => {
-      if (!localStorage.getItem("jwtToken")) {
-        if (!localStorage.getItem("refreshToken")) {
-          alert("Please login first");
-          return { name: "login" };
-        }
+      if (
+        !localStorage.getItem("jwtToken") &&
+        !localStorage.getItem("refreshToken")
+      ) {
+        alert("Please login first");
+        return { name: "login" };
       }
     },
   },
@@ -105,11 +114,12 @@ const routes = [
     name: "statusadd",
     component: StatusManager,
     beforeEnter: () => {
-      if (!localStorage.getItem("jwtToken")) {
-        if (!localStorage.getItem("refreshToken")) {
-          alert("Please login first");
-          return { name: "login" };
-        }
+      if (
+        !localStorage.getItem("jwtToken") &&
+        !localStorage.getItem("refreshToken")
+      ) {
+        alert("Please login first");
+        return { name: "login" };
       }
     },
   },
@@ -126,6 +136,18 @@ const routes = [
       }
     },
   },
+  // {
+  //   path: "/board/:boardId/:catchNotMatchPath(.*)*",
+  //   component: TaskManager,
+  //   beforeEnter: (to, from, next) => {
+  //     if (!parseInt(to.params.id)) {
+  //       alert("Page Not Found");
+  //       next({ name: "tasklist" });
+  //     } else {
+  //       next();
+  //     }
+  //   },
+  // },
   {
     path: "/",
     redirect: "/login",
@@ -135,11 +157,12 @@ const routes = [
     name: "notFound",
     beforeEnter: () => {
       alert("Page Not Found");
-      if (!localStorage.getItem("jwtToken")) {
-        if (!localStorage.getItem("refreshToken")) {
-          alert("Please login first");
-          return { name: "login" };
-        }
+      if (
+        !localStorage.getItem("jwtToken") &&
+        !localStorage.getItem("refreshToken")
+      ) {
+        alert("Please login first");
+        return { name: "login" };
       } else {
         next({ name: "boardslist" });
       }

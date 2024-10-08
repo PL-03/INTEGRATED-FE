@@ -7,6 +7,7 @@ import {
   isTokenExpired,
   getToken,
   decodedToken,
+  useRefreshToken,
 } from "@/services/tokenService";
 import VueJwtDecode from "vue-jwt-decode";
 
@@ -17,9 +18,12 @@ const showModal = ref(false);
 const boards = ref([]);
 const isTokenValid = ref(true);
 
-const token = getToken();
 const fetchBoards = async () => {
-  if (!token) return;
+  const token = getToken();
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
   const tokenDecoded = decodedToken();
   const userOid = tokenDecoded.oid; // Adjust based on your token structure
   try {
@@ -31,25 +35,29 @@ const fetchBoards = async () => {
     });
     const data = await response.json();
     boards.value = data;
-    boards.value = data.filter((board) => board.owner.oid === userOid);
-    if (boards.value.length > 0) {
-      // Redirect to the first board the user owns
-      router.push({
-        name: "tasklist",
-        params: { boardId: boards.value[0].id },
-      });
-    } else {
-      // Redirect to the boards list if no boards are found
-      router.push({ name: "boardslist" });
-    }
+    router.push({ name: "boardslist" });
+    // boards.value = data.filter((board) => board.owner.oid === userOid);
+    // if (boards.value.length > 0) {
+    //   // Redirect to the first board the user owns
+    //   router.push({
+    //     name: "tasklist",
+    //     params: { boardId: boards.value[0].id },
+    //   });
+    // } else {
+    //   // Redirect to the boards list if no boards are found
+    //   router.push({ name: "boardslist" });
+    // }
   } catch (error) {
     console.error("Error fetching boards:", error);
   }
 };
 const fetchBoardsById = async (boardId) => {
   console.log(boardId);
-
-  if (!token) return;
+  const token = getToken();
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
   try {
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}`,

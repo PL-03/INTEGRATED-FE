@@ -4,7 +4,11 @@ import { useRouter, useRoute } from "vue-router";
 import { useToast, POSITION } from "vue-toastification";
 import ConfirmationModal from "../ConfirmationModal.vue";
 import { isTokenExpired } from "@/services/tokenService";
-import { getToken, decodedToken } from "@/services/tokenService";
+import {
+  getToken,
+  decodedToken,
+  useRefreshToken,
+} from "@/services/tokenService";
 import VueJwtDecode from "vue-jwt-decode";
 const props = defineProps({
   statuses: {
@@ -50,7 +54,10 @@ const handleEditStatus = (status) => {
 };
 const fetchBoard = async () => {
   const token = getToken();
-  if (!token) return;
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
   try {
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}`,
@@ -86,7 +93,10 @@ onMounted(async () => {
 });
 const handleDeleteStatus = async (status) => {
   const token = getToken();
-  if (!token) return;
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
   statusToDelete.value = status;
   const response = await fetch(
     `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/tasks`,
@@ -112,7 +122,10 @@ const handleDeleteStatus = async (status) => {
 
 const confirmDeleteStatus = async () => {
   const token = getToken();
-  if (!token) return;
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
   try {
     if (
       statusToDelete.value.name === "No Status" ||
@@ -168,7 +181,10 @@ const closeTransferModal = () => {
 
 const transferTasks = async (targetStatusId) => {
   const token = getToken();
-  if (!token) return;
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
   try {
     if (
       statusToDelete.value.name === "No Status" ||

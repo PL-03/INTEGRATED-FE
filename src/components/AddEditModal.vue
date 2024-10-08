@@ -1,39 +1,30 @@
 <script setup>
-import { ref, watchEffect, computed, onMounted, inject } from "vue";
+import { ref, watchEffect, computed, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useToast, POSITION } from "vue-toastification";
-import { isTokenExpired, getToken } from "@/services/tokenService";
+import { getToken, useRefreshToken } from "@/services/tokenService";
 
 const props = defineProps({
-  show: {
-    type: Boolean,
-    required: true,
-  },
-  task: {
-    type: Object,
-    required: true,
-  },
-  statuses: {
-    type: Array,
-    required: true,
-  },
+  show: { type: Boolean, required: true },
+  task: { type: Object, required: true },
+  statuses: { type: Array, required: true },
 });
-const route = useRoute();
-const boardId = route.params.boardId;
 
 const emit = defineEmits(["update:show", "task-added", "task-updated"]);
-const selectedStatus = ref(props.task.status || null);
+const route = useRoute();
+const boardId = route.params.boardId;
 const router = useRouter();
-const isAddMode = computed(() => !props.task.id);
-const isTokenValid = ref(true);
-const token = getToken();
+const toast = useToast(); // Moved here
+
+const selectedStatus = ref(props.task.status || null);
 const formData = ref({
   title: "",
   description: "",
   assignees: "",
   status: null,
-  token: token,
 });
+
+const isAddMode = computed(() => !props.task.id);
 const isAddingTitleEmpty = computed(
   () => isAddMode.value && !formData.value.title.trim()
 );
@@ -68,7 +59,6 @@ const isFormModified = computed(() => {
   if (isAddMode.value) {
     return true; // always true for add mode
   }
-
   const { title, description, assignees, status } = props.task;
   const statusChanged =
     selectedStatus.value && selectedStatus.value.id !== (status?.id || null);
@@ -77,16 +67,12 @@ const isFormModified = computed(() => {
     formData.value.description !== (description || "") ||
     formData.value.assignees !== (assignees || "");
 
-  // Return true if any field (including status) is changed
   return statusChanged || otherFieldsChanged;
 });
 
-const filteredStatuses = computed(() => {
-  return props.statuses.filter((status) => status.id !== props.task.status?.id);
-});
-const check = (params) => {
-  console.log(params);
-};
+const filteredStatuses = computed(() =>
+  props.statuses.filter((status) => status.id !== props.task.status?.id)
+);
 
 const handleSubmit = async () => {
   try {
@@ -96,19 +82,26 @@ const handleSubmit = async () => {
       assignees: formData.value.assignees.trim() || null,
       status: selectedStatus.value ? selectedStatus.value.id : null,
     };
+
+    // Validate lengths
     if (
       requestData.title.length > 100 ||
-      (requestData.assignees != null && requestData.assignees.length > 30) ||
-      (requestData.description != null && requestData.description.length > 500)
+      (requestData.assignees && requestData.assignees.length > 30) ||
+      (requestData.description && requestData.description.length > 500)
     ) {
       showToast(
-        `The task name, assignees, and description should be less than 100, 30, and 500 characters respectively`,
+        "The task name, assignees, and description should be less than 100, 30, and 500 characters respectively.",
         "error"
       );
       return;
     }
 
-    if (!token) return;
+    const token = getToken();
+    if (!token) {
+      await useRefreshToken();
+      token = getToken();
+    }
+
     const response = isAddMode.value
       ? await fetch(
           `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/tasks`,
@@ -152,12 +145,14 @@ const handleSubmit = async () => {
       showToast(
         `You don't have permission to ${
           isAddMode.value ? "add" : "update"
-        } the task`,
+        } the task.`,
         "error"
       );
     } else {
       showToast(
-        `An error occurred ${isAddMode.value ? "adding" : "updating"} the task`,
+        `An error occurred ${
+          isAddMode.value ? "adding" : "updating"
+        } the task.`,
         "error"
       );
     }
@@ -167,33 +162,22 @@ const handleSubmit = async () => {
       error
     );
     showToast(
-      `An error occurred ${isAddMode.value ? "adding" : "updating"} the task`,
+      `An error occurred ${
+        isAddMode.value ? "adding" : "updating"
+      } the task. Please try again.`,
       "error"
     );
   }
 };
 
 const showToast = (message, type) => {
-  const toast = useToast();
-
   switch (type) {
     case "success-add":
-      toast.success(message, {
-        position: POSITION.TOP_CENTER,
-        timeout: 3000,
-      });
-      break;
     case "success-update":
-      toast.success(message, {
-        position: POSITION.TOP_CENTER,
-        timeout: 3000,
-      });
+      toast.success(message, { position: POSITION.TOP_CENTER, timeout: 3000 });
       break;
     case "error":
-      toast.error(message, {
-        position: POSITION.TOP_CENTER,
-        timeout: 3000,
-      });
+      toast.error(message, { position: POSITION.TOP_CENTER, timeout: 3000 });
       break;
     default:
       toast(message);

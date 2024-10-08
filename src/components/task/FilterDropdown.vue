@@ -1,7 +1,11 @@
 <script setup>
 import { onMounted, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { isTokenExpired, getToken } from "@/services/tokenService";
+import {
+  isTokenExpired,
+  getToken,
+  useRefreshToken,
+} from "@/services/tokenService";
 
 const route = useRoute();
 const router = useRouter();
@@ -9,7 +13,10 @@ const boardId = route.params.boardId;
 
 const fetchStatus = async () => {
   const token = getToken();
-  if (!token) return;
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
   try {
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/statuses`,

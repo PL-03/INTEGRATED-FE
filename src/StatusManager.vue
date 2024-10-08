@@ -3,7 +3,11 @@ import { ref, onMounted, watch, computed } from "vue";
 import StatusTable from "./components/stautus/StatusTable.vue";
 import { useRoute, useRouter } from "vue-router";
 import AddEditStatus from "./components/stautus/AddEditStatus.vue";
-import { getToken, isTokenExpired } from "./services/tokenService";
+import {
+  getToken,
+  handleTokenRefresh,
+  useRefreshToken,
+} from "./services/tokenService";
 
 const route = useRoute();
 const router = useRouter();
@@ -18,7 +22,10 @@ const boardId = route.params.boardId;
 
 const fetchStatus = async () => {
   const token = getToken();
-  if (!token) return;
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
   try {
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/statuses`,
@@ -37,7 +44,10 @@ const fetchStatus = async () => {
 
 const fetchStatusDetails = async (statusId) => {
   const token = getToken();
-  if (!token) return;
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
   if (statusId) {
     try {
       const response = await fetch(
