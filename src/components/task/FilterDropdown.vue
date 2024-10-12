@@ -89,6 +89,22 @@ const filter = () => {
   <div class="">
     <!-- Container สำหรับ Filter by status และปุ่ม Clear All -->
     <div class="flex flex-wrap items-center ">
+      <!-- ปุ่ม Filter Status -->
+      <div class="relative ">
+        <button class="h-9 px-2 mr-2 bg-[#2c62ea] text-sm text-white rounded-lg hover:bg-[#345aba]"
+          @click="toggleDropdown">
+          Filter Status
+        </button>
+        <div v-if="showDropdown" class="absolute left-0 z-10 mt-2 bg-white rounded-lg shadow-lg w-48">
+          <ul class="py-2 text-sm">
+            <li v-for="(status, index) in statuses" :key="index" class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+              @click.stop="addOption(status)">
+              {{ status.name }}
+            </li>
+          </ul>
+        </div>
+      </div>
+
       <!-- Filter by status -->
       <div class="flex items-center">
         <div v-if="selectedOptions.length > 0" class="text-[#4f4f50] text-sm">
@@ -112,27 +128,13 @@ const filter = () => {
       <!-- ปุ่ม Clear All -->
       <div v-if="selectedOptions.length > 0" class="flex items-center">
         <button type="button"
-          class="ml-8 h-9 px-4 text-sm bg-[#cf362b] text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
+          class="ml-4 h-9 px-4 text-sm bg-[#cf362b] text-white rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-400"
           @click="clearOptions">
           Clear All
         </button>
       </div>
 
-      <!-- ปุ่ม Filter Status -->
-      <div class="relative ">
-        <button class="h-9 px-2 ml-1 bg-[#2c62ea] text-sm text-white rounded-lg hover:bg-[#345aba]"
-          @click="toggleDropdown">
-          Filter Status
-        </button>
-        <div v-if="showDropdown" class="absolute left-0 z-10 mt-2 bg-white rounded-lg shadow-lg w-48">
-          <ul class="py-2 text-sm">
-            <li v-for="(status, index) in statuses" :key="index" class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-              @click.stop="addOption(status)">
-              {{ status.name }}
-            </li>
-          </ul>
-        </div>
-      </div>
+      
     </div>
   </div>
 </template>

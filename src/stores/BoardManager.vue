@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, watch, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import createBoard from "@/components/board/createBoard.vue";
+import createBoard from "@/components/board/BoardList.vue";
 import AddBoard from "@/components/board/AddBoard.vue";
 import {
   isTokenExpired,

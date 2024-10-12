@@ -1,27 +1,28 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
-import { useToast, POSITION } from "vue-toastification";
+import { ref, onMounted } from "vue"
+import { useRoute, useRouter } from "vue-router"
+import { useToast, POSITION } from "vue-toastification"
 import {
   isTokenExpired,
   decodedToken,
   removeTokens,
-} from "@/services/tokenService";
-import VueJwtDecode from "vue-jwt-decode";
+} from "@/services/tokenService"
+import VueJwtDecode from "vue-jwt-decode"
+import CollabBoard from "./CollabBoard.vue"
 
 const props = defineProps({
   boards: {
     type: Array,
     required: true,
   },
-});
-const showDropdown = ref(false);
-const router = useRouter();
+})
+const showDropdown = ref(false)
+const router = useRouter()
 // const token = getToken();
-const username = ref("");
-const oid = ref("");
-const emit = defineEmits(["board-added"]);
-const tokenDecoded = ref({});
+const username = ref("")
+const oid = ref("")
+const emit = defineEmits(["board-added"])
+const tokenDecoded = ref({})
 // const decodedToken = () => {
 //   const token = localStorage.getItem("jwtToken");
 //   if (!token || isTokenExpired(token)) {
@@ -36,25 +37,26 @@ const tokenDecoded = ref({});
 //   }
 // };
 onMounted(() => {
-  tokenDecoded.value = decodedToken();
-  username.value = tokenDecoded.value.name;
-  oid.value = tokenDecoded.value.oid;
-});
+  tokenDecoded.value = decodedToken()
+  username.value = tokenDecoded.value.name
+  oid.value = tokenDecoded.value.oid
+})
 
 const handleAddBoard = () => {
-  router.push({ name: "boardadd" });
-  emit("board-added");
-};
+  router.push({ name: "boardadd" })
+  emit("board-added")
+}
 const handleViewBoard = (id) => {
-  router.push({ name: "tasklist", params: { boardId: id } });
-};
+  router.push({ name: "tasklist", params: { boardId: id } })
+}
 const logout = () => {
-  removeTokens();
-  router.push({ name: "login" });
-};
+  removeTokens()
+  router.push({ name: "login" })
+}
 const toggleDropdown = () => {
-  showDropdown.value = !showDropdown.value;
-};
+  showDropdown.value = !showDropdown.value
+}
+
 </script>
 
 <template>
@@ -83,16 +85,6 @@ const toggleDropdown = () => {
         >
           Create New Board
         </button>
-
-        <!-- <button @click="handleAddTask"
-                    class="flex items-center text-md text-black hover:text-blue-600 transition duration-300">
-                    Add Task
-                </button> -->
-
-        <!-- <button @click="handleStatusList"
-          class="flex items-center text-md text-black hover:text-blue-600 transition duration-300">
-          Manage Status
-        </button> -->
 
         <div class="relative text-black">
           <button
@@ -154,22 +146,22 @@ const toggleDropdown = () => {
     </nav>
 
     <div></div>
+    <!-- table personal board -->
     <div
       v-if="boards.length !== 0"
-      class="flex flex-col justify-center items-center p-28"
-    >
-      <div class="text-3xl drop-shadow-lg p-4">
+      class="flex flex-col justify-center items-center p-28">
+      <div class="text-3xl drop-shadow-lg p-4 itbkk-personal-board">
         Board <span class="text-[#2b4483] ml-2">{{ username }}</span>
       </div>
 
       <table
-        class="table-auto w-full max-w-5xl rounded-2xl overflow-hidden itbkk-table bg-green-300"
+        class="table-auto rounded-md overflow-hidden itbkk-table bg-green-300"
       >
         <thead>
           <tr>
             <th>No.</th>
             <th>Name</th>
-            <th>Action</th>
+            <th>Visibility</th>
           </tr>
         </thead>
         <tbody
@@ -178,24 +170,79 @@ const toggleDropdown = () => {
           :class="index % 2 === 0 ? 'bg-yellow-50' : 'bg-orange-100'"
           class="text-center border itbkk-item font-lilita"
         >
-          <tr>
+          <tr class="itbkk-personal-item">
             <td>{{ index + 1 }}</td>
             <td>
-              <button @click="handleViewBoard(board.id)">
+              <button
+                @click="handleViewBoard(board.id)"
+                class="itbkk-board-name"
+              >
                 {{ board.name }}
               </button>
             </td>
-            <td><button>Edit</button><button>Delete</button></td>
+            <td>
+              <!-- ตรงนี้ต้องใส่ bord visibility ยังไม่เสร็จ!! -->
+              <span class="text-[#4d5fcb]">{{ board.visibility }}</span>
+            </td>
+          
+          </tr>
+        </tbody>
+      </table>
+
+      <div></div>
+  <div class="flex flex-col justify-center items-center p-28">
+    <div class="text-3xl drop-shadow-lg p-4 itbkk-collab-board">
+      Collab Boards
+    </div>
+
+    <!-- Table collab board -->
+    <div class="w-full overflow-x-auto">
+      <table class="table rounded-md overflow-hidden itbkk-table bg-green-300 min-w-full">
+        <thead>
+          <tr>
+            <th class="w-16 text-center">No.</th>
+            <th class="w-48 text-center">Name</th>
+            <th class="w-48 text-center">Owner</th>
+            <th class="w-32 text-center">Access Right</th>
+            <th class="w-32 text-center">Action</th>
+          </tr>
+        </thead>
+        <tbody
+          v-for="(board, index) in boards"
+          :key="index"
+          :class="index % 2 === 0 ? 'bg-yellow-50' : 'bg-orange-100'"
+          class="text-center border itbkk-item font-lilita"
+        >
+          <tr class="itbkk-collab-item">
+            <td>{{ index + 1 }}</td>
+            <td>
+              <button @click="handleViewBoard(board.id)" class="itbkk-board-name">
+                {{ board.name }}
+              </button>
+            </td>
+            <td>
+              <span class="itbkk-owner-name text-[#4d5fcb]">{{ board.owner.name }}</span>
+            </td>
+            <td>
+              <span class="itbkk-access-right">{{ board.accessRight }}</span>
+            </td>
+            <td>
+              <button class="itbkk-leave-board bg-[#adafb5] text-white text-sm py-1 px-2 rounded hover:bg-[#888a94]">
+                Leave
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
     </div>
+  </div>
+
+ </div>
 
     <!-- v-else -->
     <div
       v-else
-      class="flex flex-col justify-center items-center text-center gap-4 min-h-screen"
-    >
+      class="flex flex-col justify-center items-center text-center gap-4 min-h-screen">
       <img
         src="/empty-box.png"
         alt="no board"
@@ -212,7 +259,8 @@ const toggleDropdown = () => {
         Create New Board
       </button>
     </div>
-  </div>
+    </div>
+  <!-- </div> -->
 </template>
 
 <style scoped>
@@ -225,12 +273,36 @@ const toggleDropdown = () => {
   );
 }
 
-.table-auto {
-  min-width: 70%;
+.table thead th {
+  width: 180px;
+  min-width: 220px;
+  text-align: center;
+}
+
+.table tbody td {
+  min-width: 150px;
+}
+
+.table thead .itbkk-board-name {
+  width: 220px;
+}
+
+.table-auto thead th {
+  width: 180px;
+  min-width: 280px;
+  text-align: center;
+}
+
+.table-auto tbody td {
+  min-width: 150px;
+  /* ขนาดคงที่สำหรับตัวเนื้อหา */
+}
+.table-auto thead .itbkk-board-name {
+  width: 200px;
 }
 
 thead th {
-  padding: 12px;
+  padding: 8px;
 }
 
 tbody td {
@@ -252,4 +324,5 @@ tbody td {
     font-size: 24px;
   }
 }
+
 </style>

@@ -1,28 +1,28 @@
 <script setup>
-import { ref, onMounted, watchEffect, onUpdated } from "vue";
-import { useToast, POSITION } from "vue-toastification";
-import { useRouter } from "vue-router";
+import { ref, onMounted, watchEffect, onUpdated } from "vue"
+import { useToast, POSITION } from "vue-toastification"
+import { useRouter } from "vue-router"
 import {
   isTokenExpired,
   getToken,
   decodedToken,
   useRefreshToken,
-} from "@/services/tokenService";
-import VueJwtDecode from "vue-jwt-decode";
+} from "@/services/tokenService"
+import VueJwtDecode from "vue-jwt-decode"
 
 const props = defineProps({
   show: {
     type: Boolean,
     required: true,
   },
-});
-const router = useRouter();
-const toast = useToast();
-const username = ref("");
-const tokenDecoded = ref({});
+})
+const router = useRouter()
+const toast = useToast()
+const username = ref("")
+const tokenDecoded = ref({})
 const boardName = ref({
   name: "",
-});
+})
 // const decodedToken = () => {
 //   const token = localStorage.getItem("jwtToken");
 //   const refreshToken = localStorage.getItem("refreshToken");
@@ -40,26 +40,26 @@ const boardName = ref({
 // };
 
 onMounted(() => {
-  tokenDecoded.value = decodedToken();
-  username.value = tokenDecoded.value.name;
-  boardName.value.name = `${username.value} personal board`;
-});
+  tokenDecoded.value = decodedToken()
+  username.value = tokenDecoded.value.name
+  boardName.value.name = `${username.value} personal board`
+})
 
-const emit = defineEmits(["update:show", "board-added"]);
+const emit = defineEmits(["update:show", "board-added"])
 const closeModal = () => {
-  emit("update:show", false);
-  router.push({ name: "boardslist" });
-};
+  emit("update:show", false)
+  router.push({ name: "boardslist" })
+}
 
 const handleSubmit = async () => {
   try {
     const requestData = {
       name: boardName.value.name,
-    };
-    const token = getToken();
+    }
+    const token = getToken()
     if (!token) {
-      await useRefreshToken();
-      token = getToken();
+      await useRefreshToken()
+      token = getToken()
     }
     const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v3/boards`, {
       method: "POST",
@@ -68,43 +68,43 @@ const handleSubmit = async () => {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(requestData),
-    });
+    })
     if (response.ok) {
-      const newBoard = await response.json(); // Get the newly created board data from the response
-      emit("update:show", false);
-      emit("board-added", newBoard); // Emit the new board data
-      showToast("Board created successfully", "success-add");
+      const newBoard = await response.json() // Get the newly created board data from the response
+      emit("update:show", false)
+      emit("board-added", newBoard) // Emit the new board data
+      showToast("Board created successfully", "success-add")
     }
   } catch (error) {
-    console.log(error);
+    console.log(error)
   }
-};
+}
 const showToast = (message, type) => {
-  const toast = useToast();
+  const toast = useToast()
 
   switch (type) {
     case "success-add":
       toast.success(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      });
-      break;
+      })
+      break
     case "success-update":
       toast.success(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      });
-      break;
+      })
+      break
     case "error":
       toast.error(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      });
-      break;
+      })
+      break
     default:
-      toast(message);
+      toast(message)
   }
-};
+}
 </script>
 
 <template>

@@ -186,6 +186,8 @@ const routes = [
     name: "denial",
     component: AccessDenied,
   },
+
+  
 ];
 
 const router = createRouter({
