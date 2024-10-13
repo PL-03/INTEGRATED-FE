@@ -1,22 +1,18 @@
 <script setup>
 import { ref, onMounted, watch, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import createBoard from "@/components/board/createBoard.vue";
+import BoardList from "@/components/board/BoardList.vue";
 import AddBoard from "@/components/board/AddBoard.vue";
 import {
-  isTokenExpired,
   getToken,
   decodedToken,
   useRefreshToken,
 } from "@/services/tokenService";
-import VueJwtDecode from "vue-jwt-decode";
 
-const route = useRoute();
 const router = useRouter();
 const selectedBoard = ref({});
 const showModal = ref(false);
 const boards = ref([]);
-const isTokenValid = ref(true);
 
 const fetchBoards = async () => {
   const token = getToken();
@@ -51,29 +47,29 @@ const fetchBoards = async () => {
     console.error("Error fetching boards:", error);
   }
 };
-const fetchBoardsById = async (boardId) => {
-  console.log(boardId);
-  const token = getToken();
-  if (!token) {
-    await useRefreshToken();
-    token = getToken();
-  }
-  try {
-    const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    const data = await response.json();
-    selectedBoard.value = data;
-  } catch (error) {
-    console.error("Error fetching boards:", error);
-  }
-};
+// const fetchBoardsById = async (boardId) => {
+//   console.log(boardId);
+//   const token = getToken();
+//   if (!token) {
+//     await useRefreshToken();
+//     token = getToken();
+//   }
+//   try {
+//     const response = await fetch(
+//       `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}`,
+//       {
+//         headers: {
+//           Authorization: `Bearer ${token}`,
+//           "Content-Type": "application/json",
+//         },
+//       }
+//     );
+//     const data = await response.json();
+//     selectedBoard.value = data;
+//   } catch (error) {
+//     console.error("Error fetching boards:", error);
+//   }
+// };
 onMounted(() => {
   fetchBoards();
   // console.log(boards.value);
@@ -93,7 +89,7 @@ const handleBoardUpdated = (newBoard) => {
 </script>
 
 <template>
-  <createBoard :boards="boards" @board-added="handleBoardAdded" />
+  <BoardList :boards="boards" @board-added="handleBoardAdded" />
   <AddBoard
     :show="showModal"
     :board="selectedBoard"

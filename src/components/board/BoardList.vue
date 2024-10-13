@@ -1,12 +1,8 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUpdated } from "vue";
 import { useRouter } from "vue-router";
 import { useToast, POSITION } from "vue-toastification";
-import {
-  isTokenExpired,
-  decodedToken,
-  removeTokens,
-} from "@/services/tokenService";
+import { getToken, decodedToken, removeTokens } from "@/services/tokenService";
 import VueJwtDecode from "vue-jwt-decode";
 
 const props = defineProps({
@@ -22,23 +18,43 @@ const username = ref("");
 const oid = ref("");
 const emit = defineEmits(["board-added"]);
 const tokenDecoded = ref({});
-// const decodedToken = () => {
-//   const token = localStorage.getItem("jwtToken");
-//   if (!token || isTokenExpired(token)) {
-//     removeTokens();
-//     router.push({ name: "login" });
-//     return;
-//   } else if (token) {
-//     const decodedToken = VueJwtDecode.decode(token);
-//     username.value = decodedToken.name;
-//     oid.value = decodedToken.oid;
-//     // console.log("Username is: ", username.value);
-//   }
-// };
-onMounted(() => {
+const board = ref({});
+const haveBoard = ref(false);
+const fetchBoards = async () => {
+  const token = getToken();
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
+  const tokenDecoded = decodedToken();
+  const userOid = tokenDecoded.oid; // Adjust based on your token structure
+  try {
+    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v3/boards`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+    const data = await response.json();
+    if (response.ok) {
+      board.value = data;
+    } else if (response.status === 401) {
+      alert("Unauthorized");
+      removeTokens();
+      router.push({ name: "login" });
+    }
+  } catch (error) {
+    console.error("Error fetching boards:", error);
+  }
+};
+onMounted(async () => {
+  await fetchBoards();
   tokenDecoded.value = decodedToken();
   username.value = tokenDecoded.value.name;
   oid.value = tokenDecoded.value.oid;
+  haveBoard.value = board.value.length > 0;
+
+  console.log(haveBoard.value);
 });
 
 const handleAddBoard = () => {
@@ -78,7 +94,8 @@ const toggleDropdown = () => {
 
       <div class="flex m-4 items-center space-x-6">
         <button
-          class="flex items-center text-md text-black hover:text-blue-600 transition duration-300 itbkk-button-add"
+          class="addBtn flex items-center text-md text-black hover:text-blue-600 transition duration-300 itbkk-button-add"
+          :disabled="haveBoard"
           @click="handleAddBoard"
         >
           Create New Board
@@ -169,7 +186,7 @@ const toggleDropdown = () => {
           <tr>
             <th>No.</th>
             <th>Name</th>
-            <th>Action</th>
+            <th>Visibility</th>
           </tr>
         </thead>
         <tbody
@@ -185,7 +202,36 @@ const toggleDropdown = () => {
                 {{ board.name }}
               </button>
             </td>
-            <td><button>Edit</button><button>Delete</button></td>
+            <td>{{ board.visibility }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="text-3xl drop-shadow-lg p-4">Collaborator Board</div>
+
+      <table
+        class="table-auto w-full max-w-5xl rounded-2xl overflow-hidden itbkk-table bg-green-300"
+      >
+        <thead>
+          <tr>
+            <th>No.</th>
+            <th>Name</th>
+            <th>Visibility</th>
+          </tr>
+        </thead>
+        <tbody
+          v-for="(board, index) in boards"
+          :key="index"
+          :class="index % 2 === 0 ? 'bg-yellow-50' : 'bg-orange-100'"
+          class="text-center border itbkk-item font-lilita"
+        >
+          <tr>
+            <td>{{ index + 1 }}</td>
+            <td>
+              <button @click="handleViewBoard(board.id)">
+                {{ board.name }}
+              </button>
+            </td>
+            <td>{{ board.visibility }}</td>
           </tr>
         </tbody>
       </table>
@@ -248,6 +294,10 @@ tbody td {
     font-size: 14px;
   }
 
+  .addBtn:disabled {
+    color: #665f5f;
+    cursor: not-allowed;
+  }
   .text-3xl {
     font-size: 24px;
   }

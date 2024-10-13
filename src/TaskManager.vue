@@ -3,6 +3,7 @@ import { ref, onMounted, watch, computed } from "vue";
 import TaskTable from "./components/task/TaskTable.vue";
 import PopupModal from "./components/task/PopupModal.vue";
 import AddEditModal from "./components/AddEditModal.vue";
+import AddCollaborator from "./components/task/AddCollaborator.vue";
 
 import { useRoute, useRouter } from "vue-router";
 import {
@@ -23,6 +24,7 @@ const showModal = ref(false);
 const statuses = ref([]);
 const boardId = route.params.boardId;
 const boardDetail = ref({});
+const collabModal = ref(false);
 
 const fetchBoardsById = async () => {
   const token = getToken();
@@ -182,6 +184,9 @@ const handleAddTask = () => {
   showModal.value = true;
   selectedTask.value = {};
 };
+const handleAddCollaborator = () => {
+  collabModal.value = true;
+};
 </script>
 
 <template>
@@ -191,6 +196,7 @@ const handleAddTask = () => {
     @view-task="handleViewTask"
     @edit-task="handleEditTask"
     @add-task="handleAddTask"
+    @add-collaborator="handleAddCollaborator"
     @task-deleted="fetchTasks"
   />
   <AddEditModal
@@ -203,4 +209,9 @@ const handleAddTask = () => {
     @task-updated="fetchTasks"
   />
   <PopupModal v-if="isViewMode" :selectedTaskId="selectedTask" />
+  <AddCollaborator
+    v-if="collabModal"
+    :showModal="collabModal"
+    @update:showModal="collabModal = $event"
+  />
 </template>

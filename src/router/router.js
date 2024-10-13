@@ -149,6 +149,20 @@ const routes = [
   //   },
   // },
   {
+    path: "/board/:boardId/collab",
+    name: "collaboratoradd",
+    component: TaskManager,
+    beforeEnter: () => {
+      if (
+        !localStorage.getItem("jwtToken") &&
+        !localStorage.getItem("refreshToken")
+      ) {
+        alert("Please login first");
+        return { name: "login" };
+      }
+    },
+  },
+  {
     path: "/",
     redirect: "/login",
   },
