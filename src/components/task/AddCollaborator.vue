@@ -1,33 +1,53 @@
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { getToken, useRefreshToken } from "@/services/tokenService";
+import { useToast, POSITION } from "vue-toastification";
+import {
+  getToken,
+  useRefreshToken,
+  decodedToken,
+} from "@/services/tokenService";
 
 // Define props to control modal visibility
 const props = defineProps({ showModal: { type: Boolean, required: true } });
-const emits = defineEmits(["update:showModal"]);
+const emits = defineEmits(["update:showModal", "collaborator-added"]);
 const route = useRoute();
 const textInput = ref("");
-const selectedOption = ref("read");
+const selectedOption = ref("READ");
 const boardId = route.params.boardId;
-const formData = ref({
-  textInput: "",
-  selectedOption: "read",
+const isEmailValid = ref(false); // Track email validity
+
+// Define the regular expression for the email format
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+watch(textInput, (newVal) => {
+  isEmailValid.value = emailRegex.test(newVal);
 });
+
+// const formData = ref({
+//   textInput: "",
+//   selectedOption: "READ",
+// });
 const router = useRouter();
 
 // Handle form submission
 const handleSubmit = async () => {
+  let token = getToken();
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
+  const tokenDecoded = decodedToken();
+  const currentEmail = tokenDecoded.email;
+  if (currentEmail === textInput.value) {
+    showToast("You cannot add yourself as a collaborator", "error");
+    return;
+  }
   try {
     const requestData = {
-      email: formData.value.textInput,
-      accessRight: "read",
+      email: textInput.value,
+      accessRight: selectedOption.value,
     };
-    const token = getToken();
-    if (!token) {
-      await useRefreshToken();
-      token = getToken();
-    }
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/collabs`,
       {
@@ -41,7 +61,7 @@ const handleSubmit = async () => {
     );
     if (response.ok) {
       emits("update:showModal", false);
-      router.push({ name: "board", params: { boardId: boardId } });
+      emits("collaborator-added");
       showToast("Collaborator added successfully", "success-add");
     }
   } catch (error) {
@@ -52,13 +72,22 @@ const handleClose = () => {
   emits("update:showModal", false);
 };
 const showToast = (message, type) => {
+  const toast = useToast();
+
   switch (type) {
     case "success-add":
     case "success-update":
-      toast.success(message, { position: POSITION.TOP_CENTER, timeout: 3000 });
+    case "success-delete":
+      toast.success(message, {
+        position: POSITION.TOP_CENTER,
+        timeout: 3000,
+      });
       break;
     case "error":
-      toast.error(message, { position: POSITION.TOP_CENTER, timeout: 3000 });
+      toast.error(message, {
+        position: POSITION.TOP_CENTER,
+        timeout: 3000,
+      });
       break;
     default:
       toast(message);
@@ -73,8 +102,13 @@ const showToast = (message, type) => {
       <h2>Modal Title</h2>
 
       <!-- Text Field -->
-      <label for="textInput">Enter Text:</label>
-      <input v-model="textInput" id="textInput" type="text" />
+      <label for="textInput">Enter Email:</label>
+      <input v-model="textInput" id="textInput" type="email" maxlength="50" />
+
+      <!-- Error message if the email is invalid -->
+      <p v-if="!isEmailValid && textInput.length > 0" style="color: red">
+        Please enter a valid email address.
+      </p>
 
       <!-- Dropdown -->
       <label for="options">Select Option:</label>
@@ -84,12 +118,22 @@ const showToast = (message, type) => {
       </select>
 
       <!-- Submit Button -->
-      <button @click="handleSubmit" class="text-green-500">Submit</button>
-      <button @click="handleClose" class="text-red-500">Close</button>
+      <button
+        @click="handleSubmit"
+        :disabled="!isEmailValid"
+        class="text-white bg-green-600 hover:bg-green-800"
+      >
+        Add
+      </button>
+      <button
+        @click="handleClose"
+        class="text-white bg-red-600 hover:bg-red-800"
+      >
+        Cancel
+      </button>
     </div>
   </div>
 </template>
-
 <style scoped>
 .modal {
   display: flex;

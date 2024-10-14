@@ -7,7 +7,6 @@ import FilterDropdown from "./FilterDropdown.vue";
 import ConfirmationModal from "../ConfirmationModal.vue";
 import VueJwtDecode from "vue-jwt-decode";
 import {
-  isTokenExpired,
   getToken,
   decodedToken,
   removeTokens,
@@ -32,7 +31,6 @@ const emit = defineEmits([
   "add-task",
   "taskDeleted",
   "direction",
-  "add-collaborator",
 ]);
 const router = useRouter();
 const route = useRoute();
@@ -42,7 +40,6 @@ const statusFiltered = ref([]);
 const filteredTasks = ref([...props.tasks]);
 const username = ref("");
 const showDropdown = ref(false);
-const isTokenValid = ref(true);
 const boardId = route.params.boardId;
 const boardName = ref("");
 const boardVisible = ref("");
@@ -182,21 +179,6 @@ const fetchBoard = async () => {
     console.error("Error fetching boards:", error);
   }
 };
-// const decodedToken = () => {
-//   const token = localStorage.getItem("jwtToken");
-//   if (!token || isTokenExpired(token)) {
-//     isTokenValid.value = false;
-//     localStorage.removeItem("jwtToken");
-//     alert("Your session has expired. Please login again.");
-//     router.push({ name: "login" });
-//     return;
-//   } else if (token) {
-//     const decodedToken = VueJwtDecode.decode(token);
-//     username.value = decodedToken.name;
-//     currentId.value = decodedToken.oid;
-//     console.log("Username is: ", username.value);
-//   }
-// };
 const tokenDecoded = ref({});
 
 const logout = () => {
@@ -288,11 +270,10 @@ const handleFilterData = (selectedOptions) => {
   statusFiltered.value = selectedOptions;
   fetchFilteredTasks();
 };
-const handleAddCollaborator = () => {
-  router.push({ name: "collaboratoradd" });
-  emit("add-collaborator");
-};
 
+const handleCollaborator = () => {
+  router.push({ name: "collaboratorlist" });
+};
 const confirmDeleteTask = async () => {
   const token = getToken();
   if (!token) {
@@ -312,7 +293,6 @@ const confirmDeleteTask = async () => {
         },
       }
     );
-
     if (response.ok) {
       showToast(
         `The task "${taskToDelete.value.title}" has been successfully deleted`,
@@ -363,6 +343,10 @@ const showToast = (message, type) => {
       toast(message);
   }
 };
+
+const boardList = () => {
+  router.push({ name: "boardslist" });
+};
 </script>
 <template>
   <div class="bg-[#dfe0e2] min-h-screen font-lilita">
@@ -383,7 +367,7 @@ const showToast = (message, type) => {
 
       <div class="flex m-4 items-center space-x-6">
         <button
-          @click="handleAddCollaborator"
+          @click="handleCollaborator"
           class="itbkk-manage-collaborator flex text-nowrap text-xs md:text-base items-centerd text-black hover:text-blue-600 transition duration-300"
         >
           Manage collaborator
@@ -470,24 +454,34 @@ const showToast = (message, type) => {
         <div class="flex items-center justify-between my-2">
           <FilterDropdown @filter="handleFilterData" />
 
-          <label
-            class="visibilityBtn itbkk-board-visibility relative flex items-center cursor-pointer"
-            :disabled="!isOwner"
-          >
-            <input
-              type="checkbox"
-              value=""
-              class="itbkk-board-visibility sr-only peer"
-              v-model="isToggled"
-              @change="openModal"
-            />
-            <div
-              class="itbkk-board-visibility w-11 h-6 bg-gray-400 border border-[#535459] peer-focus:outline-none peer-focus:ring-2 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
-            ></div>
-            <span class="ml-2 text-sm font-medium text-[#878a9c]">
-              {{ isToggled ? "Public" : "Private" }}
-            </span>
-          </label>
+          <div class="flex items-center justify-start">
+            <label
+              class="visibilityBtn itbkk-board-visibility relative flex items-center cursor-pointer"
+              :disabled="!isOwner"
+            >
+              <input
+                type="checkbox"
+                value=""
+                class="itbkk-board-visibility sr-only peer"
+                v-model="isToggled"
+                @change="openModal"
+              />
+              <div
+                class="itbkk-board-visibility w-11 h-6 bg-gray-400 border border-[#535459] peer-focus:outline-none peer-focus:ring-2 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
+              ></div>
+              <span class="ml-2 text-sm font-medium text-[#878a9c]">
+                {{ isToggled ? "Public" : "Private" }}
+              </span>
+            </label>
+
+            <button
+              @click="handleAddTask"
+              class="addBtn itbkk-button-add flex text-nowrap ml-2 text-xs md:text-sm items-center text-white bg-[#259f60] p-2 rounded-lg hover:bg-[#46c472] transition duration-300"
+              :disabled="!isOwner"
+            >
+              Add Task
+            </button>
+          </div>
         </div>
         <ModalPublicPrivate
           v-if="showModal"
@@ -683,7 +677,7 @@ border-r {
 }
 
 .table-auto thead th {
-  width: 150px;
+  width: 180px;
   /* ขนาดคงที่ของคอลัมน์หัวข้อ */
   min-width: 150px;
   text-align: center;

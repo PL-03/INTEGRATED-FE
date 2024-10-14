@@ -32,6 +32,7 @@ const fetchBoardsById = async () => {
     await useRefreshToken();
     token = getToken();
   }
+
   try {
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}`,
@@ -209,9 +210,4 @@ const handleAddCollaborator = () => {
     @task-updated="fetchTasks"
   />
   <PopupModal v-if="isViewMode" :selectedTaskId="selectedTask" />
-  <AddCollaborator
-    v-if="collabModal"
-    :showModal="collabModal"
-    @update:showModal="collabModal = $event"
-  />
 </template>

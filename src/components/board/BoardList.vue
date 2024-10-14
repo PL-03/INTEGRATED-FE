@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUpdated } from "vue";
+import { ref, onMounted, onUpdated, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useToast, POSITION } from "vue-toastification";
 import { getToken, decodedToken, removeTokens } from "@/services/tokenService";
@@ -10,6 +10,9 @@ const props = defineProps({
     type: Array,
     required: true,
   },
+  boardCollaborators: {
+    type: Array,
+  },
 });
 const showDropdown = ref(false);
 const router = useRouter();
@@ -18,45 +21,109 @@ const username = ref("");
 const oid = ref("");
 const emit = defineEmits(["board-added"]);
 const tokenDecoded = ref({});
-const board = ref({});
+const board = ref([...props.boards]);
+const collabBoard = ref([...props.boards]);
 const haveBoard = ref(false);
-const fetchBoards = async () => {
-  const token = getToken();
+const boardCollaborators = ref([]);
+let token = getToken();
+// const fetchBoardColaborators = async () => {
+//   const token = getToken();
+//   if (!token) {
+//     await useRefreshToken();
+//     token = getToken();
+//   }
+//   try {
+//     const response = await fetch(
+//       `${import.meta.env.VITE_BASE_URL}/v3/boards/${
+//         board.value.find((board) => board.owner.oid === oid.value).id
+//       }/collabs`,
+//       {
+//         headers: {
+//           Authization: `Bearer ${token}`,
+//           "Content-Type": "application/json",
+//         },
+//       }
+//     );
+//     const data = await response.json();
+//     if (response.ok) {
+//       boardCollaborators.value = data;
+//     } else if (response.status === 401) {
+//       removeTokens();
+//       router.push({ name: "login" });
+//     } else if (response.status === 403) {
+//       router.push({ name: "denial" });
+//     }
+//   } catch (error) {
+//     console.error("Error fetching boards:", error);
+//   }
+// };
+const loop = async () => {
+  tokenDecoded.value = decodedToken();
+  oid.value = tokenDecoded.value.oid;
   if (!token) {
     await useRefreshToken();
     token = getToken();
   }
-  const tokenDecoded = decodedToken();
-  const userOid = tokenDecoded.oid; // Adjust based on your token structure
-  try {
-    const response = await fetch(`${import.meta.env.VITE_BASE_URL}/v3/boards`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-    const data = await response.json();
-    if (response.ok) {
-      board.value = data;
-    } else if (response.status === 401) {
-      alert("Unauthorized");
-      removeTokens();
-      router.push({ name: "login" });
+  for (const board of collabBoard.value) {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/v3/boards/${board.id}/collabs`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+      if (response.ok) {
+        boardCollaborators.value.push(data);
+      } else if (response.status === 401) {
+        removeTokens();
+        router.push({ name: "login" });
+      } else if (response.status === 403) {
+        router.push({ name: "denial" });
+      }
+    } catch (error) {
+      console.error("Error fetching boards:", error);
     }
-  } catch (error) {
-    console.error("Error fetching boards:", error);
   }
 };
 onMounted(async () => {
-  await fetchBoards();
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
   tokenDecoded.value = decodedToken();
   username.value = tokenDecoded.value.name;
   oid.value = tokenDecoded.value.oid;
+  board.value = props.boards.filter((board) => board.owner.oid === oid.value);
   haveBoard.value = board.value.length > 0;
-
-  console.log(haveBoard.value);
+  collabBoard.value = props.boards.filter(
+    (board) => board.owner.oid !== oid.value
+  );
+  collabBoard.value = props.boards.filter(
+    (board) => board.owner.oid !== oid.value
+  );
+  await loop();
+  console.log(boardCollaborators.value);
 });
 
+watch(
+  () => props.boards,
+  (newBoards) => {
+    board.value = newBoards.filter((board) => board.owner.oid === oid.value);
+    collabBoard.value = newBoards.filter(
+      (board) => board.owner.oid !== oid.value
+    );
+  }
+);
+watch(
+  () => boardCollaborators.value,
+  (newBoardCollaborators) => {
+    boardCollaborators.value = newBoardCollaborators;
+  }
+);
 const handleAddBoard = () => {
   router.push({ name: "boardadd" });
   emit("board-added");
@@ -94,22 +161,12 @@ const toggleDropdown = () => {
 
       <div class="flex m-4 items-center space-x-6">
         <button
-          class="addBtn flex items-center text-md text-black hover:text-blue-600 transition duration-300 itbkk-button-add"
-          :disabled="haveBoard"
+          class="flex items-center text-md text-black hover:text-blue-600 transition duration-300 itbkk-button-add"
           @click="handleAddBoard"
+          :disabled="haveBoard"
         >
           Create New Board
         </button>
-
-        <!-- <button @click="handleAddTask"
-                    class="flex items-center text-md text-black hover:text-blue-600 transition duration-300">
-                    Add Task
-                </button> -->
-
-        <!-- <button @click="handleStatusList"
-          class="flex items-center text-md text-black hover:text-blue-600 transition duration-300">
-          Manage Status
-        </button> -->
 
         <div class="relative text-black">
           <button
@@ -171,16 +228,17 @@ const toggleDropdown = () => {
     </nav>
 
     <div></div>
+    <!-- table personal board -->
     <div
       v-if="boards.length !== 0"
       class="flex flex-col justify-center items-center p-28"
     >
-      <div class="text-3xl drop-shadow-lg p-4">
+      <div class="text-3xl drop-shadow-lg p-4 itbkk-personal-board">
         Board <span class="text-[#2b4483] ml-2">{{ username }}</span>
       </div>
 
       <table
-        class="table-auto w-full max-w-5xl rounded-2xl overflow-hidden itbkk-table bg-green-300"
+        class="table-auto rounded-md overflow-hidden itbkk-table bg-green-300"
       >
         <thead>
           <tr>
@@ -190,51 +248,88 @@ const toggleDropdown = () => {
           </tr>
         </thead>
         <tbody
-          v-for="(board, index) in boards"
+          v-for="(board, index) in board"
           :key="index"
           :class="index % 2 === 0 ? 'bg-yellow-50' : 'bg-orange-100'"
           class="text-center border itbkk-item font-lilita"
         >
-          <tr>
+          <tr class="itbkk-personal-item">
             <td>{{ index + 1 }}</td>
             <td>
-              <button @click="handleViewBoard(board.id)">
+              <button
+                @click="handleViewBoard(board.id)"
+                class="itbkk-board-name"
+              >
                 {{ board.name }}
               </button>
             </td>
-            <td>{{ board.visibility }}</td>
+            <td>
+              <span class="text-[#4d5fcb]">{{ board.visibility }}</span>
+            </td>
           </tr>
         </tbody>
       </table>
-      <div class="text-3xl drop-shadow-lg p-4">Collaborator Board</div>
 
-      <table
-        class="table-auto w-full max-w-5xl rounded-2xl overflow-hidden itbkk-table bg-green-300"
-      >
-        <thead>
-          <tr>
-            <th>No.</th>
-            <th>Name</th>
-            <th>Visibility</th>
-          </tr>
-        </thead>
-        <tbody
-          v-for="(board, index) in boards"
-          :key="index"
-          :class="index % 2 === 0 ? 'bg-yellow-50' : 'bg-orange-100'"
-          class="text-center border itbkk-item font-lilita"
-        >
-          <tr>
-            <td>{{ index + 1 }}</td>
-            <td>
-              <button @click="handleViewBoard(board.id)">
-                {{ board.name }}
-              </button>
-            </td>
-            <td>{{ board.visibility }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div></div>
+      <div class="flex flex-col justify-center items-center p-28">
+        <div class="text-3xl drop-shadow-lg p-4 itbkk-collab-board">
+          Collab Boards
+        </div>
+
+        <!-- Table collab board -->
+        <div class="w-full overflow-x-auto">
+          <table
+            class="table rounded-md overflow-hidden itbkk-table bg-green-300 min-w-full"
+          >
+            <thead>
+              <tr>
+                <th class="w-16 text-center">No.</th>
+                <th class="w-48 text-center">Name</th>
+                <th class="w-48 text-center">Owner</th>
+                <th class="w-32 text-center">Access Right</th>
+                <th class="w-32 text-center">Action</th>
+              </tr>
+            </thead>
+            <tbody
+              v-for="(board, index) in collabBoard"
+              :key="index"
+              :class="index % 2 === 0 ? 'bg-yellow-50' : 'bg-orange-100'"
+              class="text-center border itbkk-item font-lilita"
+            >
+              <tr class="itbkk-collab-item">
+                <td>{{ index + 1 }}</td>
+                <td>
+                  <button
+                    @click="handleViewBoard(board.id)"
+                    class="itbkk-board-name"
+                  >
+                    {{ board.name }}
+                  </button>
+                </td>
+                <td>
+                  <span class="itbkk-owner-name text-[#4d5fcb]">{{
+                    board.owner.name
+                  }}</span>
+                </td>
+                <td>
+                  <span
+                    class="itbkk-access-right"
+                    v-for="access in boardCollaborators"
+                    >{{ access.access_right }}</span
+                  >
+                </td>
+                <td>
+                  <button
+                    class="itbkk-leave-board bg-[#adafb5] text-white text-sm py-1 px-2 rounded hover:bg-[#888a94]"
+                  >
+                    Leave
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <!-- v-else -->
@@ -259,6 +354,7 @@ const toggleDropdown = () => {
       </button>
     </div>
   </div>
+  <!-- </div> -->
 </template>
 
 <style scoped>
@@ -294,7 +390,7 @@ tbody td {
     font-size: 14px;
   }
 
-  .addBtn:disabled {
+  .itbkk-button-add:disabled {
     color: #665f5f;
     cursor: not-allowed;
   }

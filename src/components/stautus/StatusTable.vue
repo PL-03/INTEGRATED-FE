@@ -291,29 +291,7 @@ const showToast = (message, type) => {
           IT-Bangmod Kradan Kanban
         </h1>
       </div>
-
-      <!-- bg-green-700 hover:bg-emerald-500 -->
-      <div class="flex m-4">
-        <button
-          class="addBtn flex text-md px-3 py-1 mt-2 mr-8 hover:text-[#44bd6a] text-black rounded itbkk-button-add font-lilita tracking-wide"
-          @click="handleAddStatus"
-          :disabled="!isOwner"
-        >
-          <svg
-            class="mr-1 mt-1"
-            xmlns="http://www.w3.org/2000/svg"
-            width="12"
-            height="16"
-            viewBox="0 2 20 20"
-          >
-            <path
-              fill="currentColor"
-              d="M11 9V5H9v4H5v2h4v4h2v-4h4V9zm-1 11a10 10 0 1 1 0-20a10 10 0 0 1 0 20"
-            />
-          </svg>
-          Add Status
-        </button>
-      </div>
+    
     </nav>
     <div class="h-28"></div>
     <div class="mt-2 grid grid-cols-2 items-center">
@@ -325,11 +303,20 @@ const showToast = (message, type) => {
           <p
             class="text-[#2d3697] decoration-2 hover:underline decoration-[#3b6ac0]"
           >
-            Home
+            Task
           </p>
         </button>
         <strong class="text-[#525454] mt-4 ml-2"> > </strong>
         <p class="text-gray-600 mt-4 ml-4">Task Status</p>
+      </div>
+       <div class="flex justify-center ml-48">
+        <button
+          class="addBtn flex text-md px-3 py-1 mt-2 mr-8 hover:bg-[#4ae77c] bg-[#4cdb79] text-black rounded itbkk-button-add font-lilita tracking-wide"
+          @click="handleAddStatus"
+          :disabled="!isOwner"
+        >
+          Add Status
+        </button>
       </div>
     </div>
     <div class="mt-4 flex justify-center items-center">

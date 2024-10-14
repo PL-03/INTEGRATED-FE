@@ -4,6 +4,7 @@ import TaskManager from "@/TaskManager.vue";
 import StatusManager from "@/StatusManager.vue";
 import LoginManager from "@/stores/LoginManager.vue";
 import AccessDenied from "@/components/AccessDenied.vue";
+import CollabManager from "@/stores/CollabManager.vue";
 
 const routes = [
   {
@@ -150,8 +151,8 @@ const routes = [
   // },
   {
     path: "/board/:boardId/collab",
-    name: "collaboratoradd",
-    component: TaskManager,
+    name: "collaboratorlist",
+    component: CollabManager,
     beforeEnter: () => {
       if (
         !localStorage.getItem("jwtToken") &&

@@ -13,7 +13,41 @@ const router = useRouter();
 const selectedBoard = ref({});
 const showModal = ref(false);
 const boards = ref([]);
+const boardCollaborators = ref([]);
 
+const fetchBoardColaborators = async () => {
+  const token = getToken();
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
+  const tokenDecoded = decodedToken();
+  const oid = tokenDecoded.oid;
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/v3/boards/${
+        boards.value.find((board) => board.owner.oid !== oid).id
+      }/collabs`,
+      {
+        headers: {
+          Authization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const data = await response.json();
+    if (response.ok) {
+      boardCollaborators.value = data;
+    } else if (response.status === 401) {
+      removeTokens();
+      router.push({ name: "login" });
+    } else if (response.status === 403) {
+      router.push({ name: "denial" });
+    }
+  } catch (error) {
+    console.error("Error fetching boards:", error);
+  }
+};
 const fetchBoards = async () => {
   const token = getToken();
   if (!token) {
@@ -70,10 +104,9 @@ const fetchBoards = async () => {
 //     console.error("Error fetching boards:", error);
 //   }
 // };
-onMounted(() => {
-  fetchBoards();
-  // console.log(boards.value);
-  // console.log(boards.value.length);
+onMounted(async () => {
+  await fetchBoards();
+  // await fetchBoardColaborators();
 });
 const handleBoardAdded = () => {
   showModal.value = true;
@@ -89,7 +122,11 @@ const handleBoardUpdated = (newBoard) => {
 </script>
 
 <template>
-  <BoardList :boards="boards" @board-added="handleBoardAdded" />
+  <BoardList
+    :boards="boards"
+    :boardCollaborators="boardCollaborators"
+    @board-added="handleBoardAdded"
+  />
   <AddBoard
     :show="showModal"
     :board="selectedBoard"

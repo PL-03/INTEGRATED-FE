@@ -2,7 +2,11 @@
 import { ref, watchEffect, computed, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useToast, POSITION } from "vue-toastification";
-import { getToken, useRefreshToken } from "@/services/tokenService";
+import {
+  getToken,
+  useRefreshToken,
+  removeTokens,
+} from "@/services/tokenService";
 
 const props = defineProps({
   show: { type: Boolean, required: true },
@@ -139,7 +143,7 @@ const handleSubmit = async () => {
         isAddMode.value ? "success-add" : "success-update"
       );
     } else if (response.status === 401) {
-      localStorage.removeItem("jwtToken");
+      removeTokens();
       router.push({ name: "login" });
     } else if (response.status === 403) {
       showToast(
