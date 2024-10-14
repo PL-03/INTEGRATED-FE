@@ -213,7 +213,7 @@ const toggleDropdown = () => {
                   class="flex flex-row text-center px-4 py-2 hover:text-[#ba493f]"
                 >
                   <img
-                    src="/public/SignOut.png"
+                    src="../../assets/SignOut.png"
                     width="22"
                     height="10"
                     class="mr-2 mt-1"
@@ -314,9 +314,8 @@ const toggleDropdown = () => {
                 <td>
                   <span
                     class="itbkk-access-right"
-                    v-for="access in boardCollaborators"
-                    >{{ access.access_right }}</span
-                  >
+                    >{{ access.access_right }}
+                  </span>
                 </td>
                 <td>
                   <button
@@ -338,7 +337,7 @@ const toggleDropdown = () => {
       class="flex flex-col justify-center items-center text-center gap-4 min-h-screen"
     >
       <img
-        src="/empty-box.png"
+        src="../../assets/empty-box.png"
         alt="no board"
         class="w-48 h-48 object-cover opacity-90 drop-shadow-xl"
       />
