@@ -425,7 +425,7 @@ const boardList = () => {
                   class="itbkk-sign-out flex flex-row text-center px-4 py-2 hover:text-[#ba493f]"
                 >
                   <img
-                    src="/public/SignOut.png"
+                    src="../../assets/SignOut.png"
                     width="22"
                     height="10"
                     class="mr-2 mt-1"

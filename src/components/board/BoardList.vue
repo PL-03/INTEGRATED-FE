@@ -57,38 +57,7 @@ let token = getToken();
 //     console.error("Error fetching boards:", error);
 //   }
 // };
-const loop = async () => {
-  tokenDecoded.value = decodedToken();
-  oid.value = tokenDecoded.value.oid;
-  if (!token) {
-    await useRefreshToken();
-    token = getToken();
-  }
-  for (const board of collabBoard.value) {
-    try {
-      const response = await fetch(
-        `${import.meta.env.VITE_BASE_URL}/v3/boards/${board.id}/collabs`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = await response.json();
-      if (response.ok) {
-        boardCollaborators.value.push(data);
-      } else if (response.status === 401) {
-        removeTokens();
-        router.push({ name: "login" });
-      } else if (response.status === 403) {
-        router.push({ name: "denial" });
-      }
-    } catch (error) {
-      console.error("Error fetching boards:", error);
-    }
-  }
-};
+
 onMounted(async () => {
   if (!token) {
     await useRefreshToken();
@@ -101,11 +70,11 @@ onMounted(async () => {
   haveBoard.value = board.value.length > 0;
   console.log(haveBoard.value);
 
-  collabBoard.value = props.boards.filter(
-    (board) => board.owner.oid !== oid.value
+  collabBoard.value = props.boards.filter((board) =>
+    board.collaborators.some((collaborator) => collaborator.oid === oid.value)
   );
-  await loop();
-  console.log(boardCollaborators.value);
+  console.log(collabBoard.value);
+  console.log(board.value);
 });
 onUpdated(() => {
   haveBoard.value = board.value.length > 0;
@@ -114,15 +83,9 @@ watch(
   () => props.boards,
   (newBoards) => {
     board.value = newBoards.filter((board) => board.owner.oid === oid.value);
-    collabBoard.value = newBoards.filter(
-      (board) => board.owner.oid !== oid.value
+    collabBoard.value = newBoards.filter((board) =>
+      board.collaborators.some((collaborator) => collaborator.oid === oid.value)
     );
-  }
-);
-watch(
-  () => boardCollaborators.value,
-  (newBoardCollaborators) => {
-    boardCollaborators.value = newBoardCollaborators;
   }
 );
 
@@ -215,7 +178,7 @@ const toggleDropdown = () => {
                   class="flex flex-row text-center px-4 py-2 hover:text-[#ba493f]"
                 >
                   <img
-                    src="/public/SignOut.png"
+                    src="../../assets/SignOut.png"
                     width="22"
                     height="10"
                     class="mr-2 mt-1"
@@ -314,9 +277,13 @@ const toggleDropdown = () => {
                   }}</span>
                 </td>
                 <td>
-                  <span class="itbkk-access-right">{{
-                    board.access_right
-                  }}</span>
+                  <span class="itbkk-access-right">
+                    {{
+                      board.collaborators.find(
+                        (collaborator) => collaborator.oid === oid
+                      )?.accessRight || "N/A"
+                    }}
+                  </span>
                 </td>
                 <td>
                   <button
@@ -333,12 +300,12 @@ const toggleDropdown = () => {
     </div>
 
     <!-- v-else -->
-    <div
+    <!-- <div
       v-else
       class="flex flex-col justify-center items-center text-center gap-4 min-h-screen"
     >
       <img
-        src="/empty-box.png"
+        src="../../assets/empty-box.png"
         alt="no board"
         class="w-48 h-48 object-cover opacity-90 drop-shadow-xl"
       />
@@ -352,7 +319,7 @@ const toggleDropdown = () => {
       >
         Create New Board
       </button>
-    </div>
+    </div> -->
   </div>
   <!-- </div> -->
 </template>

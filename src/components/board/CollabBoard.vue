@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, onUpdated, ref } from "vue";
+import { onMounted, onUpdated, ref, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useToast, POSITION } from "vue-toastification";
 import { getToken, decodedToken, removeTokens } from "@/services/tokenService";
@@ -18,6 +18,7 @@ const currentId = ref("");
 const board = ref({});
 const boardId = route.params.boardId;
 const showDropdown = ref(false);
+const boards = ref([...props.boardCollaborators]);
 const toggleDropdown = () => {
   showDropdown.value = !showDropdown.value;
 };
@@ -61,8 +62,16 @@ onMounted(async () => {
   currentId.value = tokenDecoded.value.oid;
   isOwner.value = board.value.owner.oid === currentId.value;
   boardName.value = board.value.name;
+  boards.value = boards.value.sort(
+    (a, b) => new Date(a.added_on) - new Date(b.added_on)
+  );
 });
-onUpdated(() => {});
+watch(
+  () => props.boardCollaborators,
+  () => {
+    boards.value = [...props.boardCollaborators];
+  }
+);
 const handleAddCollaborator = () => {
   emit("add-collaborator");
 };
@@ -139,7 +148,7 @@ const logout = () => {
                   class="flex flex-row text-center px-4 py-2 hover:text-[#ba493f]"
                 >
                   <img
-                    src="/public/SignOut.png"
+                    src="../../assets/SignOut.png"
                     width="22"
                     height="10"
                     class="mr-2 mt-1"
@@ -193,7 +202,7 @@ const logout = () => {
           </tr>
         </thead>
         <tbody
-          v-for="(board, index) in boardCollaborators"
+          v-for="(board, index) in boards"
           :key="index"
           :class="index % 2 === 0 ? 'bg-yellow-50' : 'bg-orange-100'"
           class="text-center border font-lilita"
@@ -284,6 +293,10 @@ tbody td {
   /* Make the table scrollable */
   .table-auto {
     min-width: 600px;
+  }
+  .addBtn:disabled {
+    background-color: rgb(144, 150, 150);
+    cursor: not-allowed;
   }
 }
 </style>

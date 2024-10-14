@@ -65,18 +65,22 @@ const fetchBoards = async () => {
     });
     const data = await response.json();
     boards.value = data;
-    router.push({ name: "boardslist" });
-    // boards.value = data.filter((board) => board.owner.oid === userOid);
-    // if (boards.value.length > 0) {
-    //   // Redirect to the first board the user owns
-    //   router.push({
-    //     name: "tasklist",
-    //     params: { boardId: boards.value[0].id },
-    //   });
-    // } else {
-    //   // Redirect to the boards list if no boards are found
-    //   router.push({ name: "boardslist" });
-    // }
+    // router.push({ name: "boardslist" });
+    const ownBoard = boards.value.filter(
+      (board) => board.owner.oid === userOid
+    );
+    const collabBoard = boards.value.filter((board) =>
+      board.collaborators.some((collaborator) => collaborator.oid === userOid)
+    );
+    if (ownBoard.length > 0 && collabBoard.length === 0) {
+      // Redirect to the first board the user owns
+      router.push({
+        name: "tasklist",
+        params: { boardId: boards.value[0].id },
+      });
+    } else {
+      router.push({ name: "boardslist" });
+    }
   } catch (error) {
     console.error("Error fetching boards:", error);
   }
