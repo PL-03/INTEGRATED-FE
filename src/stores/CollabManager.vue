@@ -42,6 +42,8 @@ const fetchBoardColaborators = async () => {
       removeTokens();
       router.push({ name: "login" });
     } else if (response.status === 403) {
+      console.log(data);
+
       // router.push({ name: "denial" });
     }
   } catch (error) {

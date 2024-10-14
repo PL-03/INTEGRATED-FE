@@ -203,10 +203,10 @@ const toggleDropdown = () => {
       </div>
 
       <table
-        class="table-auto rounded-md overflow-hidden itbkk-table bg-green-300"
+        class="table-auto rounded-md overflow-hidden itbkk-table bg-[#39407e] min-w-full"
       >
         <thead>
-          <tr>
+          <tr class="text-white">
             <th>No.</th>
             <th>Name</th>
             <th>Visibility</th>
@@ -215,7 +215,7 @@ const toggleDropdown = () => {
         <tbody
           v-for="(board, index) in board"
           :key="index"
-          :class="index % 2 === 0 ? 'bg-yellow-50' : 'bg-orange-100'"
+          :class="index % 2 === 0 ? 'bg-[#e0e5e2]' : 'bg-[#e8f4f4]' "
           class="text-center border itbkk-item font-lilita"
         >
           <tr class="itbkk-personal-item">
@@ -229,14 +229,14 @@ const toggleDropdown = () => {
               </button>
             </td>
             <td>
-              <span class="text-[#4d5fcb]">{{ board.visibility }}</span>
+              <span class="text-[#258650]">{{ board.visibility }}</span>
             </td>
           </tr>
         </tbody>
       </table>
 
       <div></div>
-      <div class="flex flex-col justify-center items-center p-28">
+      <div class="flex flex-col justify-center items-center pt-24">
         <div class="text-3xl drop-shadow-lg p-4 itbkk-collab-board">
           Collab Boards
         </div>
@@ -244,21 +244,21 @@ const toggleDropdown = () => {
         <!-- Table collab board -->
         <div class="w-full overflow-x-auto">
           <table
-            class="table rounded-md overflow-hidden itbkk-table bg-green-300 min-w-full"
+            class="table rounded-md overflow-hidden itbkk-table bg-[#39407e] min-w-full"
           >
             <thead>
-              <tr>
-                <th class="w-16 text-center">No.</th>
-                <th class="w-48 text-center">Name</th>
-                <th class="w-48 text-center">Owner</th>
-                <th class="w-32 text-center">Access Right</th>
-                <th class="w-32 text-center">Action</th>
+              <tr class="text-white">
+                <th>No.</th>
+                <th>Name</th>
+                <th>Owner</th>
+                <th>Access Right</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody
               v-for="(board, index) in collabBoard"
               :key="index"
-              :class="index % 2 === 0 ? 'bg-yellow-50' : 'bg-orange-100'"
+              :class="index % 2 === 0 ? 'bg-[#e0e5e2]' : 'bg-[#e8f4f4]'"
               class="text-center border itbkk-item font-lilita"
             >
               <tr class="itbkk-collab-item">
@@ -266,13 +266,13 @@ const toggleDropdown = () => {
                 <td>
                   <button
                     @click="handleViewBoard(board.id)"
-                    class="itbkk-board-name"
+                    class="itbkk-board-name text-[#4d5fcb]"
                   >
                     {{ board.name }}
                   </button>
                 </td>
                 <td>
-                  <span class="itbkk-owner-name text-[#4d5fcb]">{{
+                  <span class="itbkk-owner-name ">{{
                     board.owner.name
                   }}</span>
                 </td>
@@ -337,9 +337,18 @@ const toggleDropdown = () => {
 .table-auto {
   min-width: 70%;
 }
+.table thead th {
+  width: 180px;
+  min-width: 190px;
+  text-align: center;
+}
+
+.table tbody td {
+  min-width: 150px;
+}
 
 thead th {
-  padding: 12px;
+  padding: 10px;
 }
 
 tbody td {

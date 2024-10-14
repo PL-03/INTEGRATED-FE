@@ -191,9 +191,9 @@ const logout = () => {
       </div>
 
       <!-- <div class="w-full overflow-x-auto"> -->
-      <table class="table rounded-md overflow-hidden itbkk-table bg-green-300">
+      <table class="table-auto rounded-md overflow-hidden itbkk-table bg-[#39407e]">
         <thead>
-          <tr>
+          <tr class="text-white">
             <th>No.</th>
             <th>Name</th>
             <th>Email</th>
@@ -204,7 +204,7 @@ const logout = () => {
         <tbody
           v-for="(board, index) in boards"
           :key="index"
-          :class="index % 2 === 0 ? 'bg-yellow-50' : 'bg-orange-100'"
+          :class="index % 2 === 0 ? 'bg-[#e0e5e2]' : 'bg-[#e8f4f4]'"
           class="text-center border font-lilita"
         >
           <tr class="itbkk-item">
@@ -248,7 +248,7 @@ const logout = () => {
 
 .table-auto thead th {
   width: 180px;
-  min-width: 220px;
+  min-width: 190px;
   text-align: center;
 }
 

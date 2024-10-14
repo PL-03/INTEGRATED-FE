@@ -347,6 +347,10 @@ const showToast = (message, type) => {
 const boardList = () => {
   router.push({ name: "boardslist" });
 };
+
+const handleToboardList = () => {
+  router.push({ name: "boardslist" });
+};
 </script>
 <template>
   <div class="bg-[#dfe0e2] min-h-screen font-lilita">
@@ -366,6 +370,13 @@ const boardList = () => {
       </div>
 
       <div class="flex m-4 items-center space-x-6">
+        <button
+          @click="handleToboardList"
+          class="itbkk-home flex text-nowrap text-xs md:text-base items-centerd text-black hover:text-blue-600 transition duration-300"
+        >
+          Home
+        </button>
+
         <button
           @click="handleCollaborator"
           class="itbkk-manage-collaborator flex text-nowrap text-xs md:text-base items-centerd text-black hover:text-blue-600 transition duration-300"
