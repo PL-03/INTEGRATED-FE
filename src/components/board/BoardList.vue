@@ -99,16 +99,17 @@ onMounted(async () => {
   oid.value = tokenDecoded.value.oid;
   board.value = props.boards.filter((board) => board.owner.oid === oid.value);
   haveBoard.value = board.value.length > 0;
-  collabBoard.value = props.boards.filter(
-    (board) => board.owner.oid !== oid.value
-  );
+  console.log(haveBoard.value);
+
   collabBoard.value = props.boards.filter(
     (board) => board.owner.oid !== oid.value
   );
   await loop();
   console.log(boardCollaborators.value);
 });
-
+onUpdated(() => {
+  haveBoard.value = board.value.length > 0;
+});
 watch(
   () => props.boards,
   (newBoards) => {
@@ -124,6 +125,7 @@ watch(
     boardCollaborators.value = newBoardCollaborators;
   }
 );
+
 const handleAddBoard = () => {
   router.push({ name: "boardadd" });
   emit("board-added");
@@ -161,7 +163,7 @@ const toggleDropdown = () => {
 
       <div class="flex m-4 items-center space-x-6">
         <button
-          class="flex items-center text-md text-black hover:text-blue-600 transition duration-300 itbkk-button-add"
+          class="createBtn flex items-center text-md text-black hover:text-blue-600 transition duration-300 itbkk-button-add"
           @click="handleAddBoard"
           :disabled="haveBoard"
         >
@@ -312,11 +314,9 @@ const toggleDropdown = () => {
                   }}</span>
                 </td>
                 <td>
-                  <span
-                    class="itbkk-access-right"
-                    v-for="access in boardCollaborators"
-                    >{{ access.access_right }}</span
-                  >
+                  <span class="itbkk-access-right">{{
+                    board.access_right
+                  }}</span>
                 </td>
                 <td>
                   <button
@@ -396,6 +396,10 @@ tbody td {
   }
   .text-3xl {
     font-size: 24px;
+  }
+  .createBtn:disabled {
+    color: #665f5f;
+    cursor: not-allowed;
   }
 }
 </style>

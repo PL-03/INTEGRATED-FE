@@ -372,13 +372,6 @@ const boardList = () => {
         >
           Manage collaborator
         </button>
-        <button
-          @click="handleAddTask"
-          class="addBtn itbkk-button-add flex text-nowrap text-xs md:text-base items-center text-md text-black hover:text-blue-600 transition duration-300"
-          :disabled="!isOwner"
-        >
-          Add Task
-        </button>
 
         <button
           @click="handleStatusList"
@@ -665,13 +658,15 @@ border-r {
   width: 120px;
 }
 
-.addBtn:disabled,
 .editBtn:disabled,
 .deleteBtn:disabled {
   color: #665f5f;
   cursor: not-allowed;
 }
-
+.addBtn:disabled {
+  cursor: not-allowed;
+  background-color: #665f5f;
+}
 .visibilityBtn:disabled {
   cursor: not-allowed;
 }
