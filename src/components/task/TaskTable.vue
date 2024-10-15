@@ -1,18 +1,18 @@
 <script setup>
-import { useRouter, useRoute } from "vue-router";
-import { ref, watch, onMounted, onUpdated, computed } from "vue";
-import { useToast, POSITION } from "vue-toastification";
-import { getStatusText } from "@/libs/util";
-import FilterDropdown from "./FilterDropdown.vue";
-import ConfirmationModal from "../ConfirmationModal.vue";
-import VueJwtDecode from "vue-jwt-decode";
+import { useRouter, useRoute } from "vue-router"
+import { ref, watch, onMounted, onUpdated, computed } from "vue"
+import { useToast, POSITION } from "vue-toastification"
+import { getStatusText } from "@/libs/util"
+import FilterDropdown from "./FilterDropdown.vue"
+import ConfirmationModal from "../ConfirmationModal.vue"
+import VueJwtDecode from "vue-jwt-decode"
 import {
   getToken,
   decodedToken,
   removeTokens,
   useRefreshToken,
-} from "@/services/tokenService";
-import ModalPublicPrivate from "../ModalAlertToggle.vue";
+} from "@/services/tokenService"
+import ModalPublicPrivate from "../ModalAlertToggle.vue"
 
 const props = defineProps({
   tasks: {
@@ -23,7 +23,7 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-});
+})
 
 const emit = defineEmits([
   "view-task",
@@ -31,50 +31,50 @@ const emit = defineEmits([
   "add-task",
   "taskDeleted",
   "direction",
-]);
-const router = useRouter();
-const route = useRoute();
-const showConfirmationModal = ref(false);
-const taskToDelete = ref(null);
-const statusFiltered = ref([]);
-const filteredTasks = ref([...props.tasks]);
-const username = ref("");
-const showDropdown = ref(false);
-const boardId = route.params.boardId;
-const boardName = ref("");
-const boardVisible = ref("");
-const showModal = ref(false);
-const isToggled = ref(false);
-const boardVisibility = ref("");
-const currentId = ref("");
-const board = ref({});
+])
+const router = useRouter()
+const route = useRoute()
+const showConfirmationModal = ref(false)
+const taskToDelete = ref(null)
+const statusFiltered = ref([])
+const filteredTasks = ref([...props.tasks])
+const username = ref("")
+const showDropdown = ref(false)
+const boardId = route.params.boardId
+const boardName = ref("")
+const boardVisible = ref("")
+const showModal = ref(false)
+const isToggled = ref(false)
+const boardVisibility = ref("")
+const currentId = ref("")
+const board = ref({})
 
 // const isPublic = ref(board.value.visibility === "PUBLIC");
 const openModal = () => {
-  showModal.value = true;
+  showModal.value = true
   // boardVisible.value = boardVisible.value === "Private" ? "Public" : "Private";
-};
+}
 
-const isOwner = ref("");
+const isOwner = ref("")
 
 const closeModal = () => {
-  showModal.value = false;
-};
+  showModal.value = false
+}
 const checkToggled = () => {
   if (boardVisibility.value === "PUBLIC") {
-    return (isToggled.value = true);
+    return (isToggled.value = true)
   } else {
-    return (isToggled.value = false);
+    return (isToggled.value = false)
   }
-};
+}
 const confirmToggle = async () => {
-  boardVisible.value = boardVisible.value === "PUBLIC" ? "PRIVATE" : "PUBLIC";
-  showModal.value = false;
+  boardVisible.value = boardVisible.value === "PUBLIC" ? "PRIVATE" : "PUBLIC"
+  showModal.value = false
 
-  const token = getToken();
+  const token = getToken()
   if (!token) {
-    await useRefreshToken();
-    token = getToken();
+    await useRefreshToken()
+    token = getToken()
   }
   try {
     const response = await fetch(
@@ -87,52 +87,49 @@ const confirmToggle = async () => {
         },
         body: JSON.stringify({ visibility: boardVisible.value }),
       }
-    );
+    )
     if (response.ok) {
-      await fetchBoard();
-      boardVisible.value = board.value.visibility;
-      isToggled.value = boardVisible.value === "PUBLIC";
-      showToast(
-        "The board visibility has been successfully updated",
-        "success"
-      );
+      await fetchBoard()
+      boardVisible.value = board.value.visibility
+      isToggled.value = boardVisible.value === "PUBLIC"
+      showToast("The board visibility has been successfully updated", "success")
     } else if (response.status === 401) {
-      localStorage.removeItem("jwtToken");
-      router.push({ name: "login" });
+      localStorage.removeItem("jwtToken")
+      router.push({ name: "login" })
     } else if (response.status === 403) {
       showToast(
         "You do not have permission to change the board visibility mode",
         "error"
-      );
+      )
     } else {
-      showToast("There is a problem. Please try again later.", "error");
+      showToast("There is a problem. Please try again later.", "error")
     }
   } catch (error) {
-    console.error(error);
+    console.error(error)
   }
-};
+}
 
 const statusColors = {
   "No Status": "#9ca3af",
   "To Do": "#ffd1d1",
   Doing: "#fde047",
   Done: "#5cd052",
-};
+}
 
 const getStatusColor = (statusText) => {
-  return statusColors[statusText] || "#D1FFFF"; // New color for new status
-};
+  return statusColors[statusText] || "#D1FFFF" // New color for new status
+}
 
 const fetchFilteredTasks = async () => {
-  const selectedStatuses = statusFiltered.value.join(",");
+  const selectedStatuses = statusFiltered.value.join(",")
   const url = `${
     import.meta.env.VITE_BASE_URL
-  }/v3/boards/${boardId}/tasks?sortBy=statusV3.name&filterStatuses=${selectedStatuses}`;
+  }/v3/boards/${boardId}/tasks?sortBy=statusV3.name&filterStatuses=${selectedStatuses}`
 
-  const token = getToken();
+  const token = getToken()
   if (!token) {
-    await useRefreshToken();
-    token = getToken();
+    await useRefreshToken()
+    token = getToken()
   }
   try {
     const response = await fetch(url, {
@@ -140,18 +137,18 @@ const fetchFilteredTasks = async () => {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-    });
-    const data = await response.json();
-    filteredTasks.value = data;
+    })
+    const data = await response.json()
+    filteredTasks.value = data
   } catch (error) {
-    console.error("Error fetching filtered tasks:", error);
+    console.error("Error fetching filtered tasks:", error)
   }
-};
+}
 const fetchBoard = async () => {
-  const token = getToken();
+  const token = getToken()
   if (!token) {
-    await useRefreshToken();
-    token = getToken();
+    await useRefreshToken()
+    token = getToken()
   }
   try {
     const response = await fetch(
@@ -162,48 +159,48 @@ const fetchBoard = async () => {
           "Content-Type": "application/json",
         },
       }
-    );
-    const data = await response.json();
+    )
+    const data = await response.json()
     if (response.ok) {
-      board.value = data;
+      board.value = data
     } else if (response.status === 404) {
-      alert("The requested board does not exist");
-      router.push({ name: "boardslist" });
+      alert("The requested board does not exist")
+      router.push({ name: "boardslist" })
     } else if (response.status === 401) {
-      localStorage.removeItem("jwtToken");
-      router.push({ name: "login" });
+      localStorage.removeItem("jwtToken")
+      router.push({ name: "login" })
     } else if (response.status === 403) {
-      router.push({ name: "denial" });
+      router.push({ name: "denial" })
     }
   } catch (error) {
-    console.error("Error fetching boards:", error);
+    console.error("Error fetching boards:", error)
   }
-};
-const tokenDecoded = ref({});
+}
+const tokenDecoded = ref({})
 
 const logout = () => {
-  removeTokens();
-  router.push({ name: "login" });
-};
+  removeTokens()
+  router.push({ name: "login" })
+}
 
 onMounted(async () => {
-  await fetchBoard();
-  tokenDecoded.value = decodedToken();
-  username.value = tokenDecoded.value.name;
-  currentId.value = tokenDecoded.value.oid;
+  await fetchBoard()
+  tokenDecoded.value = decodedToken()
+  username.value = tokenDecoded.value.name
+  currentId.value = tokenDecoded.value.oid
 
   // boardVisibility.value = props.boardDetail.visibility;
   // boardVisible.value = props.boardDetail.visibility;
-  isOwner.value = board.value.owner.oid === currentId.value;
-  console.log(isOwner.value);
-});
+  isOwner.value = board.value.owner.oid === currentId.value
+  console.log(isOwner.value)
+})
 onUpdated(() => {
-  boardName.value = props.boardDetail.name;
-  boardVisibility.value = board.value.visibility;
-  boardVisible.value = board.value.visibility;
+  boardName.value = props.boardDetail.name
+  boardVisibility.value = board.value.visibility
+  boardVisible.value = board.value.visibility
 
-  checkToggled();
-});
+  checkToggled()
+})
 watch(
   () => props.tasks,
   () => {
@@ -211,74 +208,74 @@ watch(
       (task) =>
         statusFiltered.value.length === 0 ||
         statusFiltered.value.includes(task.status.name)
-    );
+    )
   },
   { immediate: true }
-);
+)
 
-watch(statusFiltered, fetchFilteredTasks, fetchBoard, { immediate: true });
+watch(statusFiltered, fetchFilteredTasks, fetchBoard, { immediate: true })
 
 const handleSortData = (direction) => {
-  if (!filteredTasks.value || filteredTasks.value.length === 0) return;
+  if (!filteredTasks.value || filteredTasks.value.length === 0) return
 
-  const sortedTasks = [...filteredTasks.value];
+  const sortedTasks = [...filteredTasks.value]
 
   if (direction === "Def") {
-    sortedTasks.sort((a, b) => a.id - b.id);
+    sortedTasks.sort((a, b) => a.id - b.id)
   } else {
     sortedTasks.sort((a, b) => {
-      const statusA = getStatusText(a.status).toUpperCase();
-      const statusB = getStatusText(b.status).toUpperCase();
+      const statusA = getStatusText(a.status).toUpperCase()
+      const statusB = getStatusText(b.status).toUpperCase()
 
       if (statusA < statusB) {
-        return direction === "Asc" ? -1 : 1;
+        return direction === "Asc" ? -1 : 1
       }
       if (statusA > statusB) {
-        return direction === "Asc" ? 1 : -1;
+        return direction === "Asc" ? 1 : -1
       }
-      return 0;
-    });
+      return 0
+    })
   }
 
-  filteredTasks.value = sortedTasks;
-};
+  filteredTasks.value = sortedTasks
+}
 
 const handleStatusList = () => {
-  router.push({ name: "statusList" });
-};
+  router.push({ name: "statusList" })
+}
 
 const handleAddTask = () => {
-  router.push({ name: "taskadd" });
-  emit("add-task");
-};
+  router.push({ name: "taskadd" })
+  emit("add-task")
+}
 
 const handleViewTask = (task) => {
-  emit("view-task", task);
-};
+  emit("view-task", task)
+}
 
 const handleEditTask = (task) => {
-  router.push({ name: "taskedit", params: { taskId: task.id } });
-  emit("edit-task", task.id);
-};
+  router.push({ name: "taskedit", params: { taskId: task.id } })
+  emit("edit-task", task.id)
+}
 
 const handleDeleteTask = (task) => {
-  taskToDelete.value = task;
-  showConfirmationModal.value = true;
-};
+  taskToDelete.value = task
+  showConfirmationModal.value = true
+}
 
 const handleFilterData = (selectedOptions) => {
-  statusFiltered.value = selectedOptions;
-  fetchFilteredTasks();
-};
+  statusFiltered.value = selectedOptions
+  fetchFilteredTasks()
+}
 
 const handleCollaborator = () => {
-  router.push({ name: "collaboratorlist" });
-};
+  router.push({ name: "collaboratorlist" })
+}
 const confirmDeleteTask = async () => {
-  const token = getToken();
+  const token = getToken()
   if (!token) {
-    await useRefreshToken();
-    token = getToken();
+    await useRefreshToken()
+    token = getToken()
   }
   try {
     const response = await fetch(
@@ -292,37 +289,37 @@ const confirmDeleteTask = async () => {
           "Content-Type": "application/json",
         },
       }
-    );
+    )
     if (response.ok) {
       showToast(
         `The task "${taskToDelete.value.title}" has been successfully deleted`,
         "success-delete"
-      );
-      emit("taskDeleted");
-      fetchFilteredTasks();
+      )
+      emit("taskDeleted")
+      fetchFilteredTasks()
     } else if (response.status === 404) {
-      showToast("An error has occurred, the task does not exist", "error");
+      showToast("An error has occurred, the task does not exist", "error")
     } else {
-      showToast("An error occurred while deleting the task", "error");
+      showToast("An error occurred while deleting the task", "error")
     }
   } catch (error) {
-    console.error("Error deleting task:", error);
-    showToast("An error occurred while deleting the task", "error");
+    console.error("Error deleting task:", error)
+    showToast("An error occurred while deleting the task", "error")
   } finally {
-    showConfirmationModal.value = false;
-    taskToDelete.value = null;
+    showConfirmationModal.value = false
+    taskToDelete.value = null
   }
-};
+}
 
 const closeConfirmationModal = () => {
-  showConfirmationModal.value = false;
-  taskToDelete.value = null;
-};
+  showConfirmationModal.value = false
+  taskToDelete.value = null
+}
 const toggleDropdown = () => {
-  showDropdown.value = !showDropdown.value;
-};
+  showDropdown.value = !showDropdown.value
+}
 const showToast = (message, type) => {
-  const toast = useToast();
+  const toast = useToast()
 
   switch (type) {
     case "success-add":
@@ -331,26 +328,26 @@ const showToast = (message, type) => {
       toast.success(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      });
-      break;
+      })
+      break
     case "error":
       toast.error(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      });
-      break;
+      })
+      break
     default:
-      toast(message);
+      toast(message)
   }
-};
+}
 
 const boardList = () => {
-  router.push({ name: "boardslist" });
-};
+  router.push({ name: "boardslist" })
+}
 
 const handleToboardList = () => {
-  router.push({ name: "boardslist" });
-};
+  router.push({ name: "boardslist" })
+}
 </script>
 <template>
   <div class="bg-[#dfe0e2] min-h-screen font-lilita">
@@ -358,10 +355,10 @@ const handleToboardList = () => {
       class="navbar h-20 flex justify-between z-10 shadow-md shadow-[#95999ad8]"
     >
       <div class="image flex h-14 m-2">
-        <img
+        <!-- <img
           class="ml-4"
           src="https://www.sit.kmutt.ac.th/wp-content/uploads/2016/12/logo-kmutt.png"
-        />
+        /> -->
         <h1
           class="text-start font-lilita p-4 text-black tracking-wide text-nowrap text-base md:text-2xl"
         >

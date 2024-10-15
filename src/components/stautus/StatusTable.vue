@@ -1,33 +1,33 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import { useToast, POSITION } from "vue-toastification";
-import ConfirmationModal from "../ConfirmationModal.vue";
-import { isTokenExpired } from "@/services/tokenService";
+import { ref, onMounted } from "vue"
+import { useRouter, useRoute } from "vue-router"
+import { useToast, POSITION } from "vue-toastification"
+import ConfirmationModal from "../ConfirmationModal.vue"
+import { isTokenExpired } from "@/services/tokenService"
 import {
   getToken,
   decodedToken,
   useRefreshToken,
-} from "@/services/tokenService";
-import VueJwtDecode from "vue-jwt-decode";
+} from "@/services/tokenService"
+import VueJwtDecode from "vue-jwt-decode"
 const props = defineProps({
   statuses: {
     type: Array,
     required: true,
   },
-});
-const route = useRoute();
-const emit = defineEmits(["add-status", "edit-status", "status-deleted"]);
-const router = useRouter();
-const showConfirmationModal = ref(false);
-const statusToDelete = ref(null);
-const defaultStatus = ["No Status", "Done"];
-const showTransferModal = ref(false);
-const board = ref({});
-const currentId = ref("");
-const boardId = route.params.boardId;
-const isOwner = ref("");
-const tokenDecoded = ref({});
+})
+const route = useRoute()
+const emit = defineEmits(["add-status", "edit-status", "status-deleted"])
+const router = useRouter()
+const showConfirmationModal = ref(false)
+const statusToDelete = ref(null)
+const defaultStatus = ["No Status", "Done"]
+const showTransferModal = ref(false)
+const board = ref({})
+const currentId = ref("")
+const boardId = route.params.boardId
+const isOwner = ref("")
+const tokenDecoded = ref({})
 // const decodedToken = () => {
 //   const token = getToken();
 //   if (!token || isTokenExpired(token)) {
@@ -40,23 +40,23 @@ const tokenDecoded = ref({});
 //   }
 // };
 const closeStatusPage = () => {
-  router.push({ name: "tasklist" });
-};
+  router.push({ name: "tasklist" })
+}
 
 const handleAddStatus = () => {
-  router.push({ name: "statusadd" });
-  emit("add-status"); // Emit add-status event
-};
+  router.push({ name: "statusadd" })
+  emit("add-status") // Emit add-status event
+}
 // name: "statusedit"
 const handleEditStatus = (status) => {
-  router.push({ name: "statusedit", params: { id: status.id } });
-  emit("edit-status", status.id);
-};
+  router.push({ name: "statusedit", params: { id: status.id } })
+  emit("edit-status", status.id)
+}
 const fetchBoard = async () => {
-  const token = getToken();
+  const token = getToken()
   if (!token) {
-    await useRefreshToken();
-    token = getToken();
+    await useRefreshToken()
+    token = getToken()
   }
   try {
     const response = await fetch(
@@ -67,37 +67,37 @@ const fetchBoard = async () => {
           "Content-Type": "application/json",
         },
       }
-    );
-    const data = await response.json();
+    )
+    const data = await response.json()
     if (response.ok) {
-      board.value = data;
+      board.value = data
     } else if (response.status === 404) {
-      alert("The requested board does not exist");
-      router.push({ name: "boardslist" });
+      alert("The requested board does not exist")
+      router.push({ name: "boardslist" })
     } else if (response.status === 401) {
-      localStorage.removeItem("jwtToken");
-      router.push({ name: "login" });
+      localStorage.removeItem("jwtToken")
+      router.push({ name: "login" })
     } else if (response.status === 403) {
-      router.push({ name: "boardslist" });
+      router.push({ name: "boardslist" })
     }
   } catch (error) {
-    console.error("Error fetching boards:", error);
+    console.error("Error fetching boards:", error)
   }
-};
+}
 onMounted(async () => {
-  await fetchBoard();
-  tokenDecoded.value = decodedToken();
-  currentId.value = tokenDecoded.value.oid;
-  isOwner.value = board.value.owner.oid === currentId.value;
-  console.log(isOwner.value);
-});
+  await fetchBoard()
+  tokenDecoded.value = decodedToken()
+  currentId.value = tokenDecoded.value.oid
+  isOwner.value = board.value.owner.oid === currentId.value
+  console.log(isOwner.value)
+})
 const handleDeleteStatus = async (status) => {
-  const token = getToken();
+  const token = getToken()
   if (!token) {
-    await useRefreshToken();
-    token = getToken();
+    await useRefreshToken()
+    token = getToken()
   }
-  statusToDelete.value = status;
+  statusToDelete.value = status
   const response = await fetch(
     `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/tasks`,
     {
@@ -106,33 +106,33 @@ const handleDeleteStatus = async (status) => {
         "Content-Type": "application/json",
       },
     }
-  );
-  const tasks = await response.json();
+  )
+  const tasks = await response.json()
 
-  const associatedTasks = tasks.filter((task) => task.status === status.name);
-  const hasAssociatedTasks = associatedTasks.length > 0;
+  const associatedTasks = tasks.filter((task) => task.status === status.name)
+  const hasAssociatedTasks = associatedTasks.length > 0
 
   if (hasAssociatedTasks) {
-    showTransferModal.value = true;
-    statusToDelete.value.associatedTasksCount = associatedTasks.length;
+    showTransferModal.value = true
+    statusToDelete.value.associatedTasksCount = associatedTasks.length
   } else {
-    showConfirmationModal.value = true;
+    showConfirmationModal.value = true
   }
-};
+}
 
 const confirmDeleteStatus = async () => {
-  const token = getToken();
+  const token = getToken()
   if (!token) {
-    await useRefreshToken();
-    token = getToken();
+    await useRefreshToken()
+    token = getToken()
   }
   try {
     if (
       statusToDelete.value.name === "No Status" ||
       statusToDelete.value.name === "Done"
     ) {
-      showToast(`The status can not be deleted`, "error");
-      return;
+      showToast(`The status can not be deleted`, "error")
+      return
     }
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/statuses/${
@@ -145,53 +145,53 @@ const confirmDeleteStatus = async () => {
           "Content-Type": "application/json",
         },
       }
-    );
+    )
 
     if (response.ok) {
       // Remove the deleted status from the statuses array
       props.statuses.splice(
         props.statuses.findIndex((s) => s.id === statusToDelete.value.id),
         1
-      );
-      emit("status-deleted");
+      )
+      emit("status-deleted")
       showToast(
         `The status "${statusToDelete.value.name}" has been successfully deleted`,
         "success-delete"
-      );
+      )
     } else {
-      console.error("Error deleting status:", response.statusText);
-      showToast("An error occurred while deleting the status", "error");
+      console.error("Error deleting status:", response.statusText)
+      showToast("An error occurred while deleting the status", "error")
     }
   } catch (error) {
-    console.error("Error deleting status:", error);
-    showToast("An error occurred while deleting the status", "error");
+    console.error("Error deleting status:", error)
+    showToast("An error occurred while deleting the status", "error")
   } finally {
-    showConfirmationModal.value = false;
-    showTransferModal.value = false;
+    showConfirmationModal.value = false
+    showTransferModal.value = false
   }
-};
+}
 
 const closeConfirmationModal = () => {
-  showConfirmationModal.value = false;
-};
+  showConfirmationModal.value = false
+}
 
 const closeTransferModal = () => {
-  showTransferModal.value = false;
-};
+  showTransferModal.value = false
+}
 
 const transferTasks = async (targetStatusId) => {
-  const token = getToken();
+  const token = getToken()
   if (!token) {
-    await useRefreshToken();
-    token = getToken();
+    await useRefreshToken()
+    token = getToken()
   }
   try {
     if (
       statusToDelete.value.name === "No Status" ||
       statusToDelete.value.name === "Done"
     ) {
-      showToast(`The status can not be deleted`, "error");
-      return;
+      showToast(`The status can not be deleted`, "error")
+      return
     }
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/statuses/${
@@ -204,73 +204,73 @@ const transferTasks = async (targetStatusId) => {
           "Content-Type": "application/json",
         },
       }
-    );
+    )
 
     if (response.ok) {
       // Remove the deleted status from the statuses array
       props.statuses.splice(
         props.statuses.findIndex((s) => s.id === statusToDelete.value.id),
         1
-      );
-      emit("status-deleted");
+      )
+      emit("status-deleted")
       showToast(
         `The status "${statusToDelete.value.name}" has been successfully deleted and associated tasks transferred`,
         "success-delete"
-      );
+      )
     } else {
       console.error(
         "Error deleting status and transferring tasks:",
         response.statusText
-      );
+      )
       showToast(
         "An error occurred while deleting the status and transferring associated tasks",
         "error"
-      );
+      )
     }
   } catch (error) {
-    console.error("Error deleting status and transferring tasks:", error);
+    console.error("Error deleting status and transferring tasks:", error)
     showToast(
       "An error occurred while deleting the status and transferring associated tasks",
       "error"
-    );
+    )
   } finally {
-    showConfirmationModal.value = false;
-    showTransferModal.value = false;
+    showConfirmationModal.value = false
+    showTransferModal.value = false
   }
-};
+}
 
 const showToast = (message, type) => {
-  const toast = useToast(); // Create a toast instance
+  const toast = useToast() // Create a toast instance
 
   switch (type) {
     case "success-add":
       toast.success(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      });
-      break;
+      })
+      break
     case "success-update":
       toast.success(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      });
-      break;
+      })
+      break
     case "success-delete":
       toast.success(message, {
         position: POSITION.TOP_CENTER,
         timeout: 5000,
-      });
-      break;
+      })
+      break
     case "error":
       toast.error(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      });
-      break;
+      })
+      break
     default:
-      toast(message);
+      toast(message)
   }
-};
+}
 </script>
 
 <template>
@@ -281,17 +281,16 @@ const showToast = (message, type) => {
     >
       <!-- shadow-md bg-gradient-to-t from-blue-100 via-blue-300 to-blue-900 shadow-[#5d5d5fc7] bg-[#eaeef2]-->
       <div class="image flex h-14 m-2">
-        <img
+        <!-- <img
           class="ml-4"
           src="https://www.sit.kmutt.ac.th/wp-content/uploads/2016/12/logo-kmutt.png"
-        />
+        /> -->
         <h1
           class="text-start text-2xl font-lilita p-4 text-black tracking-wide"
         >
           IT-Bangmod Kradan Kanban
         </h1>
       </div>
-    
     </nav>
     <div class="h-28"></div>
     <div class="mt-2 grid grid-cols-2 items-center">
@@ -309,7 +308,7 @@ const showToast = (message, type) => {
         <strong class="text-[#525454] mt-4 ml-2"> > </strong>
         <p class="text-gray-600 mt-4 ml-4">Task Status</p>
       </div>
-       <div class="flex justify-center ml-48">
+      <div class="flex justify-center ml-48">
         <button
           class="addBtn flex text-md px-3 py-1 mt-2 mr-8 hover:bg-[#4ae77c] bg-[#4cdb79] text-black rounded itbkk-button-add font-lilita tracking-wide"
           @click="handleAddStatus"

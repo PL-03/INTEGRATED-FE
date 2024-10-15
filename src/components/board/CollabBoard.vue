@@ -1,32 +1,32 @@
 <script setup>
-import { onMounted, onUpdated, ref, watch } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import { useToast, POSITION } from "vue-toastification";
-import { getToken, decodedToken, removeTokens } from "@/services/tokenService";
+import { onMounted, onUpdated, ref, watch } from "vue"
+import { useRouter, useRoute } from "vue-router"
+import { useToast, POSITION } from "vue-toastification"
+import { getToken, decodedToken, removeTokens } from "@/services/tokenService"
 const props = defineProps({
   boardCollaborators: { type: Array, required: true },
   board: { type: Object, required: true },
-});
-const emit = defineEmits(["add-collaborator"]);
-const route = useRoute();
-const router = useRouter();
-const boardName = ref("");
-const username = ref("");
-const tokenDecoded = ref({});
-const isOwner = ref(false);
-const currentId = ref("");
-const board = ref({});
-const boardId = route.params.boardId;
-const showDropdown = ref(false);
-const boards = ref([...props.boardCollaborators]);
+})
+const emit = defineEmits(["add-collaborator"])
+const route = useRoute()
+const router = useRouter()
+const boardName = ref("")
+const username = ref("")
+const tokenDecoded = ref({})
+const isOwner = ref(false)
+const currentId = ref("")
+const board = ref({})
+const boardId = route.params.boardId
+const showDropdown = ref(false)
+const boards = ref([...props.boardCollaborators])
 const toggleDropdown = () => {
-  showDropdown.value = !showDropdown.value;
-};
+  showDropdown.value = !showDropdown.value
+}
 const fetchBoard = async () => {
-  const token = getToken();
+  const token = getToken()
   if (!token) {
-    await useRefreshToken();
-    token = getToken();
+    await useRefreshToken()
+    token = getToken()
   }
   try {
     const response = await fetch(
@@ -37,51 +37,51 @@ const fetchBoard = async () => {
           "Content-Type": "application/json",
         },
       }
-    );
-    const data = await response.json();
+    )
+    const data = await response.json()
     if (response.ok) {
-      board.value = data;
+      board.value = data
     } else if (response.status === 404) {
-      alert("The requested board does not exist");
-      router.push({ name: "boardslist" });
+      alert("The requested board does not exist")
+      router.push({ name: "boardslist" })
     } else if (response.status === 401) {
-      localStorage.removeItem("jwtToken");
-      router.push({ name: "login" });
+      localStorage.removeItem("jwtToken")
+      router.push({ name: "login" })
     } else if (response.status === 403) {
-      router.push({ name: "denial" });
+      router.push({ name: "denial" })
     }
   } catch (error) {
-    console.error("Error fetching boards:", error);
+    console.error("Error fetching boards:", error)
   }
-};
+}
 
 onMounted(async () => {
-  await fetchBoard();
-  tokenDecoded.value = decodedToken();
-  username.value = tokenDecoded.value.name;
-  currentId.value = tokenDecoded.value.oid;
-  isOwner.value = board.value.owner.oid === currentId.value;
-  boardName.value = board.value.name;
+  await fetchBoard()
+  tokenDecoded.value = decodedToken()
+  username.value = tokenDecoded.value.name
+  currentId.value = tokenDecoded.value.oid
+  isOwner.value = board.value.owner.oid === currentId.value
+  boardName.value = board.value.name
   boards.value = boards.value.sort(
     (a, b) => new Date(a.added_on) - new Date(b.added_on)
-  );
-});
+  )
+})
 watch(
   () => props.boardCollaborators,
   () => {
-    boards.value = [...props.boardCollaborators];
+    boards.value = [...props.boardCollaborators]
   }
-);
+)
 const handleAddCollaborator = () => {
-  emit("add-collaborator");
-};
+  emit("add-collaborator")
+}
 const back = () => {
-  router.push({ name: "tasklist", params: { boardId: boardId } });
-};
+  router.push({ name: "tasklist", params: { boardId: boardId } })
+}
 const logout = () => {
-  removeTokens();
-  router.push({ name: "login" });
-};
+  removeTokens()
+  router.push({ name: "login" })
+}
 </script>
 
 <template>
@@ -91,10 +91,10 @@ const logout = () => {
     >
       <!-- shadow-md bg-gradient-to-t from-blue-100 via-blue-300 to-blue-900 shadow-[#5d5d5fc7] bg-[#eaeef2]-->
       <div class="image flex h-14 m-2">
-        <img
+        <!-- <img
           class="ml-4"
           src="https://www.sit.kmutt.ac.th/wp-content/uploads/2016/12/logo-kmutt.png"
-        />
+        /> -->
         <h1
           class="text-start text-2xl font-lilita p-4 text-black tracking-wide"
         >
@@ -191,7 +191,9 @@ const logout = () => {
       </div>
 
       <!-- <div class="w-full overflow-x-auto"> -->
-      <table class="table-auto rounded-md overflow-hidden itbkk-table bg-[#39407e]">
+      <table
+        class="table-auto rounded-md overflow-hidden itbkk-table bg-[#39407e]"
+      >
         <thead>
           <tr class="text-white">
             <th>No.</th>
@@ -220,7 +222,7 @@ const logout = () => {
             </td>
             <td>
               <!-- Access Right -->
-              <span class="itbkk-access-right">{{ board.access_right }}</span>
+              <span class="itbkk-access-right">{{ board.accessRight }}</span>
             </td>
             <td>
               <button

@@ -1,9 +1,9 @@
 <script setup>
-import { ref, onMounted, onUpdated, watch } from "vue";
-import { useRouter } from "vue-router";
-import { useToast, POSITION } from "vue-toastification";
-import { getToken, decodedToken, removeTokens } from "@/services/tokenService";
-import VueJwtDecode from "vue-jwt-decode";
+import { ref, onMounted, onUpdated, watch } from "vue"
+import { useRouter } from "vue-router"
+import { useToast, POSITION } from "vue-toastification"
+import { getToken, decodedToken, removeTokens } from "@/services/tokenService"
+import VueJwtDecode from "vue-jwt-decode"
 
 const props = defineProps({
   boards: {
@@ -13,19 +13,19 @@ const props = defineProps({
   boardCollaborators: {
     type: Array,
   },
-});
-const showDropdown = ref(false);
-const router = useRouter();
+})
+const showDropdown = ref(false)
+const router = useRouter()
 // const token = getToken();
-const username = ref("");
-const oid = ref("");
-const emit = defineEmits(["board-added"]);
-const tokenDecoded = ref({});
-const board = ref([...props.boards]);
-const collabBoard = ref([...props.boards]);
-const haveBoard = ref(false);
-const boardCollaborators = ref([]);
-let token = getToken();
+const username = ref("")
+const oid = ref("")
+const emit = defineEmits(["board-added"])
+const tokenDecoded = ref({})
+const board = ref([...props.boards])
+const collabBoard = ref([...props.boards])
+const haveBoard = ref(false)
+const boardCollaborators = ref([])
+let token = getToken()
 // const fetchBoardColaborators = async () => {
 //   const token = getToken();
 //   if (!token) {
@@ -60,49 +60,49 @@ let token = getToken();
 
 onMounted(async () => {
   if (!token) {
-    await useRefreshToken();
-    token = getToken();
+    await useRefreshToken()
+    token = getToken()
   }
-  tokenDecoded.value = decodedToken();
-  username.value = tokenDecoded.value.name;
-  oid.value = tokenDecoded.value.oid;
-  board.value = props.boards.filter((board) => board.owner.oid === oid.value);
-  haveBoard.value = board.value.length > 0;
-  console.log(haveBoard.value);
+  tokenDecoded.value = decodedToken()
+  username.value = tokenDecoded.value.name
+  oid.value = tokenDecoded.value.oid
+  board.value = props.boards.filter((board) => board.owner.oid === oid.value)
+  haveBoard.value = board.value.length > 0
+  console.log(haveBoard.value)
 
   collabBoard.value = props.boards.filter((board) =>
     board.collaborators.some((collaborator) => collaborator.oid === oid.value)
-  );
-  console.log(collabBoard.value);
-  console.log(board.value);
-});
+  )
+  console.log(collabBoard.value)
+  console.log(board.value)
+})
 onUpdated(() => {
-  haveBoard.value = board.value.length > 0;
-});
+  haveBoard.value = board.value.length > 0
+})
 watch(
   () => props.boards,
   (newBoards) => {
-    board.value = newBoards.filter((board) => board.owner.oid === oid.value);
+    board.value = newBoards.filter((board) => board.owner.oid === oid.value)
     collabBoard.value = newBoards.filter((board) =>
       board.collaborators.some((collaborator) => collaborator.oid === oid.value)
-    );
+    )
   }
-);
+)
 
 const handleAddBoard = () => {
-  router.push({ name: "boardadd" });
-  emit("board-added");
-};
+  router.push({ name: "boardadd" })
+  emit("board-added")
+}
 const handleViewBoard = (id) => {
-  router.push({ name: "tasklist", params: { boardId: id } });
-};
+  router.push({ name: "tasklist", params: { boardId: id } })
+}
 const logout = () => {
-  removeTokens();
-  router.push({ name: "login" });
-};
+  removeTokens()
+  router.push({ name: "login" })
+}
 const toggleDropdown = () => {
-  showDropdown.value = !showDropdown.value;
-};
+  showDropdown.value = !showDropdown.value
+}
 </script>
 
 <template>
@@ -113,10 +113,10 @@ const toggleDropdown = () => {
     >
       <!-- shadow-md bg-gradient-to-t from-blue-100 via-blue-300 to-blue-900 shadow-[#5d5d5fc7] bg-[#eaeef2]-->
       <div class="image flex h-14 m-2">
-        <img
+        <!-- <img
           class="ml-4"
           src="https://www.sit.kmutt.ac.th/wp-content/uploads/2016/12/logo-kmutt.png"
-        />
+        /> -->
         <h1
           class="text-start text-2xl font-lilita p-4 text-black tracking-wide"
         >
@@ -215,7 +215,7 @@ const toggleDropdown = () => {
         <tbody
           v-for="(board, index) in board"
           :key="index"
-          :class="index % 2 === 0 ? 'bg-[#e0e5e2]' : 'bg-[#e8f4f4]' "
+          :class="index % 2 === 0 ? 'bg-[#e0e5e2]' : 'bg-[#e8f4f4]'"
           class="text-center border itbkk-item font-lilita"
         >
           <tr class="itbkk-personal-item">
@@ -272,9 +272,7 @@ const toggleDropdown = () => {
                   </button>
                 </td>
                 <td>
-                  <span class="itbkk-owner-name ">{{
-                    board.owner.name
-                  }}</span>
+                  <span class="itbkk-owner-name">{{ board.owner.name }}</span>
                 </td>
                 <td>
                   <span class="itbkk-access-right">
