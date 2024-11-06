@@ -1,6 +1,7 @@
 <script setup>
 import { useRoute, useRouter } from "vue-router";
 import { ref, onMounted, watch, watchEffect } from "vue";
+import { useToast, POSITION } from "vue-toastification";
 import {
   getToken,
   useRefreshToken,
@@ -137,7 +138,7 @@ const confirmPermissionChange = async () => {
         router.push({ name: "login" });
       }
     } else if (response.status === 403) {
-      router.push({ name: "denial" });
+      showToast("You are not allowed to perform this action", "error");
     }
   } catch (error) {
     console.log(error);
@@ -163,6 +164,28 @@ const closeModal = () => {
   fetchBoardColaborators();
   showConfirmationModal.value = false;
   showChangePermission.value = false;
+};
+const showToast = (message, type) => {
+  const toast = useToast();
+
+  switch (type) {
+    case "success-add":
+    case "success-update":
+    case "success-delete":
+      toast.success(message, {
+        position: POSITION.TOP_CENTER,
+        timeout: 3000,
+      });
+      break;
+    case "error":
+      toast.error(message, {
+        position: POSITION.TOP_CENTER,
+        timeout: 3000,
+      });
+      break;
+    default:
+      toast(message);
+  }
 };
 </script>
 

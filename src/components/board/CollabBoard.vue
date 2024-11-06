@@ -18,7 +18,6 @@ const currentId = ref("");
 const board = ref({});
 const boardId = route.params.boardId;
 const showDropdown = ref(false);
-const showModal = ref(false);
 const boards = ref([...props.boardCollaborators]);
 
 const hadleChangePermission = (permission, board) => {
@@ -250,6 +249,7 @@ const logout = () => {
               <button
                 class="itbkk-collab-remove bg-[#db2d2d] text-white text-sm py-1 px-2 rounded hover:bg-[#888a94]"
                 @click="handleRemoveCollaborator(board)"
+                :disabled="!isOwner"
               >
                 Remove
               </button>
@@ -320,6 +320,10 @@ tbody td {
     min-width: 600px;
   }
   .addBtn:disabled {
+    background-color: rgb(144, 150, 150);
+    cursor: not-allowed;
+  }
+  .itbkk-collab-remove:disabled {
     background-color: rgb(144, 150, 150);
     cursor: not-allowed;
   }
