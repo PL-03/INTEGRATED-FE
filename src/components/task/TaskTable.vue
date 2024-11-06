@@ -370,10 +370,10 @@ const handleToboardList = () => {
       class="navbar h-20 flex justify-between z-10 shadow-md shadow-[#95999ad8]"
     >
       <div class="image flex h-14 m-2">
-        <img
+        <!-- <img
           class="ml-4"
           src="https://www.sit.kmutt.ac.th/wp-content/uploads/2016/12/logo-kmutt.png"
-        />
+        /> -->
         <h1
           class="text-start font-lilita p-4 text-black tracking-wide text-nowrap text-base md:text-2xl"
         >
