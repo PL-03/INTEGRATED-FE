@@ -117,7 +117,7 @@ const confirmDeleteCollaborator = async () => {
       }
     );
     if (response.ok) {
-      fetchBoardColaborators();
+      fetchBoards();
       showDeleteModal.value = false;
     } else if (response.status === 404) {
       alert("The requested board does not exist");

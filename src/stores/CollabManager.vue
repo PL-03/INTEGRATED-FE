@@ -23,7 +23,7 @@ const showConfirmationModal = ref(false);
 const collabDetail = ref(null);
 const permissionTochange = ref(null);
 const showChangePermission = ref(false);
-const collaboratorDetail = ref({});
+
 const fetchBoardColaborators = async () => {
   let token = getToken();
   if (!token) {
@@ -69,7 +69,7 @@ const confirmDeleteCollaborator = async () => {
   try {
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/collabs/${
-        collabToDelete.value.oid
+        collabDetail.value.oid
       }`,
       {
         method: "DELETE",
