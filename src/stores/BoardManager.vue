@@ -3,17 +3,23 @@ import { ref, onMounted, watch, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import BoardList from "@/components/board/BoardList.vue";
 import AddBoard from "@/components/board/AddBoard.vue";
+import ConfirmationModal from "@/components/ConfirmationModal.vue";
 import {
   getToken,
   decodedToken,
   useRefreshToken,
+  removeTokens,
 } from "@/services/tokenService";
-
+const route = useRoute();
 const router = useRouter();
 const selectedBoard = ref({});
 const showModal = ref(false);
 const boards = ref([]);
 const boardCollaborators = ref([]);
+const showDeleteModal = ref(false);
+const boardDetail = ref({});
+const oidToDelete = ref("");
+const boardId = route.params.boardId;
 
 const fetchBoardColaborators = async () => {
   const token = getToken();
@@ -30,7 +36,7 @@ const fetchBoardColaborators = async () => {
       }/collabs`,
       {
         headers: {
-          Authization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
       }
@@ -39,8 +45,14 @@ const fetchBoardColaborators = async () => {
     if (response.ok) {
       boardCollaborators.value = data;
     } else if (response.status === 401) {
-      removeTokens();
-      router.push({ name: "login" });
+      let token = getToken();
+      if (!token) {
+        await useRefreshToken();
+        token = getToken();
+      } else if (!token) {
+        removeTokens();
+        router.push({ name: "login" });
+      }
     } else if (response.status === 403) {
       router.push({ name: "denial" });
     }
@@ -85,29 +97,47 @@ const fetchBoards = async () => {
     console.error("Error fetching boards:", error);
   }
 };
-// const fetchBoardsById = async (boardId) => {
-//   console.log(boardId);
-//   const token = getToken();
-//   if (!token) {
-//     await useRefreshToken();
-//     token = getToken();
-//   }
-//   try {
-//     const response = await fetch(
-//       `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}`,
-//       {
-//         headers: {
-//           Authorization: `Bearer ${token}`,
-//           "Content-Type": "application/json",
-//         },
-//       }
-//     );
-//     const data = await response.json();
-//     selectedBoard.value = data;
-//   } catch (error) {
-//     console.error("Error fetching boards:", error);
-//   }
-// };
+const confirmDeleteCollaborator = async () => {
+  const token = getToken();
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/v3/boards/${
+        boardDetail.value.id
+      }/collabs/${oidToDelete.value}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.ok) {
+      fetchBoardColaborators();
+      showDeleteModal.value = false;
+    } else if (response.status === 404) {
+      alert("The requested board does not exist");
+      router.push({ name: "boardslist" });
+    } else if (response.status === 401) {
+      let token = getToken();
+      if (!token) {
+        await useRefreshToken();
+        token = getToken();
+      } else if (!token) {
+        removeTokens();
+        router.push({ name: "login" });
+      }
+    } else if (response.status === 403) {
+      router.push({ name: "denial" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
 onMounted(async () => {
   await fetchBoards();
   // await fetchBoardColaborators();
@@ -123,6 +153,17 @@ const handleBoardUpdated = (newBoard) => {
 
   router.push({ name: "tasklist", params: { boardId: newBoard.id } });
 };
+const handleRemoveCollaborator = (board, collaborator) => {
+  boardDetail.value = board;
+  oidToDelete.value = collaborator;
+  // console.log(boardDetail.value);
+
+  showDeleteModal.value = true;
+};
+const closeModal = () => {
+  showModal.value = false;
+  showDeleteModal.value = false;
+};
 </script>
 
 <template>
@@ -130,11 +171,19 @@ const handleBoardUpdated = (newBoard) => {
     :boards="boards"
     :boardCollaborators="boardCollaborators"
     @board-added="handleBoardAdded"
+    @remove-collaborator="handleRemoveCollaborator"
   />
   <AddBoard
     :show="showModal"
     :board="selectedBoard"
     @update:show="showModal = $event"
     @board-added="handleBoardUpdated"
+  />
+  <ConfirmationModal
+    v-if="showDeleteModal"
+    :showDeleteModal="showDeleteModal"
+    :boardDetail="boardDetail"
+    @close="closeModal"
+    @confirm="confirmDeleteCollaborator"
   />
 </template>

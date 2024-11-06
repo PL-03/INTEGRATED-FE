@@ -22,22 +22,35 @@ const close = () => {
 </script>
 
 <template>
-  <div v-if="show" class="modal fixed inset-0 z-50 flex items-center justify-center" @click="close">
+  <div
+    v-if="show"
+    class="modal fixed inset-0 z-50 flex items-center justify-center"
+    @click="close"
+  >
     <div class="itbkk-modal-alert bg-white rounded-lg shadow-2xl p-4 w-1/3">
       <h3 class="text-xl mb-4 text-start pl-2">Change Board Visibility</h3>
-      <p v-if="boardVisible === 'PRIVATE'" class="itbkk-message mb-6 text-gray-700 text-start p-2">
-        In public, anyone can view the board, task list and task detail of
-        tasks in the board. Do you want to change the visibility to Public?
+      <p
+        v-if="boardVisible === 'PRIVATE'"
+        class="itbkk-message mb-6 text-gray-700 text-start p-2"
+      >
+        In public, anyone can view the board, task list and task detail of tasks
+        in the board. Do you want to change the visibility to Public?
       </p>
       <p v-else class="itbkk-message mb-6 text-gray-700 text-start p-2">
-        In private, only board owner can access/control board, task list.
-        Do you want to change the visibility to Private?
+        In private, only board owner can access/control board, task list. Do you
+        want to change the visibility to Private?
       </p>
       <div class="flex justify-end space-x-2">
-        <button class="itbkk-button-confirm bg-green-500 text-white py-2 px-4 rounded" @click="confirm">
+        <button
+          class="itbkk-button-confirm bg-green-500 text-white py-2 px-4 rounded"
+          @click="confirm"
+        >
           Confirm
         </button>
-        <button class="itbkk-button-cancel bg-red-500 text-white py-2 px-4 rounded" @click="close">
+        <button
+          class="itbkk-button-cancel bg-red-500 text-white py-2 px-4 rounded"
+          @click="close"
+        >
           Cancel
         </button>
       </div>

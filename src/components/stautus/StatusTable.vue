@@ -75,8 +75,14 @@ const fetchBoard = async () => {
       alert("The requested board does not exist");
       router.push({ name: "boardslist" });
     } else if (response.status === 401) {
-      localStorage.removeItem("jwtToken");
-      router.push({ name: "login" });
+      let token = getToken();
+      if (!token) {
+        await useRefreshToken();
+        token = getToken();
+      } else if (!token) {
+        removeTokens();
+        router.push({ name: "login" });
+      }
     } else if (response.status === 403) {
       router.push({ name: "boardslist" });
     }
@@ -291,7 +297,6 @@ const showToast = (message, type) => {
           IT-Bangmod Kradan Kanban
         </h1>
       </div>
-    
     </nav>
     <div class="h-28"></div>
     <div class="mt-2 grid grid-cols-2 items-center">
@@ -309,7 +314,7 @@ const showToast = (message, type) => {
         <strong class="text-[#525454] mt-4 ml-2"> > </strong>
         <p class="text-gray-600 mt-4 ml-4">Task Status</p>
       </div>
-       <div class="flex justify-center ml-48">
+      <div class="flex justify-center ml-48">
         <button
           class="addBtn flex text-md px-3 py-1 mt-2 mr-8 hover:bg-[#4ae77c] bg-[#4cdb79] text-black rounded itbkk-button-add font-lilita tracking-wide"
           @click="handleAddStatus"

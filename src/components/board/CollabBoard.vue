@@ -18,7 +18,15 @@ const currentId = ref("");
 const board = ref({});
 const boardId = route.params.boardId;
 const showDropdown = ref(false);
+const showModal = ref(false);
 const boards = ref([...props.boardCollaborators]);
+
+const hadleChangePermission = (permission, board) => {
+  emit("change-permission", permission.target.value, board);
+};
+const handleRemoveCollaborator = (board) => {
+  emit("remove-collaborator", board);
+};
 const toggleDropdown = () => {
   showDropdown.value = !showDropdown.value;
 };
@@ -45,8 +53,14 @@ const fetchBoard = async () => {
       alert("The requested board does not exist");
       router.push({ name: "boardslist" });
     } else if (response.status === 401) {
-      localStorage.removeItem("jwtToken");
-      router.push({ name: "login" });
+      let token = getToken();
+      if (!token) {
+        await useRefreshToken();
+        token = getToken();
+      } else if (!token) {
+        removeTokens();
+        router.push({ name: "login" });
+      }
     } else if (response.status === 403) {
       router.push({ name: "denial" });
     }
@@ -191,7 +205,9 @@ const logout = () => {
       </div>
 
       <!-- <div class="w-full overflow-x-auto"> -->
-      <table class="table-auto rounded-md overflow-hidden itbkk-table bg-[#39407e]">
+      <table
+        class="table-auto rounded-md overflow-hidden itbkk-table bg-[#39407e]"
+      >
         <thead>
           <tr class="text-white">
             <th>No.</th>
@@ -220,11 +236,20 @@ const logout = () => {
             </td>
             <td>
               <!-- Access Right -->
-              <span class="itbkk-access-right">{{ board.access_right }}</span>
+              <select
+                v-model="board.accessRight"
+                id="options"
+                class="itbkk-access-right"
+                @change="hadleChangePermission($event, board)"
+              >
+                <option value="READ">READ</option>
+                <option value="WRITE">WRITE</option>
+              </select>
             </td>
             <td>
               <button
                 class="itbkk-collab-remove bg-[#db2d2d] text-white text-sm py-1 px-2 rounded hover:bg-[#888a94]"
+                @click="handleRemoveCollaborator(board)"
               >
                 Remove
               </button>

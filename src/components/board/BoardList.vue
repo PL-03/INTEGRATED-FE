@@ -3,7 +3,6 @@ import { ref, onMounted, onUpdated, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useToast, POSITION } from "vue-toastification";
 import { getToken, decodedToken, removeTokens } from "@/services/tokenService";
-import VueJwtDecode from "vue-jwt-decode";
 
 const props = defineProps({
   boards: {
@@ -19,13 +18,19 @@ const router = useRouter();
 // const token = getToken();
 const username = ref("");
 const oid = ref("");
-const emit = defineEmits(["board-added"]);
+const emit = defineEmits(["board-added", "remove-collaborator"]);
 const tokenDecoded = ref({});
 const board = ref([...props.boards]);
 const collabBoard = ref([...props.boards]);
 const haveBoard = ref(false);
 const boardCollaborators = ref([]);
-let token = getToken();
+const checkToken = async () => {
+  let token = getToken();
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
+};
 // const fetchBoardColaborators = async () => {
 //   const token = getToken();
 //   if (!token) {
@@ -59,10 +64,7 @@ let token = getToken();
 // };
 
 onMounted(async () => {
-  if (!token) {
-    await useRefreshToken();
-    token = getToken();
-  }
+  await checkToken();
   tokenDecoded.value = decodedToken();
   username.value = tokenDecoded.value.name;
   oid.value = tokenDecoded.value.oid;
@@ -77,6 +79,7 @@ onMounted(async () => {
   console.log(board.value);
 });
 onUpdated(() => {
+  checkToken();
   haveBoard.value = board.value.length > 0;
 });
 watch(
@@ -95,6 +98,9 @@ const handleAddBoard = () => {
 };
 const handleViewBoard = (id) => {
   router.push({ name: "tasklist", params: { boardId: id } });
+};
+const handleRemoveCollaborator = (board, oid) => {
+  emit("remove-collaborator", board, oid);
 };
 const logout = () => {
   removeTokens();
@@ -215,7 +221,7 @@ const toggleDropdown = () => {
         <tbody
           v-for="(board, index) in board"
           :key="index"
-          :class="index % 2 === 0 ? 'bg-[#e0e5e2]' : 'bg-[#e8f4f4]' "
+          :class="index % 2 === 0 ? 'bg-[#e0e5e2]' : 'bg-[#e8f4f4]'"
           class="text-center border itbkk-item font-lilita"
         >
           <tr class="itbkk-personal-item">
@@ -272,9 +278,7 @@ const toggleDropdown = () => {
                   </button>
                 </td>
                 <td>
-                  <span class="itbkk-owner-name ">{{
-                    board.owner.name
-                  }}</span>
+                  <span class="itbkk-owner-name">{{ board.owner.name }}</span>
                 </td>
                 <td>
                   <span class="itbkk-access-right">
@@ -287,7 +291,8 @@ const toggleDropdown = () => {
                 </td>
                 <td>
                   <button
-                    class="itbkk-leave-board bg-[#adafb5] text-white text-sm py-1 px-2 rounded hover:bg-[#888a94]"
+                    class="itbkk-leave-board bg-[#c52d2d] text-white text-sm py-1 px-2 rounded hover:bg-[#a54848]"
+                    @click="handleRemoveCollaborator(board, oid)"
                   >
                     Leave
                   </button>
@@ -300,7 +305,7 @@ const toggleDropdown = () => {
     </div>
 
     <!-- v-else -->
-    <!-- <div
+    <div
       v-else
       class="flex flex-col justify-center items-center text-center gap-4 min-h-screen"
     >
@@ -319,7 +324,7 @@ const toggleDropdown = () => {
       >
         Create New Board
       </button>
-    </div> -->
+    </div>
   </div>
   <!-- </div> -->
 </template>

@@ -97,8 +97,14 @@ const confirmToggle = async () => {
         "success"
       );
     } else if (response.status === 401) {
-      localStorage.removeItem("jwtToken");
-      router.push({ name: "login" });
+      let token = getToken();
+      if (!token) {
+        await useRefreshToken();
+        token = getToken();
+      } else if (!token) {
+        removeTokens();
+        router.push({ name: "login" });
+      }
     } else if (response.status === 403) {
       showToast(
         "You do not have permission to change the board visibility mode",
@@ -170,8 +176,14 @@ const fetchBoard = async () => {
       alert("The requested board does not exist");
       router.push({ name: "boardslist" });
     } else if (response.status === 401) {
-      localStorage.removeItem("jwtToken");
-      router.push({ name: "login" });
+      let token = getToken();
+      if (!token) {
+        await useRefreshToken();
+        token = getToken();
+      } else if (!token) {
+        removeTokens();
+        router.push({ name: "login" });
+      }
     } else if (response.status === 403) {
       router.push({ name: "denial" });
     }

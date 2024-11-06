@@ -26,6 +26,27 @@ const props = defineProps({
     type: Number,
     default: 0,
   },
+  showConfirmationModal: {
+    type: Boolean,
+    default: false,
+  },
+  showChangePermission: {
+    type: Boolean,
+    default: false,
+  },
+  collabDetail: {
+    type: Object,
+  },
+  permissionToChange: {
+    type: String,
+    required: true,
+  },
+  showDeleteModal: {
+    type: Boolean,
+  },
+  boardDetail: {
+    type: Object,
+  },
 });
 
 const emit = defineEmits(["close", "confirm", "transfer"]);
@@ -41,7 +62,9 @@ const confirmDelete = () => {
     emit("confirm");
   }
 };
-
+const confirmPermissionChange = () => {
+  emit("confirmPermissionChange");
+};
 const modalTitle = computed(() => {
   return props.tasksAssociated
     ? "Transfer Tasks"
@@ -72,27 +95,130 @@ const filteredStatuses = computed(() => {
 
 <template>
   <div v-if="show" class="modal-overlay">
-    <div class="modal-content  font-lilita">
-      <button class="close hover:text-red-500 " @click="closeModal">&times;</button>
-      <h2 class=" text-xl text-yellow-950">{{ modalTitle }}</h2>
+    <div class="modal-content font-lilita">
+      <button class="close hover:text-red-500" @click="closeModal">
+        &times;
+      </button>
+      <h2 class="text-xl text-yellow-950">{{ modalTitle }}</h2>
       <p class="itbkk-message">{{ modalMessage }}</p>
       <div v-if="tasksAssociated" class="mt-4">
-        <select id="transfer-status" v-model="transferStatus"
-          class="w-full px-3 py-2 border border-gray-300 rounded-md">
-          <option v-for="status in filteredStatuses" :key="status.id" :value="status">
+        <select
+          id="transfer-status"
+          v-model="transferStatus"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md"
+        >
+          <option
+            v-for="status in filteredStatuses"
+            :key="status.id"
+            :value="status"
+          >
             {{ status.name }}
           </option>
         </select>
       </div>
       <div class="flex flex-row justify-center itbkk-button-action mt-4">
         <div class="mt-4">
-          <button class="bg-green-500 text-white w-20 h-10 rounded itbkk-button-confirm"
-            @click="confirmDelete" :disabled="tasksAssociated && !transferStatus">
+          <button
+            class="bg-green-500 text-white w-20 h-10 rounded itbkk-button-confirm"
+            @click="confirmDelete"
+            :disabled="tasksAssociated && !transferStatus"
+          >
             {{ tasksAssociated ? "Transfer" : "OK" }}
           </button>
         </div>
         <div class="m-4">
-          <button class="bg-red-500 text-white  py-2 px-4 rounded itbkk-button-cancel" @click="closeModal">
+          <button
+            class="bg-red-500 text-white py-2 px-4 rounded itbkk-button-cancel"
+            @click="closeModal"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div v-if="showConfirmationModal" class="modal-overlay">
+    <div class="modal-content font-lilita">
+      <button class="close hover:text-red-500" @click="closeModal">
+        &times;
+      </button>
+      <h2 class="text-xl text-yellow-950">Remove Collaborator</h2>
+      <p class="itbkk-message">
+        Do you want to remove "{{ collabDetail.name }}" from the board?
+      </p>
+      <div class="flex flex-row justify-center itbkk-button-action mt-4">
+        <div class="mt-4">
+          <button
+            class="bg-green-500 text-white w-20 h-10 rounded itbkk-button-confirm"
+            @click="confirmDelete"
+          >
+            Confirm
+          </button>
+        </div>
+        <div class="m-4">
+          <button
+            class="bg-red-500 text-white py-2 px-4 rounded itbkk-button-cancel"
+            @click="closeModal"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div v-if="showChangePermission" class="modal-overlay">
+    <div class="modal-content font-lilita">
+      <button class="close hover:text-red-500" @click="closeModal">
+        &times;
+      </button>
+      <h2 class="text-xl text-yellow-950">Remove Collaborator</h2>
+      <p class="itbkk-message">
+        Do you want to remove "{{ collabDetail.name }}" to
+        {{ permissionToChange }}?
+      </p>
+      <div class="flex flex-row justify-center itbkk-button-action mt-4">
+        <div class="mt-4">
+          <button
+            class="bg-green-500 text-white w-20 h-10 rounded itbkk-button-confirm"
+            @click="confirmPermissionChange"
+          >
+            Confirm
+          </button>
+        </div>
+        <div class="m-4">
+          <button
+            class="bg-red-500 text-white py-2 px-4 rounded itbkk-button-cancel"
+            @click="closeModal"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div v-if="showDeleteModal" class="modal-overlay">
+    <div class="modal-content font-lilita">
+      <button class="close hover:text-red-500" @click="closeModal">
+        &times;
+      </button>
+      <h2 class="text-xl text-yellow-950">Leave Board</h2>
+      <p class="itbkk-message">
+        Do you want to leave this "{{ boardDetail.name }}" board?
+      </p>
+      <div class="flex flex-row justify-center itbkk-button-action mt-4">
+        <div class="mt-4">
+          <button
+            class="bg-green-500 text-white w-20 h-10 rounded itbkk-button-confirm"
+            @click="confirmDelete"
+          >
+            Confirm
+          </button>
+        </div>
+        <div class="m-4">
+          <button
+            class="bg-red-500 text-white py-2 px-4 rounded itbkk-button-cancel"
+            @click="closeModal"
+          >
             Cancel
           </button>
         </div>

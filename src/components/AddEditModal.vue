@@ -143,8 +143,14 @@ const handleSubmit = async () => {
         isAddMode.value ? "success-add" : "success-update"
       );
     } else if (response.status === 401) {
-      removeTokens();
-      router.push({ name: "login" });
+      let token = getToken();
+      if (!token) {
+        await useRefreshToken();
+        token = getToken();
+      } else if (!token) {
+        removeTokens();
+        router.push({ name: "login" });
+      }
     } else if (response.status === 403) {
       showToast(
         `You don't have permission to ${
