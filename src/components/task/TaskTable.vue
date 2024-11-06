@@ -48,6 +48,8 @@ const isToggled = ref(false);
 const boardVisibility = ref("");
 const currentId = ref("");
 const board = ref({});
+const isWriteCollab = ref(false);
+const isDisabled = ref(false);
 
 // const isPublic = ref(board.value.visibility === "PUBLIC");
 const openModal = () => {
@@ -207,7 +209,22 @@ onMounted(async () => {
   // boardVisibility.value = props.boardDetail.visibility;
   // boardVisible.value = props.boardDetail.visibility;
   isOwner.value = board.value.owner.oid === currentId.value;
-  console.log(isOwner.value);
+
+  const matchCurrentUser = board.value.collaborators.find(
+    (collaborator) => collaborator.oid === currentId.value
+  );
+
+  if (currentId.value === matchCurrentUser.oid) {
+    if (matchCurrentUser.accessRight === "WRITE") {
+      isWriteCollab.value = true;
+    } else if (isOwner.value === false && isWriteCollab.value === false) {
+      isDisabled.value = true;
+    }
+  }
+  console.log(isOwner.value === false && isWriteCollab.value === false);
+  console.log(isDisabled.value);
+
+  isWriteCollab.value = console.log(board.value);
 });
 onUpdated(() => {
   boardName.value = props.boardDetail.name;
@@ -228,7 +245,17 @@ watch(
   { immediate: true }
 );
 
-watch(statusFiltered, fetchFilteredTasks, fetchBoard, { immediate: true });
+watch(
+  isDisabled,
+  isOwner,
+  isWriteCollab,
+  statusFiltered,
+  fetchFilteredTasks,
+  fetchBoard,
+  {
+    immediate: true,
+  }
+);
 
 const handleSortData = (direction) => {
   if (!filteredTasks.value || filteredTasks.value.length === 0) return;
@@ -493,7 +520,7 @@ const handleToboardList = () => {
             <button
               @click="handleAddTask"
               class="addBtn itbkk-button-add flex text-nowrap ml-2 text-xs md:text-sm items-center text-white bg-[#259f60] p-2 rounded-lg hover:bg-[#46c472] transition duration-300"
-              :disabled="!isOwner"
+              :disabled="isDisabled"
             >
               Add Task
             </button>
@@ -609,7 +636,7 @@ const handleToboardList = () => {
                   <button
                     class="editBtn text-blue-800 hover:text-blue-500 ml-2 e-btn itbkk-button-edit"
                     @click="handleEditTask(task)"
-                    :disabled="!isOwner"
+                    :disabled="isDisabled"
                   >
                     <svg
                       class="itbkk-button-edit"
@@ -628,7 +655,7 @@ const handleToboardList = () => {
                   <button
                     class="deleteBtn text-red-700 hover:text-red-400 d-btn px-4"
                     @click="handleDeleteTask(task)"
-                    :disabled="!isOwner"
+                    :disabled="isDisabled"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"

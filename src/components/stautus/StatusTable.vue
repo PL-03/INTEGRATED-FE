@@ -28,6 +28,8 @@ const currentId = ref("");
 const boardId = route.params.boardId;
 const isOwner = ref("");
 const tokenDecoded = ref({});
+const isWriteCollab = ref(false);
+const isDisabled = ref(false);
 // const decodedToken = () => {
 //   const token = getToken();
 //   if (!token || isTokenExpired(token)) {
@@ -95,7 +97,17 @@ onMounted(async () => {
   tokenDecoded.value = decodedToken();
   currentId.value = tokenDecoded.value.oid;
   isOwner.value = board.value.owner.oid === currentId.value;
-  console.log(isOwner.value);
+  const matchCurrentUser = board.value.collaborators.find(
+    (collaborator) => collaborator.oid === currentId.value
+  );
+
+  if (currentId.value === matchCurrentUser.oid) {
+    if (matchCurrentUser.accessRight === "WRITE") {
+      isWriteCollab.value = true;
+    } else if (isOwner.value === false && isWriteCollab.value === false) {
+      isDisabled.value = true;
+    }
+  }
 });
 const handleDeleteStatus = async (status) => {
   const token = getToken();
@@ -318,7 +330,7 @@ const showToast = (message, type) => {
         <button
           class="addBtn flex text-md px-3 py-1 mt-2 mr-8 hover:bg-[#4ae77c] bg-[#4cdb79] text-black rounded itbkk-button-add font-lilita tracking-wide"
           @click="handleAddStatus"
-          :disabled="!isOwner"
+          :disabled="isDisabled"
         >
           Add Status
         </button>
@@ -377,7 +389,7 @@ const showToast = (message, type) => {
               <button
                 class="editBtn text-blue-800 hover:text-blue-500 mb-2 e-btn edit-delete itbkk-button-edit"
                 @click="handleEditStatus(status)"
-                :disabled="defaultStatus.includes(status.name) || !isOwner"
+                :disabled="defaultStatus.includes(status.name) || isDisabled"
               >
                 <svg
                   class="itbkk-button-edit"
@@ -396,7 +408,7 @@ const showToast = (message, type) => {
               <button
                 class="deleteBtn text-red-700 hover:text-red-400 d-btn px-4 edit-delete itbkk-button-delete"
                 @click="handleDeleteStatus(status)"
-                :disabled="defaultStatus.includes(status.name) || !isOwner"
+                :disabled="defaultStatus.includes(status.name) || isDisabled"
               >
                 <svg
                   class="itbkk-button-delete"
