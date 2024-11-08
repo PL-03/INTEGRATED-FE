@@ -139,25 +139,26 @@ const filteredStatuses = computed(() => {
   </div>
   <div v-if="showConfirmationModal" class="modal-overlay">
     <div class="modal-content font-lilita">
-      <button class="close hover:text-red-500" @click="closeModal">
+      <!-- <button class="close hover:text-red-500" @click="closeModal">
         &times;
-      </button>
-      <h2 class="text-xl text-yellow-950">Remove Collaborator</h2>
-      <p class="itbkk-message">
-        Do you want to remove "{{ collabDetail.name }}" from the board?
+      </button> -->
+      <h2 class="text-xl text-yellow-900">Remove Collaborator</h2>
+      <hr class="divider">
+      <p class="itbkk-message text-left">
+        Do you want to remove " {{ collabDetail.name }} " from the board?
       </p>
-      <div class="flex flex-row justify-center itbkk-button-action mt-4">
-        <div class="mt-4">
+      <div class="flex flex-row justify-end itbkk-button-action mt-4">
+        <div class="mt-2 mr-2">
           <button
-            class="bg-green-500 text-white w-20 h-10 rounded itbkk-button-confirm"
+            class="bg-[#3cc55e] hover:bg-[#319c5e] text-white w-20 h-10 rounded itbkk-button-confirm"
             @click="confirmDelete"
           >
             Confirm
           </button>
         </div>
-        <div class="m-4">
+        <div class="mt-2">
           <button
-            class="bg-red-500 text-white py-2 px-4 rounded itbkk-button-cancel"
+            class="bg-red-500 hover:bg-[#c03a3a] text-white  w-20 h-10 rounded itbkk-button-cancel"
             @click="closeModal"
           >
             Cancel
@@ -168,26 +169,27 @@ const filteredStatuses = computed(() => {
   </div>
   <div v-if="showChangePermission" class="modal-overlay">
     <div class="modal-content font-lilita">
-      <button class="close hover:text-red-500" @click="closeModal">
+      <!-- <button class="close hover:text-red-500" @click="closeModal">
         &times;
-      </button>
-      <h2 class="text-xl text-yellow-950">Remove Collaborator</h2>
-      <p class="itbkk-message">
-        Do you want to remove "{{ collabDetail.name }}" to
-        {{ permissionToChange }}?
+      </button> -->
+      <h2 class="text-xl text-yellow-900">Change Access Right</h2>
+       <hr class="divider">
+      <p class="itbkk-message text-left">
+        Do you want to change access right " {{ collabDetail.name }} " to 
+        " {{ permissionToChange }} " ?
       </p>
-      <div class="flex flex-row justify-center itbkk-button-action mt-4">
-        <div class="mt-4">
+      <div class="flex flex-row justify-end itbkk-button-action mt-4">
+        <div class="mt-2 mr-2">
           <button
-            class="bg-green-500 text-white w-20 h-10 rounded itbkk-button-confirm"
-            @click="confirmPermissionChange"
+            class="bg-[#3cc55e] hover:bg-[#319c5e] text-white w-20 h-10 rounded itbkk-button-confirm"
+            @click="confirmDelete"
           >
             Confirm
           </button>
         </div>
-        <div class="m-4">
+        <div class="mt-2">
           <button
-            class="bg-red-500 text-white py-2 px-4 rounded itbkk-button-cancel"
+            class="bg-red-500 hover:bg-[#c03a3a] text-white  w-20 h-10 rounded itbkk-button-cancel"
             @click="closeModal"
           >
             Cancel
@@ -198,25 +200,26 @@ const filteredStatuses = computed(() => {
   </div>
   <div v-if="showDeleteModal" class="modal-overlay">
     <div class="modal-content font-lilita">
-      <button class="close hover:text-red-500" @click="closeModal">
+      <!-- <button class="close hover:text-red-500" @click="closeModal">
         &times;
-      </button>
-      <h2 class="text-xl text-yellow-950">Leave Board</h2>
-      <p class="itbkk-message">
-        Do you want to leave this "{{ boardDetail.name }}" board?
+      </button> -->
+      <h2 class="text-xl text-yellow-900">Leave Board</h2>
+      <hr class="divider">
+      <p class="itbkk-message text-left">
+        Do you want to leave this " {{ boardDetail.name }} " board?
       </p>
-      <div class="flex flex-row justify-center itbkk-button-action mt-4">
-        <div class="mt-4">
+      <div class="flex flex-row justify-end itbkk-button-action mt-8">
+        <div class="mt-2 mr-2">
           <button
-            class="bg-green-500 text-white w-20 h-10 rounded itbkk-button-confirm"
+            class="bg-[#3cc55e] hover:bg-[#319c5e] text-white w-20 h-10 rounded itbkk-button-confirm"
             @click="confirmDelete"
           >
             Confirm
           </button>
         </div>
-        <div class="m-4">
+        <div class="mt-2">
           <button
-            class="bg-red-500 text-white py-2 px-4 rounded itbkk-button-cancel"
+            class="bg-red-500 hover:bg-[#c03a3a] text-white  w-20 h-10 rounded itbkk-button-cancel"
             @click="closeModal"
           >
             Cancel
@@ -250,4 +253,10 @@ const filteredStatuses = computed(() => {
   max-height: 90vh;
   overflow-y: auto;
 }
+.divider {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 10px 0;
+}
+
 </style>

@@ -134,7 +134,7 @@ const toggleDropdown = () => {
         <button
           class="createBtn flex items-center text-md text-black hover:text-blue-600 transition duration-300 itbkk-button-add"
           @click="handleAddBoard"
-          :disabled="haveBoard"
+          v-if="!haveBoard"
         >
           Create New Board
         </button>
@@ -221,7 +221,7 @@ const toggleDropdown = () => {
         <tbody
           v-for="(board, index) in board"
           :key="index"
-          :class="index % 2 === 0 ? 'bg-[#e0e5e2]' : 'bg-[#e8f4f4]'"
+          :class="index % 2 === 0 ? 'bg-[#def3f4]' : 'bg-[#eaf9f9]'"
           class="text-center border itbkk-item font-lilita"
         >
           <tr class="itbkk-personal-item">
@@ -229,13 +229,13 @@ const toggleDropdown = () => {
             <td>
               <button
                 @click="handleViewBoard(board.id)"
-                class="itbkk-board-name"
+                class="itbkk-board-name text-[#283aa4] hover:text-[#4e5afe]"
               >
                 {{ board.name }}
               </button>
             </td>
             <td>
-              <span class="text-[#258650]">{{ board.visibility }}</span>
+              <span class="text-[#f38836]">{{ board.visibility }}</span>
             </td>
           </tr>
         </tbody>
@@ -264,7 +264,7 @@ const toggleDropdown = () => {
             <tbody
               v-for="(board, index) in collabBoard"
               :key="index"
-              :class="index % 2 === 0 ? 'bg-[#e0e5e2]' : 'bg-[#e8f4f4]'"
+              :class="index % 2 === 0 ? 'bg-[#def3f4]' : 'bg-[#eaf9f9]'"
               class="text-center border itbkk-item font-lilita"
             >
               <tr class="itbkk-collab-item">
@@ -272,7 +272,7 @@ const toggleDropdown = () => {
                 <td>
                   <button
                     @click="handleViewBoard(board.id)"
-                    class="itbkk-board-name text-[#4d5fcb]"
+                    class="itbkk-board-name text-[#283aa4] hover:text-[#4e5afe] text-nowrap"
                   >
                     {{ board.name }}
                   </button>

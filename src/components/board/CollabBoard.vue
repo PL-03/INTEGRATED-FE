@@ -179,7 +179,7 @@ const logout = () => {
         Collaborator Management
       </div>
 
-      <div class="flex w-4/5 justify-between">
+      <div class="flex w-9/12 justify-between">
         <div class="flex font-lilita">
           <button class="p-2 rounded itbkk-board-name">
             <!-- ยังไม่ใส่ @click -->
@@ -197,7 +197,7 @@ const logout = () => {
         <button
           class="addBtn itbkk-collaborator-add flex text-md w-36 h-8 items-center justify-center hover:bg-[#4ae77c] bg-[#4cdb79] text-black rounded font-lilita tracking-wide"
           @click="handleAddCollaborator"
-          :disabled="!isOwner"
+          :disabled="!isOwner && !isWriteCollab"
         >
           Add Collaborator
         </button>
@@ -219,26 +219,26 @@ const logout = () => {
         <tbody
           v-for="(board, index) in boards"
           :key="index"
-          :class="index % 2 === 0 ? 'bg-[#e0e5e2]' : 'bg-[#e8f4f4]'"
+          :class="index % 2 === 0 ? 'bg-[#def3f4]' : 'bg-[#eaf9f9]'"
           class="text-center border font-lilita"
         >
           <tr class="itbkk-item">
             <td>{{ index + 1 }}</td>
             <td>
-              <button @click="handleViewBoard(board.name)" class="itbkk-name">
-                <span class="itbkk-email text-[#4d5fcb]">{{ board.name }}</span>
-              </button>
+              <tr @click="handleViewBoard(board.name)" class="itbkk-name">
+                <span class="itbkk-email text-[#020202]">{{ board.name }}</span>
+              </tr>
             </td>
             <td>
               <!-- E-mail -->
-              <span class="itbkk-email text-[#4d5fcb]">{{ board.email }}</span>
+              <span class="itbkk-email text-[#000000]">{{ board.email }}</span>
             </td>
             <td>
               <!-- Access Right -->
               <select
                 v-model="board.accessRight"
                 id="options"
-                class="itbkk-access-right"
+                class="itbkk-access-right p-1 bg-[#d0d2d3] rounded"
                 @change="hadleChangePermission($event, board)"
               >
                 <option value="READ">READ</option>
@@ -272,7 +272,7 @@ const logout = () => {
 }
 
 .table-auto thead th {
-  width: 180px;
+  width: 195px;
   min-width: 190px;
   text-align: center;
 }
