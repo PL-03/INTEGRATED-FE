@@ -96,7 +96,7 @@ const confirmDeleteCollaborator = async () => {
         router.push({ name: "login" });
       }
     } else if (response.status === 403) {
-      router.push({ name: "denial" });
+      showToast("You are not allowed to perform this action", "error");
     }
   } catch (error) {
     console.log(error);
@@ -126,8 +126,7 @@ const confirmPermissionChange = async () => {
       fetchBoardColaborators();
       showChangePermission.value = false;
     } else if (response.status === 404) {
-      alert("The requested board does not exist");
-      router.push({ name: "boardslist" });
+      alert("The collaborator does not exist");
     } else if (response.status === 401) {
       let token = getToken();
       if (!token) {
