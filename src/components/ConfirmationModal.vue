@@ -143,7 +143,7 @@ const filteredStatuses = computed(() => {
         &times;
       </button> -->
       <h2 class="text-xl text-yellow-900">Remove Collaborator</h2>
-      <hr class="divider">
+      <hr class="divider" />
       <p class="itbkk-message text-left">
         Do you want to remove " {{ collabDetail.name }} " from the board?
       </p>
@@ -158,7 +158,7 @@ const filteredStatuses = computed(() => {
         </div>
         <div class="mt-2">
           <button
-            class="bg-red-500 hover:bg-[#c03a3a] text-white  w-20 h-10 rounded itbkk-button-cancel"
+            class="bg-red-500 hover:bg-[#c03a3a] text-white w-20 h-10 rounded itbkk-button-cancel"
             @click="closeModal"
           >
             Cancel
@@ -173,23 +173,23 @@ const filteredStatuses = computed(() => {
         &times;
       </button> -->
       <h2 class="text-xl text-yellow-900">Change Access Right</h2>
-       <hr class="divider">
+      <hr class="divider" />
       <p class="itbkk-message text-left">
-        Do you want to change access right " {{ collabDetail.name }} " to 
-        " {{ permissionToChange }} " ?
+        Do you want to change access right " {{ collabDetail.name }} " to "
+        {{ permissionToChange }} " ?
       </p>
       <div class="flex flex-row justify-end itbkk-button-action mt-4">
         <div class="mt-2 mr-2">
           <button
             class="bg-[#3cc55e] hover:bg-[#319c5e] text-white w-20 h-10 rounded itbkk-button-confirm"
-            @click="confirmDelete"
+            @click="confirmPermissionChange"
           >
             Confirm
           </button>
         </div>
         <div class="mt-2">
           <button
-            class="bg-red-500 hover:bg-[#c03a3a] text-white  w-20 h-10 rounded itbkk-button-cancel"
+            class="bg-red-500 hover:bg-[#c03a3a] text-white w-20 h-10 rounded itbkk-button-cancel"
             @click="closeModal"
           >
             Cancel
@@ -204,7 +204,7 @@ const filteredStatuses = computed(() => {
         &times;
       </button> -->
       <h2 class="text-xl text-yellow-900">Leave Board</h2>
-      <hr class="divider">
+      <hr class="divider" />
       <p class="itbkk-message text-left">
         Do you want to leave this " {{ boardDetail.name }} " board?
       </p>
@@ -219,7 +219,7 @@ const filteredStatuses = computed(() => {
         </div>
         <div class="mt-2">
           <button
-            class="bg-red-500 hover:bg-[#c03a3a] text-white  w-20 h-10 rounded itbkk-button-cancel"
+            class="bg-red-500 hover:bg-[#c03a3a] text-white w-20 h-10 rounded itbkk-button-cancel"
             @click="closeModal"
           >
             Cancel
@@ -258,5 +258,4 @@ const filteredStatuses = computed(() => {
   border-top: 1px solid #ddd;
   margin: 10px 0;
 }
-
 </style>

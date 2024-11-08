@@ -121,7 +121,7 @@ const showToast = (message, type) => {
 
       <div class="flex m-4 justify-center items-center">
         <div class="mr-2">
-          <label for="textInput" class="itebkk-label flex items-start"
+          <label for="textInput" class="itbkk-label flex items-start"
             >Collaborator Email</label
           >
 
