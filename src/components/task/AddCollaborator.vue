@@ -118,8 +118,8 @@ const showToast = (message, type) => {
     <div class="itbkk-modal-alert modal-content font-lilita">
       <!-- Modal Header -->
       <p class="text-xl">Add Collaborator</p>
-
-      <div class="flex m-4 justify-center items-center">
+      <hr class="divider" />
+      <div class="flex mt-4 mx-4 justify-center items-center">
         <div class="mr-2">
           <label for="textInput" class="itbkk-label flex items-start"
             >Collaborator Email</label
@@ -140,9 +140,6 @@ const showToast = (message, type) => {
         </p>
 
         <div>
-          <p v-if="isOwner && textInput.length > 0" style="color: red">
-            You can't add yourself as a collaborator.
-          </p>
           <!-- Dropdown -->
           <label for="options" class="flex items-start">Access Right</label>
           <select
@@ -155,8 +152,15 @@ const showToast = (message, type) => {
           </select>
         </div>
       </div>
+      <p
+        v-if="isOwner && textInput.length > 0"
+        style="color: red"
+        class="text-left mt-1 ml-2"
+      >
+        You can't add yourself as a collaborator.
+      </p>
       <!-- Submit Button -->
-      <div class="button flex justify-end">
+      <div class="button flex justify-end mt-4">
         <button
           @click="handleSubmit"
           :disabled="!isEmailValid || isOwner"
@@ -215,5 +219,10 @@ button {
 .addBtn:disabled {
   background-color: #665f5f;
   cursor: not-allowed;
+}
+.divider {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 10px 0;
 }
 </style>

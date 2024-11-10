@@ -1,35 +1,39 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import { useToast, POSITION } from "vue-toastification";
-import ConfirmationModal from "../ConfirmationModal.vue";
-import { isTokenExpired } from "@/services/tokenService";
+import { ref, onMounted } from "vue"
+import { useRouter, useRoute } from "vue-router"
+import { useToast, POSITION } from "vue-toastification"
+import ConfirmationModal from "../ConfirmationModal.vue"
+import { isTokenExpired } from "@/services/tokenService"
 import {
   getToken,
   decodedToken,
   useRefreshToken,
-} from "@/services/tokenService";
-import VueJwtDecode from "vue-jwt-decode";
+} from "@/services/tokenService"
+import VueJwtDecode from "vue-jwt-decode"
 const props = defineProps({
   statuses: {
     type: Array,
     required: true,
   },
-});
-const route = useRoute();
-const emit = defineEmits(["add-status", "edit-status", "status-deleted"]);
-const router = useRouter();
-const showConfirmationModal = ref(false);
-const statusToDelete = ref(null);
-const defaultStatus = ["No Status", "Done"];
-const showTransferModal = ref(false);
-const board = ref({});
-const currentId = ref("");
-const boardId = route.params.boardId;
-const isOwner = ref("");
-const tokenDecoded = ref({});
-const isWriteCollab = ref(false);
-const isDisabled = ref(false);
+})
+const route = useRoute()
+const emit = defineEmits(["add-status", "edit-status", "status-deleted"])
+const router = useRouter()
+const showConfirmationModal = ref(false)
+const statusToDelete = ref(null)
+const defaultStatus = ["No Status", "Done"]
+const showTransferModal = ref(false)
+const board = ref({})
+const currentId = ref("")
+const boardId = route.params.boardId
+const isOwner = ref("")
+const tokenDecoded = ref({})
+const isWriteCollab = ref(false)
+const isDisabled = ref(false)
+const showDropdown = ref(false)
+const username = ref("")
+
+
 // const decodedToken = () => {
 //   const token = getToken();
 //   if (!token || isTokenExpired(token)) {
@@ -42,23 +46,23 @@ const isDisabled = ref(false);
 //   }
 // };
 const closeStatusPage = () => {
-  router.push({ name: "tasklist" });
-};
+  router.push({ name: "tasklist" })
+}
 
 const handleAddStatus = () => {
-  router.push({ name: "statusadd" });
-  emit("add-status"); // Emit add-status event
-};
+  router.push({ name: "statusadd" })
+  emit("add-status") // Emit add-status event
+}
 // name: "statusedit"
 const handleEditStatus = (status) => {
-  router.push({ name: "statusedit", params: { id: status.id } });
-  emit("edit-status", status.id);
-};
+  router.push({ name: "statusedit", params: { id: status.id } })
+  emit("edit-status", status.id)
+}
 const fetchBoard = async () => {
-  const token = getToken();
+  const token = getToken()
   if (!token) {
-    await useRefreshToken();
-    token = getToken();
+    await useRefreshToken()
+    token = getToken()
   }
   try {
     const response = await fetch(
@@ -69,53 +73,54 @@ const fetchBoard = async () => {
           "Content-Type": "application/json",
         },
       }
-    );
-    const data = await response.json();
+    )
+    const data = await response.json()
     if (response.ok) {
-      board.value = data;
+      board.value = data
     } else if (response.status === 404) {
-      alert("The requested board does not exist");
-      router.push({ name: "boardslist" });
+      alert("The requested board does not exist")
+      router.push({ name: "boardslist" })
     } else if (response.status === 401) {
-      let token = getToken();
+      let token = getToken()
       if (!token) {
-        await useRefreshToken();
-        token = getToken();
+        await useRefreshToken()
+        token = getToken()
       } else if (!token) {
-        removeTokens();
-        router.push({ name: "login" });
+        removeTokens()
+        router.push({ name: "login" })
       }
     } else if (response.status === 403) {
-      router.push({ name: "boardslist" });
+      router.push({ name: "boardslist" })
     }
   } catch (error) {
-    console.error("Error fetching boards:", error);
+    console.error("Error fetching boards:", error)
   }
-};
+}
 onMounted(async () => {
-  await fetchBoard();
-  tokenDecoded.value = decodedToken();
-  currentId.value = tokenDecoded.value.oid;
-  isOwner.value = board.value.owner.oid === currentId.value;
+  await fetchBoard()
+  tokenDecoded.value = decodedToken()
+  username.value = tokenDecoded.value.name
+  currentId.value = tokenDecoded.value.oid
+  isOwner.value = board.value.owner.oid === currentId.value
   const matchCurrentUser = board.value.collaborators.find(
     (collaborator) => collaborator.oid === currentId.value
-  );
+  )
 
   if (currentId.value === matchCurrentUser.oid) {
     if (matchCurrentUser.accessRight === "WRITE") {
-      isWriteCollab.value = true;
+      isWriteCollab.value = true
     } else if (isOwner.value === false && isWriteCollab.value === false) {
-      isDisabled.value = true;
+      isDisabled.value = true
     }
   }
-});
+})
 const handleDeleteStatus = async (status) => {
-  const token = getToken();
+  const token = getToken()
   if (!token) {
-    await useRefreshToken();
-    token = getToken();
+    await useRefreshToken()
+    token = getToken()
   }
-  statusToDelete.value = status;
+  statusToDelete.value = status
   const response = await fetch(
     `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/tasks`,
     {
@@ -124,33 +129,33 @@ const handleDeleteStatus = async (status) => {
         "Content-Type": "application/json",
       },
     }
-  );
-  const tasks = await response.json();
+  )
+  const tasks = await response.json()
 
-  const associatedTasks = tasks.filter((task) => task.status === status.name);
-  const hasAssociatedTasks = associatedTasks.length > 0;
+  const associatedTasks = tasks.filter((task) => task.status === status.name)
+  const hasAssociatedTasks = associatedTasks.length > 0
 
   if (hasAssociatedTasks) {
-    showTransferModal.value = true;
-    statusToDelete.value.associatedTasksCount = associatedTasks.length;
+    showTransferModal.value = true
+    statusToDelete.value.associatedTasksCount = associatedTasks.length
   } else {
-    showConfirmationModal.value = true;
+    showConfirmationModal.value = true
   }
-};
+}
 
 const confirmDeleteStatus = async () => {
-  const token = getToken();
+  const token = getToken()
   if (!token) {
-    await useRefreshToken();
-    token = getToken();
+    await useRefreshToken()
+    token = getToken()
   }
   try {
     if (
       statusToDelete.value.name === "No Status" ||
       statusToDelete.value.name === "Done"
     ) {
-      showToast(`The status can not be deleted`, "error");
-      return;
+      showToast(`The status can not be deleted`, "error")
+      return
     }
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/statuses/${
@@ -163,53 +168,53 @@ const confirmDeleteStatus = async () => {
           "Content-Type": "application/json",
         },
       }
-    );
+    )
 
     if (response.ok) {
       // Remove the deleted status from the statuses array
       props.statuses.splice(
         props.statuses.findIndex((s) => s.id === statusToDelete.value.id),
         1
-      );
-      emit("status-deleted");
+      )
+      emit("status-deleted")
       showToast(
         `The status "${statusToDelete.value.name}" has been successfully deleted`,
         "success-delete"
-      );
+      )
     } else {
-      console.error("Error deleting status:", response.statusText);
-      showToast("An error occurred while deleting the status", "error");
+      console.error("Error deleting status:", response.statusText)
+      showToast("An error occurred while deleting the status", "error")
     }
   } catch (error) {
-    console.error("Error deleting status:", error);
-    showToast("An error occurred while deleting the status", "error");
+    console.error("Error deleting status:", error)
+    showToast("An error occurred while deleting the status", "error")
   } finally {
-    showConfirmationModal.value = false;
-    showTransferModal.value = false;
+    showConfirmationModal.value = false
+    showTransferModal.value = false
   }
-};
+}
 
 const closeConfirmationModal = () => {
-  showConfirmationModal.value = false;
-};
+  showConfirmationModal.value = false
+}
 
 const closeTransferModal = () => {
-  showTransferModal.value = false;
-};
+  showTransferModal.value = false
+}
 
 const transferTasks = async (targetStatusId) => {
-  const token = getToken();
+  const token = getToken()
   if (!token) {
-    await useRefreshToken();
-    token = getToken();
+    await useRefreshToken()
+    token = getToken()
   }
   try {
     if (
       statusToDelete.value.name === "No Status" ||
       statusToDelete.value.name === "Done"
     ) {
-      showToast(`The status can not be deleted`, "error");
-      return;
+      showToast(`The status can not be deleted`, "error")
+      return
     }
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/statuses/${
@@ -222,73 +227,75 @@ const transferTasks = async (targetStatusId) => {
           "Content-Type": "application/json",
         },
       }
-    );
+    )
 
     if (response.ok) {
       // Remove the deleted status from the statuses array
       props.statuses.splice(
         props.statuses.findIndex((s) => s.id === statusToDelete.value.id),
         1
-      );
-      emit("status-deleted");
+      )
+      emit("status-deleted")
       showToast(
         `The status "${statusToDelete.value.name}" has been successfully deleted and associated tasks transferred`,
         "success-delete"
-      );
+      )
     } else {
       console.error(
         "Error deleting status and transferring tasks:",
         response.statusText
-      );
+      )
       showToast(
         "An error occurred while deleting the status and transferring associated tasks",
         "error"
-      );
+      )
     }
   } catch (error) {
-    console.error("Error deleting status and transferring tasks:", error);
+    console.error("Error deleting status and transferring tasks:", error)
     showToast(
       "An error occurred while deleting the status and transferring associated tasks",
       "error"
-    );
+    )
   } finally {
-    showConfirmationModal.value = false;
-    showTransferModal.value = false;
+    showConfirmationModal.value = false
+    showTransferModal.value = false
   }
-};
-
+}
+const toggleDropdown = () => {
+  showDropdown.value = !showDropdown.value
+}
 const showToast = (message, type) => {
-  const toast = useToast(); // Create a toast instance
+  const toast = useToast() // Create a toast instance
 
   switch (type) {
     case "success-add":
       toast.success(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      });
-      break;
+      })
+      break
     case "success-update":
       toast.success(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      });
-      break;
+      })
+      break
     case "success-delete":
       toast.success(message, {
         position: POSITION.TOP_CENTER,
         timeout: 5000,
-      });
-      break;
+      })
+      break
     case "error":
       toast.error(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      });
-      break;
+      })
+      break
     default:
-      toast(message);
+      toast(message)
   }
-};
+}
 </script>
 
 <template>
@@ -309,6 +316,64 @@ const showToast = (message, type) => {
           IT-Bangmod Kradan Kanban
         </h1>
       </div>
+      <div class="flex m-4 items-center space-x-6">
+        <div class="relative text-black">
+          <button
+            @click="toggleDropdown"
+            class="flex items-center hover:text-[#4d5fcb] itbkk-fullname"
+          >
+            <svg
+              class="mr-2"
+              xmlns="http://www.w3.org/2000/svg"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+            >
+              <path
+                fill="currentColor"
+                d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10s10-4.48 10-10S17.52 2 12 2m0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6m0 14c-2.03 0-4.43-.82-6.14-2.88a9.95 9.95 0 0 1 12.28 0C16.43 19.18 14.03 20 12 20"
+              />
+            </svg>
+            {{ username }}
+            <svg
+              class="ml-1 w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 9l-7 7-7-7"
+              ></path>
+            </svg>
+          </button>
+
+          <div
+            v-if="showDropdown"
+            class="absolute right-0 mt-2 w-32 bg-white rounded-lg shadow-lg py-2"
+          >
+            <ul>
+              <li>
+                <button
+                  @click="logout"
+                  class="flex flex-row text-center px-4 py-2 hover:text-[#ba493f]"
+                >
+                  <img
+                    src="../../assets/SignOut.png"
+                    width="22"
+                    height="10"
+                    class="mr-2 mt-1"
+                  />
+                  Sign out
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </nav>
     <div class="h-28"></div>
     <div class="mt-2 grid grid-cols-2 items-center">
@@ -318,12 +383,12 @@ const showToast = (message, type) => {
           class="ml-48 mt-2 p-2 rounded itbkk-button-home"
         >
           <p
-            class="text-[#2d3697] decoration-2 hover:underline decoration-[#3b6ac0]"
+            class="text-[#2d3697] text-lg decoration-2 hover:underline ml-2 decoration-[#3b6ac0]"
           >
             Task
           </p>
         </button>
-        <strong class="text-[#525454] mt-4 ml-2"> > </strong>
+        <strong class="text-[#525454] mt-4 ml-4"> > </strong>
         <p class="text-gray-600 mt-4 ml-4">Task Status</p>
       </div>
       <div class="flex justify-center ml-48">
@@ -466,10 +531,15 @@ const showToast = (message, type) => {
   );
 }
 
-.addBtn:disabled,
+.addBtn:disabled{
+  color: #5f6566;
+  background-color: #b3b5b8;
+  cursor: not-allowed;
+}
+
 .editBtn:disabled,
 .deleteBtn:disabled {
-  color: #665f5f;
+  color: #5f6566;
   cursor: not-allowed;
 }
 </style>

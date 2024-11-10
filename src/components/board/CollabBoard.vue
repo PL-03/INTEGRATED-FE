@@ -1,39 +1,40 @@
 <script setup>
-import { onMounted, onUpdated, ref, watch } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import { useToast, POSITION } from "vue-toastification";
-import { getToken, decodedToken, removeTokens } from "@/services/tokenService";
+import { onMounted, onUpdated, ref, watch } from "vue"
+import { useRouter, useRoute } from "vue-router"
+import { useToast, POSITION } from "vue-toastification"
+import { getToken, decodedToken, removeTokens } from "@/services/tokenService"
 const props = defineProps({
   boardCollaborators: { type: Array, required: true },
   board: { type: Object, required: true },
-});
-const emit = defineEmits(["add-collaborator"]);
-const route = useRoute();
-const router = useRouter();
-const boardName = ref("");
-const username = ref("");
-const tokenDecoded = ref({});
-const isOwner = ref(false);
-const currentId = ref("");
-const board = ref({});
-const boardId = route.params.boardId;
-const showDropdown = ref(false);
-const boards = ref([...props.boardCollaborators]);
-
+})
+const emit = defineEmits(["add-collaborator"])
+const route = useRoute()
+const router = useRouter()
+const boardName = ref("")
+const username = ref("")
+const tokenDecoded = ref({})
+const isOwner = ref(false)
+const currentId = ref("")
+const board = ref({})
+const boardId = route.params.boardId
+const showDropdown = ref(false)
+const boards = ref([...props.boardCollaborators])
+const isWriteCollab = ref(false)
+const isDisabled = ref(false)
 const hadleChangePermission = (permission, board) => {
-  emit("change-permission", permission.target.value, board);
-};
+  emit("change-permission", permission.target.value, board)
+}
 const handleRemoveCollaborator = (board) => {
-  emit("remove-collaborator", board);
-};
+  emit("remove-collaborator", board)
+}
 const toggleDropdown = () => {
-  showDropdown.value = !showDropdown.value;
-};
+  showDropdown.value = !showDropdown.value
+}
 const fetchBoard = async () => {
-  const token = getToken();
+  const token = getToken()
   if (!token) {
-    await useRefreshToken();
-    token = getToken();
+    await useRefreshToken()
+    token = getToken()
   }
   try {
     const response = await fetch(
@@ -44,57 +45,69 @@ const fetchBoard = async () => {
           "Content-Type": "application/json",
         },
       }
-    );
-    const data = await response.json();
+    )
+    const data = await response.json()
     if (response.ok) {
-      board.value = data;
+      board.value = data
     } else if (response.status === 404) {
-      alert("The requested board does not exist");
-      router.push({ name: "boardslist" });
+      alert("The requested board does not exist")
+      router.push({ name: "boardslist" })
     } else if (response.status === 401) {
-      let token = getToken();
+      let token = getToken()
       if (!token) {
-        await useRefreshToken();
-        token = getToken();
+        await useRefreshToken()
+        token = getToken()
       } else if (!token) {
-        removeTokens();
-        router.push({ name: "login" });
+        removeTokens()
+        router.push({ name: "login" })
       }
     } else if (response.status === 403) {
-      router.push({ name: "denial" });
+      router.push({ name: "denial" })
     }
   } catch (error) {
-    console.error("Error fetching boards:", error);
+    console.error("Error fetching boards:", error)
   }
-};
+}
 
 onMounted(async () => {
-  await fetchBoard();
-  tokenDecoded.value = decodedToken();
-  username.value = tokenDecoded.value.name;
-  currentId.value = tokenDecoded.value.oid;
-  isOwner.value = board.value.owner.oid === currentId.value;
-  boardName.value = board.value.name;
+  await fetchBoard()
+  tokenDecoded.value = decodedToken()
+  username.value = tokenDecoded.value.name
+  currentId.value = tokenDecoded.value.oid
+  isOwner.value = board.value.owner.oid === currentId.value
+  boardName.value = board.value.name
   boards.value = boards.value.sort(
     (a, b) => new Date(a.added_on) - new Date(b.added_on)
-  );
-});
+  )
+
+  // หาผู้ใช้ปัจจุบันในรายการ collaborators
+  const matchCurrentUser = board.value.collaborators.find(
+    (collaborator) => collaborator.oid === currentId.value
+  )
+
+  // ตั้งค่า disabled state
+  if (matchCurrentUser) {
+    isWriteCollab.value = matchCurrentUser.accessRight === "WRITE"
+    // ถ้าไม่ใช่เจ้าของและไม่มีสิทธิ์ WRITE ให้ปุ่ม disabled
+    isDisabled.value = !isOwner.value && !isWriteCollab.value
+  }
+})
 watch(
   () => props.boardCollaborators,
   () => {
-    boards.value = [...props.boardCollaborators];
+    boards.value = [...props.boardCollaborators]
   }
-);
+)
 const handleAddCollaborator = () => {
-  emit("add-collaborator");
-};
+  emit("add-collaborator")
+}
 const back = () => {
-  router.push({ name: "tasklist", params: { boardId: boardId } });
-};
+  router.push({ name: "tasklist", params: { boardId: boardId } })
+}
 const logout = () => {
-  removeTokens();
-  router.push({ name: "login" });
-};
+  removeTokens()
+  router.push({ name: "login" })
+}
 </script>
 
 <template>
@@ -195,9 +208,9 @@ const logout = () => {
         </div>
 
         <button
+          :disabled="isDisabled"
           class="addBtn itbkk-collaborator-add flex text-md w-36 h-8 items-center justify-center hover:bg-[#4ae77c] bg-[#4cdb79] text-black rounded font-lilita tracking-wide"
           @click="handleAddCollaborator"
-          :disabled="!isOwner && !isWriteCollab"
         >
           Add Collaborator
         </button>
@@ -249,7 +262,7 @@ const logout = () => {
               <button
                 class="itbkk-collab-remove bg-[#db2d2d] text-white text-sm py-1 px-2 rounded hover:bg-[#888a94]"
                 @click="handleRemoveCollaborator(board)"
-                :disabled="!isOwner"
+                :disabled="isDisabled"
               >
                 Remove
               </button>
@@ -319,13 +332,16 @@ tbody td {
   .table-auto {
     min-width: 600px;
   }
-  .addBtn:disabled {
-    background-color: rgb(144, 150, 150);
+  
+}
+.addBtn:disabled {
+    background-color: #858d8d;
     cursor: not-allowed;
+    opacity: 0.6;
   }
+
   .itbkk-collab-remove:disabled {
     background-color: rgb(144, 150, 150);
     cursor: not-allowed;
   }
-}
 </style>

@@ -54,6 +54,8 @@ const isDisabled = ref(false)
 // const isPublic = ref(board.value.visibility === "PUBLIC");
 const openModal = () => {
   showModal.value = true
+  if (!isOwner.value && !isWriteCollab.value) return;
+  showModal.value = true;
   // boardVisible.value = boardVisible.value === "Private" ? "Public" : "Private";
 }
 
@@ -499,13 +501,14 @@ const handleToboardList = () => {
             >
             <label
               class="visibilityBtn itbkk-board-visibility relative flex items-center cursor-pointer"
-              :disabled="!isOwner && !isWriteCollab">
+              >
               <input
                 type="checkbox"
                 value=""
                 class="itbkk-board-visibility sr-only peer"
                 v-model="isToggled"
                 @change="openModal"
+                :disabled="isDisabled"
               />
               <div
                 class="itbkk-board-visibility w-11 h-6 bg-gray-400 border border-[#535459] peer-focus:outline-none peer-focus:ring-2 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"
@@ -620,15 +623,15 @@ const handleToboardList = () => {
                 <td
                   class="text-gray-900 font-light border whitespace-normal itbkk-status"
                 >
-                  <button
-                    class="itbkk-status rounded px-4 status-text itbkk-status"
+                  <span
+                    class="itbkk-status rounded px-4 py-2 status-text itbkk-status"
                     :style="{
                       background: getStatusColor(getStatusText(task.status)),
                     }"
                     style="word-break: break-word"
                   >
                     {{ getStatusText(task.status) }}
-                  </button>
+                  </span>
                 </td>
                 <td class="px-4">
                   <button
@@ -713,11 +716,12 @@ border-r {
 }
 .addBtn:disabled {
   cursor: not-allowed;
-  background-color: #665f5f;
+  color: #6b6e71;
+  background-color: #b3b5b8;
 }
-.visibilityBtn:disabled {
+/* .visibilityBtn:disabled {
   cursor: not-allowed;
-}
+} */
 
 .table-auto thead th {
   width: 180px;
@@ -734,5 +738,12 @@ border-r {
 .table-auto tbody td {
   min-width: 150px;
   /* ขนาดคงที่สำหรับตัวเนื้อหา */
+}
+input[type="checkbox"]:disabled + div {
+  cursor: not-allowed !important;
+}
+
+input[type="checkbox"]:disabled ~ span {
+  cursor: not-allowed;
 }
 </style>
