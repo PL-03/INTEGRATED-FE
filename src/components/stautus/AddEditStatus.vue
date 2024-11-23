@@ -287,8 +287,12 @@ const existingNames = computed(() => {
   width: 50%;
   max-height: 80vh;
   overflow-y: auto;
+  overflow: visible;
 }
-
+input[type="file"] {
+  display: block;
+  margin-top: 10px;
+}
 .itbkk-description span {
   word-wrap: break-word;
 }

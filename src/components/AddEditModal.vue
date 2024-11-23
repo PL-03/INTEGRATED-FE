@@ -19,9 +19,16 @@ const route = useRoute();
 const boardId = route.params.boardId;
 const router = useRouter();
 const toast = useToast(); // Moved here
-
+const files = ref([]);
+const handleFileInput = (event) => {
+  const newFiles = Array.from(event.target.files);
+  files.value = [...files.value, ...newFiles];
+};
+const removeFile = (index) => {
+  files.value.splice(index, 1);
+};
 const selectedStatus = ref(props.task.status || null);
-const formData = ref({
+const formFields = ref({
   title: "",
   description: "",
   assignees: "",
@@ -29,28 +36,32 @@ const formData = ref({
 });
 
 const isAddMode = computed(() => !props.task.id);
-const isAddingTitleEmpty = computed(
-  () => isAddMode.value && !formData.value.title.trim()
-);
+const isAddingTitleEmpty = computed(() => {
+  return isAddMode.value && !formFields.value.title.trim();
+});
 
 onMounted(() => {
   if (props.task.id) {
-    formData.value = {
-      title: props.task.title,
-      description: props.task.description,
-      assignees: props.task.assignees,
-      status: (selectedStatus.value = props.task.status),
+    formFields.value = {
+      title: props.task.title || "",
+      description: props.task.description || "",
+      assignees: props.task.assignees || "",
+      status: props.task.status || null,
     };
+    selectedStatus.value = props.task.status || null;
   }
+  console.log(props.task);
 });
 
 watchEffect(() => {
   if (props.show) {
-    const { title, description, assignees, status } = props.task;
-    formData.value.title = title || "";
-    formData.value.description = description || "";
-    formData.value.assignees = assignees || "";
-    selectedStatus.value = status || null;
+    formFields.value = {
+      title: props.task.title || "",
+      description: props.task.description || "",
+      assignees: props.task.assignees || "",
+      status: props.task.status || null,
+    };
+    selectedStatus.value = props.task.status || null;
   }
 });
 
@@ -61,15 +72,16 @@ const closeModal = () => {
 
 const isFormModified = computed(() => {
   if (isAddMode.value) {
-    return true; // always true for add mode
+    return true; // Always allow modifications in add mode
   }
   const { title, description, assignees, status } = props.task;
   const statusChanged =
-    selectedStatus.value && selectedStatus.value.id !== (status?.id || null);
+    selectedStatus.value?.id !== props.task.status?.id ||
+    selectedStatus.value !== props.task.status;
   const otherFieldsChanged =
-    formData.value.title !== (title || "") ||
-    formData.value.description !== (description || "") ||
-    formData.value.assignees !== (assignees || "");
+    formFields.value.title !== (title || "") ||
+    formFields.value.description !== (description || "") ||
+    formFields.value.assignees !== (assignees || "");
 
   return statusChanged || otherFieldsChanged;
 });
@@ -80,13 +92,26 @@ const filteredStatuses = computed(() =>
 
 const handleSubmit = async () => {
   try {
+    const data = new FormData();
+
+    // data.append("title", formFields.value.title.trim());
+    // data.append("description", formFields.value.description.trim() || null);
+    // data.append("assignees", formFields.value.assignees.trim() || null);
+    // data.append(
+    //   "status",
+    //   selectedStatus.value ? selectedStatus.value.id : null
+    // );
+
+    files.value.forEach((file) => {
+      data.append(`files`, file || null);
+    });
     const requestData = {
-      title: formData.value.title.trim(),
-      description: formData.value.description.trim() || null,
-      assignees: formData.value.assignees.trim() || null,
+      title: formFields.value.title.trim(),
+      description: formFields.value.description.trim() || null,
+      assignees: formFields.value.assignees.trim() || null,
       status: selectedStatus.value ? selectedStatus.value.id : null,
     };
-
+    data.append("task", JSON.stringify(requestData));
     // Validate lengths
     if (
       requestData.title.length > 100 ||
@@ -99,8 +124,9 @@ const handleSubmit = async () => {
       );
       return;
     }
+    console.log(data.getAll("task"));
 
-    const token = getToken();
+    let token = getToken();
     if (!token) {
       await useRefreshToken();
       token = getToken();
@@ -126,45 +152,26 @@ const handleSubmit = async () => {
             method: "PUT",
             headers: {
               Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
             },
-            body: JSON.stringify(requestData),
+            body: data,
           }
         );
-
     if (response.ok) {
       emit("update:show", false);
       router.push({ name: "tasklist" });
-      isAddMode.value ? emit("task-added") : emit("task-updated");
+      emit(isAddMode.value ? "task-added" : "task-updated");
       showToast(
-        `The task "${formData.value.title}" has been successfully ${
+        `The task "${formFields.value.title}" has been successfully ${
           isAddMode.value ? "added" : "updated"
-        }`,
+        }.`,
         isAddMode.value ? "success-add" : "success-update"
       );
     } else if (response.status === 401) {
-      let token = getToken();
-      if (!token) {
-        await useRefreshToken();
-        token = getToken();
-      } else if (!token) {
-        removeTokens();
-        router.push({ name: "login" });
-      }
+      await handleUnauthorized();
     } else if (response.status === 403) {
-      showToast(
-        `You don't have permission to ${
-          isAddMode.value ? "add" : "update"
-        } the task.`,
-        "error"
-      );
+      showToast("You don't have permission to modify this task.", "error");
     } else {
-      showToast(
-        `An error occurred ${
-          isAddMode.value ? "adding" : "updating"
-        } the task.`,
-        "error"
-      );
+      showToast("An error occurred while submitting the task.", "error");
     }
   } catch (error) {
     console.error(
@@ -217,7 +224,7 @@ const showToast = (message, type) => {
           >
         </p>
         <input
-          v-model.trim="formData.title"
+          v-model="formFields.title"
           type="text"
           class="ml-6 bg-gray-300 rounded-md px-4 py-2 w-11/12 shadow-md"
         />
@@ -233,7 +240,7 @@ const showToast = (message, type) => {
               >
             </p>
             <textarea
-              v-model="formData.description"
+              v-model="formFields.description"
               class="shadow-lg shadow-gray-500/50 p-8 resize-none bg-yellow-100 w-full rounded-lg"
               rows="8"
             ></textarea>
@@ -249,7 +256,7 @@ const showToast = (message, type) => {
               >
             </p>
             <textarea
-              v-model.trim="formData.assignees"
+              v-model.trim="formFields.assignees"
               class="shadow-md p-4 bg-blue-200 w-full rounded-lg itbkk-assignees"
               rows="3"
             ></textarea>
@@ -276,6 +283,34 @@ const showToast = (message, type) => {
             </select>
           </div>
         </div>
+      </div>
+      <div class="flex justify-end mt-2" v-if="!isAddMode">
+        <div class="m-1">
+          <input
+            type="file"
+            multiple
+            @change="handleFileInput"
+            ref="fileInput"
+          />
+        </div>
+      </div>
+      <div class="flex flex-col mt-2" v-if="!isAddMode">
+        <p class="text-sm text-gray-600">Selected Files:</p>
+        <ul class="text-sm text-gray-800">
+          <li
+            v-for="(file, index) in files"
+            :key="index"
+            class="flex items-center justify-between"
+          >
+            <span>{{ file.name }}</span>
+            <button
+              @click="removeFile(index)"
+              class="text-red-600 hover:underline ml-2"
+            >
+              Remove
+            </button>
+          </li>
+        </ul>
       </div>
 
       <div class="flex justify-end">
