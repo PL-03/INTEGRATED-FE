@@ -70,6 +70,8 @@ const fetchBoard = async () => {
 };
 
 onMounted(async () => {
+  console.log(boards.value);
+
   await fetchBoard();
   tokenDecoded.value = decodedToken();
   username.value = tokenDecoded.value.name;
@@ -80,15 +82,12 @@ onMounted(async () => {
     (a, b) => new Date(a.added_on) - new Date(b.added_on)
   );
 
-  // หาผู้ใช้ปัจจุบันในรายการ collaborators
   const matchCurrentUser = board.value.collaborators.find(
     (collaborator) => collaborator.oid === currentId.value
   );
 
-  // ตั้งค่า disabled state
   if (matchCurrentUser) {
     isWriteCollab.value = matchCurrentUser.accessRight === "WRITE";
-    // ถ้าไม่ใช่เจ้าของและไม่มีสิทธิ์ WRITE ให้ปุ่ม disabled
     isDisabled.value = !isOwner.value && !isWriteCollab.value;
   }
 });
@@ -254,8 +253,32 @@ const logout = () => {
               <span class="itbkk-email text-[#000000]">{{ board.email }}</span>
             </td>
             <td>
+              <select
+                v-if="board.accessRight === 'PENDING'"
+                v-model="board.assignedAccessRight"
+                id="options"
+                class="itbkk-access-right p-1 bg-[#d0d2d3] rounded"
+                @change="hadleChangePermission($event, board)"
+              >
+                <option :value="board.assignedAccessRight">
+                  {{ board.assignedAccessRight }}
+                </option>
+                <option
+                  v-if="board.assignedAccessRight === 'READ'"
+                  value="WRITE"
+                >
+                  WRITE
+                </option>
+                <option
+                  v-if="board.assignedAccessRight === 'WRITE'"
+                  value="READ"
+                >
+                  READ
+                </option>
+              </select>
               <!-- Access Right -->
               <select
+                v-else
                 v-model="board.accessRight"
                 id="options"
                 class="itbkk-access-right p-1 bg-[#d0d2d3] rounded"
@@ -263,14 +286,6 @@ const logout = () => {
               >
                 <option value="READ">READ</option>
                 <option value="WRITE">WRITE</option>
-                <option
-                  v-if="board.accessRight === 'PENDING'"
-                  :disabled="true"
-                  value="PENDING"
-                  class="hover:cursor-not-allowed"
-                >
-                  PENDING
-                </option>
               </select>
             </td>
             <td>

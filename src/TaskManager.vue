@@ -170,6 +170,7 @@ const fetchStatuses = async () => {
     console.error("Error fetching statuses:", error);
   }
 };
+
 onMounted(async () => {
   await fetchBoardsById();
   await fetchTasks();
