@@ -4,6 +4,7 @@ import { useRoute, useRouter } from "vue-router";
 import BoardList from "@/components/board/BoardList.vue";
 import AddBoard from "@/components/board/AddBoard.vue";
 import ConfirmationModal from "@/components/ConfirmationModal.vue";
+import InviteConfirmation from "@/components/InviteConfirmation.vue";
 import {
   getToken,
   decodedToken,
@@ -84,11 +85,12 @@ const fetchBoards = async () => {
     const collabBoard = boards.value.filter((board) =>
       board.collaborators.some((collaborator) => collaborator.oid === userOid)
     );
+
     if (ownBoard.length > 0 && collabBoard.length === 0) {
       // Redirect to the first board the user owns
       router.push({
         name: "tasklist",
-        params: { boardId: boards.value[0].id },
+        params: { boardId: ownBoard[0].id },
       });
     } else {
       router.push({ name: "boardslist" });
@@ -160,6 +162,86 @@ const handleRemoveCollaborator = (board, collaborator) => {
 
   showDeleteModal.value = true;
 };
+const handleAcceptCollab = async (board, collaborator) => {
+  let token = getToken();
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/v3/boards/${
+        board.id
+      }/collabs/${collaborator}/accept`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.ok) {
+      fetchBoards();
+    } else if (response.status === 404) {
+      alert("The requested board does not exist");
+      router.push({ name: "boardslist" });
+    } else if (response.status === 401) {
+      let token = getToken();
+      if (!token) {
+        await useRefreshToken();
+        token = getToken();
+      } else if (!token) {
+        removeTokens();
+        router.push({ name: "login" });
+      }
+    } else if (response.status === 403) {
+      router.push({ name: "denial" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+const handleDeclineCollab = async (board, collaborator) => {
+  let token = getToken();
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/v3/boards/${
+        board.id
+      }/collabs/${collaborator}/decline`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    if (response.ok) {
+      fetchBoards();
+    } else if (response.status === 404) {
+      alert("The requested board does not exist");
+      router.push({ name: "boardslist" });
+    } else if (response.status === 401) {
+      let token = getToken();
+      if (!token) {
+        await useRefreshToken();
+        token = getToken();
+      } else if (!token) {
+        removeTokens();
+        router.push({ name: "login" });
+      }
+    } else if (response.status === 403) {
+      router.push({ name: "denial" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
 const closeModal = () => {
   showModal.value = false;
   showDeleteModal.value = false;
@@ -172,6 +254,8 @@ const closeModal = () => {
     :boardCollaborators="boardCollaborators"
     @board-added="handleBoardAdded"
     @remove-collaborator="handleRemoveCollaborator"
+    @accept-collab="handleAcceptCollab"
+    @decline-collab="handleDeclineCollab"
   />
   <AddBoard
     :show="showModal"
@@ -186,4 +270,5 @@ const closeModal = () => {
     @close="closeModal"
     @confirm="confirmDeleteCollaborator"
   />
+  <InviteConfirmation :details="boards" />
 </template>

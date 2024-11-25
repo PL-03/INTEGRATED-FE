@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUpdated, watch } from "vue";
+import { ref, onMounted, onUpdated, watch, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useToast, POSITION } from "vue-toastification";
 import { getToken, decodedToken, removeTokens } from "@/services/tokenService";
@@ -18,12 +18,24 @@ const router = useRouter();
 // const token = getToken();
 const username = ref("");
 const oid = ref("");
-const emit = defineEmits(["board-added", "remove-collaborator"]);
+const emit = defineEmits([
+  "board-added",
+  "remove-collaborator",
+  "accept-collab",
+  "decline-collab",
+]);
 const tokenDecoded = ref({});
 const board = ref([...props.boards]);
 const collabBoard = ref([...props.boards]);
 const haveBoard = ref(false);
-const boardCollaborators = ref([]);
+const checkPending = computed(() => {
+  return collabBoard.value.some((board) => {
+    const collaborator = board.collaborators.find(
+      (collaborator) => collaborator.oid === oid.value
+    );
+    return collaborator && collaborator.accessRight === "PENDING";
+  });
+});
 const checkToken = async () => {
   let token = getToken();
   if (!token) {
@@ -31,37 +43,6 @@ const checkToken = async () => {
     token = getToken();
   }
 };
-// const fetchBoardColaborators = async () => {
-//   const token = getToken();
-//   if (!token) {
-//     await useRefreshToken();
-//     token = getToken();
-//   }
-//   try {
-//     const response = await fetch(
-//       `${import.meta.env.VITE_BASE_URL}/v3/boards/${
-//         board.value.find((board) => board.owner.oid === oid.value).id
-//       }/collabs`,
-//       {
-//         headers: {
-//           Authization: `Bearer ${token}`,
-//           "Content-Type": "application/json",
-//         },
-//       }
-//     );
-//     const data = await response.json();
-//     if (response.ok) {
-//       boardCollaborators.value = data;
-//     } else if (response.status === 401) {
-//       removeTokens();
-//       router.push({ name: "login" });
-//     } else if (response.status === 403) {
-//       router.push({ name: "denial" });
-//     }
-//   } catch (error) {
-//     console.error("Error fetching boards:", error);
-//   }
-// };
 
 onMounted(async () => {
   await checkToken();
@@ -70,13 +51,11 @@ onMounted(async () => {
   oid.value = tokenDecoded.value.oid;
   board.value = props.boards.filter((board) => board.owner.oid === oid.value);
   haveBoard.value = board.value.length > 0;
-  console.log(haveBoard.value);
 
   collabBoard.value = props.boards.filter((board) =>
     board.collaborators.some((collaborator) => collaborator.oid === oid.value)
   );
-  console.log(collabBoard.value);
-  console.log(board.value);
+  console.log(board.value.length);
 });
 onUpdated(() => {
   checkToken();
@@ -101,6 +80,13 @@ const handleViewBoard = (id) => {
 };
 const handleRemoveCollaborator = (board, oid) => {
   emit("remove-collaborator", board, oid);
+};
+const handleAcceptance = (board, oid, e) => {
+  if (e === "A") {
+    emit("accept-collab", board, oid);
+  } else if (e === "D") {
+    emit("decline-collab", board, oid);
+  }
 };
 const logout = () => {
   removeTokens();
@@ -201,7 +187,7 @@ const toggleDropdown = () => {
     <div></div>
     <!-- table personal board -->
     <div
-      v-if="boards.length !== 0"
+      v-if="board.length !== 0"
       class="flex flex-col justify-center items-center p-28"
     >
       <div class="text-3xl drop-shadow-lg p-4 itbkk-personal-board">
@@ -290,12 +276,29 @@ const toggleDropdown = () => {
                   </span>
                 </td>
                 <td>
-                  <button
-                    class="itbkk-leave-board bg-[#c52d2d] text-white text-sm py-1 px-2 rounded hover:bg-[#a54848]"
-                    @click="handleRemoveCollaborator(board, oid)"
-                  >
-                    Leave
-                  </button>
+                  <div v-if="checkPending">
+                    <button
+                      class="bg-green-500 hover:bg-green-700 text-white text-sm py-1 px-2 rounded"
+                      @click="handleAcceptance(board, oid, 'A')"
+                    >
+                      Accept
+                    </button>
+                    |
+                    <button
+                      class="bg-red-500 hover:bg-red-900 text-white text-sm py-1 px-2 rounded"
+                      @click="handleAcceptance(board, oid, 'D')"
+                    >
+                      Decline
+                    </button>
+                  </div>
+                  <div v-else>
+                    <button
+                      class="itbkk-leave-board bg-[#c52d2d] text-white text-sm py-1 px-2 rounded hover:bg-[#a54848]"
+                      @click="handleRemoveCollaborator(board, oid)"
+                    >
+                      Leave
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>

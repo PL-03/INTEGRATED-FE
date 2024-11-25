@@ -5,6 +5,7 @@ import StatusManager from "@/StatusManager.vue";
 import LoginManager from "@/stores/LoginManager.vue";
 import AccessDenied from "@/components/AccessDenied.vue";
 import CollabManager from "@/stores/CollabManager.vue";
+import InviteConfirmation from "@/components/InviteConfirmation.vue";
 
 const routes = [
   {

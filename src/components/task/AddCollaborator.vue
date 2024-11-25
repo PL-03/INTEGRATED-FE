@@ -41,6 +41,7 @@ const handleSubmit = async () => {
     await useRefreshToken();
     token = getToken();
   }
+  showToast(`Sending request, please wait`, "info");
   const currentEmail = tokenDecoded.email;
   if (currentEmail === textInput.value) {
     showToast("You cannot add yourself as a collaborator", "error");
@@ -62,10 +63,11 @@ const handleSubmit = async () => {
         body: JSON.stringify(requestData),
       }
     );
+
     if (response.ok) {
       emits("update:showModal", false);
       emits("collaborator-added");
-      showToast("Collaborator added successfully", "success-add");
+      showToast("Collaborator successfully sent", "success-add");
     } else if (response.status === 401) {
       let token = getToken();
       if (!token) {
@@ -93,6 +95,12 @@ const showToast = (message, type) => {
   const toast = useToast();
 
   switch (type) {
+    case "info":
+      toast.info(message, {
+        position: POSITION.TOP_CENTER,
+        timeout: 34000,
+      });
+      break;
     case "success-add":
     case "success-update":
     case "success-delete":
