@@ -41,11 +41,6 @@ const isAddingTitleEmpty = computed(() => {
 });
 
 onMounted(() => {
-  files.value = props.task.attachments || [];
-  console.log(files.value.forEach((file) => console.log(file.name)));
-  const filesNames = files.value.map((file) => file.name);
-  console.log(filesNames);
-
   if (props.task.id) {
     formFields.value = {
       title: props.task.title || "",
