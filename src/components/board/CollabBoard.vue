@@ -220,7 +220,7 @@ const logout = () => {
         class="table-auto rounded-md overflow-hidden itbkk-table bg-[#39407e]"
       >
         <thead>
-          <tr class="text-white">
+          <tr class="text-[#f2f2f8] tracking-wider">
             <th>No.</th>
             <th>Name</th>
             <th>Email</th>
@@ -228,13 +228,13 @@ const logout = () => {
             <th>Action</th>
           </tr>
         </thead>
-        <tbody
-          v-for="(board, index) in boards"
-          :key="index"
-          :class="index % 2 === 0 ? 'bg-[#def3f4]' : 'bg-[#eaf9f9]'"
-          class="text-center border font-lilita"
-        >
-          <tr class="itbkk-item">
+        <tbody v-if="boards.length > 0">
+          <tr
+            class="itbkk-item text-center border font-lilita"
+            v-for="(board, index) in boards"
+            :key="index"
+            :class="index % 2 === 0 ? 'bg-[#def3f4]' : 'bg-[#eaf9f9]'"
+          >
             <td>{{ index + 1 }}</td>
             <td>
               <tr @click="handleViewBoard(board.name)" class="itbkk-name">
@@ -296,6 +296,13 @@ const logout = () => {
               >
                 Remove
               </button>
+            </td>
+          </tr>
+        </tbody>
+        <tbody v-else>
+          <tr class="bg-[#def3f4]">
+            <td colspan="5" class="text-center text-[#99a0aa] py-4 italic">
+              No Collaborator
             </td>
           </tr>
         </tbody>

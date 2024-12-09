@@ -105,12 +105,10 @@ const filteredStatuses = computed(() => {
 <template>
   <div v-if="show" class="modal-overlay">
     <div class="modal-content font-lilita">
-      <button class="close hover:text-red-500" @click="closeModal">
-        &times;
-      </button>
       <h2 class="text-xl text-yellow-950">{{ modalTitle }}</h2>
-      <p class="itbkk-message">{{ modalMessage }}</p>
-      <div v-if="tasksAssociated" class="mt-4">
+      <hr class="divider" />
+      <p class="itbkk-message mt-4">{{ modalMessage }}</p>
+      <div v-if="tasksAssociated" class="mt-2">
         <select
           id="transfer-status"
           v-model="transferStatus"
@@ -125,19 +123,19 @@ const filteredStatuses = computed(() => {
           </option>
         </select>
       </div>
-      <div class="flex flex-row justify-center itbkk-button-action mt-4">
-        <div class="mt-4">
+      <div class="flex flex-row justify-end itbkk-button-action mt-4">
+        <div class="mt-4 mr-2">
           <button
-            class="bg-green-500 text-white w-20 h-10 rounded itbkk-button-confirm"
+            class="bg-green-600 hover:bg-green-500 text-white w-20 h-10 rounded itbkk-button-confirm"
             @click="confirmDelete"
             :disabled="tasksAssociated && !transferStatus"
           >
             {{ tasksAssociated ? "Transfer" : "OK" }}
           </button>
         </div>
-        <div class="m-4">
+        <div class="mt-4 ">
           <button
-            class="bg-red-500 text-white py-2 px-4 rounded itbkk-button-cancel"
+            class="bg-red-600 hover:bg-red-500 text-white py-2 px-4 rounded itbkk-button-cancel"
             @click="closeModal"
           >
             Cancel
@@ -148,9 +146,6 @@ const filteredStatuses = computed(() => {
   </div>
   <div v-if="showConfirmationModal" class="modal-overlay">
     <div class="modal-content font-lilita">
-      <!-- <button class="close hover:text-red-500" @click="closeModal">
-        &times;
-      </button> -->
       <h2 class="text-xl text-yellow-900">Remove Collaborator</h2>
       <hr class="divider" />
       <p
@@ -165,7 +160,7 @@ const filteredStatuses = computed(() => {
       <div class="flex flex-row justify-end itbkk-button-action mt-4">
         <div class="mt-2 mr-2">
           <button
-            class="bg-[#3cc55e] hover:bg-[#319c5e] text-white w-20 h-10 rounded itbkk-button-confirm"
+            class="bg-green-600 hover:bg-green-500 text-white w-20 h-10 rounded itbkk-button-confirm"
             @click="confirmDelete"
           >
             Confirm
@@ -173,7 +168,7 @@ const filteredStatuses = computed(() => {
         </div>
         <div class="mt-2">
           <button
-            class="bg-red-500 hover:bg-[#c03a3a] text-white w-20 h-10 rounded itbkk-button-cancel"
+            class="bg-red-600 hover:bg-red-500 text-white w-20 h-10 rounded itbkk-button-cancel"
             @click="closeModal"
           >
             Cancel
@@ -199,15 +194,15 @@ const filteredStatuses = computed(() => {
       <div class="flex flex-row justify-end itbkk-button-action mt-4">
         <div class="mt-2 mr-2">
           <button
-            class="bg-[#3cc55e] hover:bg-[#319c5e] text-white w-20 h-10 rounded itbkk-button-confirm"
-            @click="editPermission('edit')"
+            class="bg-green-600 hover:bg-green-500 text-white w-20 h-10 rounded itbkk-button-confirm"
+            @click="editPermission('edit')" 
           >
             Confirm
           </button>
         </div>
         <div class="mt-2">
           <button
-            class="bg-red-500 hover:bg-[#c03a3a] text-white w-20 h-10 rounded itbkk-button-cancel"
+            class="bg-red-600 hover:bg-red-500 text-white w-20 h-10 rounded itbkk-button-cancel"
             @click="closeModal"
           >
             Cancel
@@ -222,7 +217,7 @@ const filteredStatuses = computed(() => {
     class="modal-overlay"
   >
     <div class="modal-content font-lilita">
-      <h2 class="text-xl text-yellow-900">
+      <h2 class="text-lg text-yellow-900">
         Change Access Right (For "PENDING" user)
       </h2>
       <hr class="divider" />
@@ -233,7 +228,7 @@ const filteredStatuses = computed(() => {
       <div class="flex flex-row justify-end itbkk-button-action mt-4">
         <div class="mt-2 mr-2">
           <button
-            class="bg-[#3cc55e] hover:bg-[#319c5e] text-white w-20 h-10 rounded itbkk-button-confirm"
+            class="bg-green-600 hover:bg-green-500 text-white w-20 h-10 rounded itbkk-button-confirm"
             @click="editPermission('editPending')"
           >
             Confirm
@@ -241,7 +236,7 @@ const filteredStatuses = computed(() => {
         </div>
         <div class="mt-2">
           <button
-            class="bg-red-500 hover:bg-[#c03a3a] text-white w-20 h-10 rounded itbkk-button-cancel"
+            class="bg-red-600 hover:bg-red-500 text-white w-20 h-10 rounded itbkk-button-cancel"
             @click="closeModal"
           >
             Cancel
@@ -263,7 +258,7 @@ const filteredStatuses = computed(() => {
       <div class="flex flex-row justify-end itbkk-button-action mt-8">
         <div class="mt-2 mr-2">
           <button
-            class="bg-[#3cc55e] hover:bg-[#319c5e] text-white w-20 h-10 rounded itbkk-button-confirm"
+            class="bg-green-600 hover:bg-green-500 text-white w-20 h-10 rounded itbkk-button-confirm"
             @click="confirmDelete"
           >
             Confirm
@@ -271,7 +266,7 @@ const filteredStatuses = computed(() => {
         </div>
         <div class="mt-2">
           <button
-            class="bg-red-500 hover:bg-[#c03a3a] text-white w-20 h-10 rounded itbkk-button-cancel"
+            class="bg-red-600 hover:bg-red-500 text-white w-20 h-10 rounded itbkk-button-cancel"
             @click="closeModal"
           >
             Cancel

@@ -379,10 +379,10 @@ const showToast = (message, type) => {
       <div class="flex justify-start font-lilita">
         <button
           @click="closeStatusPage"
-          class="ml-48 mt-2 p-2 rounded itbkk-button-home"
+          class="ml-60 mt-2 p-2 rounded itbkk-button-home"
         >
           <p
-            class="text-[#2d3697] text-lg decoration-2 hover:underline ml-2 decoration-[#3b6ac0]"
+            class="text-[#3541bb] text-lg decoration-2 hover:underline ml-2 decoration-[#3b72d9]"
           >
             Task
           </p>
@@ -390,7 +390,7 @@ const showToast = (message, type) => {
         <strong class="text-[#525454] mt-4 ml-4"> > </strong>
         <p class="text-gray-600 mt-4 ml-4">Task Status</p>
       </div>
-      <div class="flex justify-center ml-48">
+      <div class="flex justify-center ml-44">
         <button
           class="addBtn flex text-md px-3 py-1 mt-2 mr-8 hover:bg-[#4ae77c] bg-[#4cdb79] text-black rounded itbkk-button-add font-lilita tracking-wide"
           @click="handleAddStatus"
@@ -400,22 +400,22 @@ const showToast = (message, type) => {
         </button>
       </div>
     </div>
-    <div class="mt-4 flex justify-center items-center">
+    <div class="mt-4 flex justify-center items-center ">
       <table
-        class="table-auto w-9/12 m-2 rounded-2xl overflow-hidden shadow-md shadow-white/40 font-lilita"
+        class="table-auto w-8/12 m-2 rounded-md overflow-hidden shadow-md shadow-white/40 font-lilita "
       >
-        <thead class="bg-yellow-950 border-b py-4 tracking-wide">
+        <thead class="bg-yellow-950 border-b py-4 tracking-wide text-center">
           <tr>
-            <th class="text-md text-[#e9e8e8] px-4 py-2 text-left border-r">
+            <th class="text-md text-[#e9e8e8] px-4 py-2  border-r">
               #
             </th>
-            <th class="text-md text-[#e9e8e8] px-4 py-2 text-left border-r">
+            <th class="text-md text-[#e9e8e8] px-4 py-2  border-r">
               Name
             </th>
-            <th class="text-md text-[#e9e8e8] px-4 py-2 text-left border-r">
+            <th class="text-md text-[#e9e8e8] px-4 py-2  border-r">
               Description
             </th>
-            <th class="text-md text-[#e9e8e8] px-4 py-2 text-left">Actions</th>
+            <th class="text-md text-[#e9e8e8] px-4 py-2 ">Actions</th>
           </tr>
         </thead>
         <tbody>

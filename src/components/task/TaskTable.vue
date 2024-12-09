@@ -412,6 +412,7 @@ const handleToboardList = () => {
 
       <div class="flex m-4 items-center space-x-6">
         <button
+        
           @click="handleToboardList"
           class="itbkk-home flex text-nowrap text-xs md:text-base items-centerd text-black hover:text-blue-600 transition duration-300"
         >
@@ -521,7 +522,7 @@ const handleToboardList = () => {
 
             <button
               @click="handleAddTask"
-              class="addBtn itbkk-button-add flex text-nowrap ml-2 text-xs md:text-sm items-center text-white bg-[#259f60] p-2 rounded-lg hover:bg-[#46c472] transition duration-300"
+              class="addBtn itbkk-button-add flex text-nowrap ml-2 text-xs md:text-sm items-center text-white bg-[#259f60] p-2 rounded-md hover:bg-[#46c472] transition duration-300"
               :disabled="isDisabled"
             >
               Add Task
@@ -548,7 +549,7 @@ const handleToboardList = () => {
                   >
                     Status
                     <button
-                      class="ml-1 px-1 py-1 text-[#fff6a4] hover:text-[#a7e4f2] focus:text-[#a7e4f2]"
+                      class="ml-1 px-1 py-1 text-[#fff6a4] hover:text-[#54d64b] focus:text-[#54d64b]"
                       @click="handleSortData('Asc')"
                     >
                       <svg
@@ -564,7 +565,7 @@ const handleToboardList = () => {
                       </svg>
                     </button>
                     <button
-                      class="ml-1 px-1 py-1 text-[#fff6a4] hover:text-[#a7e4f2] focus:text-[#a7e4f2]"
+                      class="ml-1 px-1 py-1 text-[#fff6a4] hover:text-[#54d64b] focus:text-[#54d64b]"
                       @click="handleSortData('Desc')"
                     >
                       <svg
@@ -580,7 +581,7 @@ const handleToboardList = () => {
                       </svg>
                     </button>
                     <button
-                      class="ml-1 mr-1 px-2 text-[#fff6a4] hover:text-[#a7e4f2] focus:text-[#a7e4f2]"
+                      class="ml-1 mr-1 px-2 text-[#fff6a4] hover:text-[#54d64b] focus:text-[#54d64b] tracking-wide"
                       @click="handleSortData('Def')"
                     >
                       Default
@@ -592,6 +593,15 @@ const handleToboardList = () => {
             </thead>
             <tbody>
               <tr
+                v-if="filteredTasks.length === 0"
+                class="bg-yellow-50 text-center"
+              >
+                <td colspan="6" class="py-4 text-gray-600 italic">No task</td>
+              </tr>
+
+              <!-- แสดง task ปกติเมื่อมี task -->
+              <tr
+                v-else
                 v-for="(task, index) in filteredTasks"
                 :key="index"
                 :class="index % 2 === 0 ? 'bg-yellow-50' : 'bg-orange-100'"
