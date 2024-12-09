@@ -12,8 +12,10 @@ const router = useRouter();
 const route = useRoute();
 const boardId = route.params.boardId;
 const boardCollaborators = ref({});
+const collab = ref({});
 const owner = ref({});
 const collaborator = ref({});
+const tokenDecoded = ref("");
 const emit = defineEmits(["accept", "decline"]);
 const boardDetail = async () => {
   let token = getToken();
@@ -21,8 +23,8 @@ const boardDetail = async () => {
     await useRefreshToken();
     token = getToken();
   }
-  const tokenDecoded = decodedToken();
-  const userOid = tokenDecoded.oid;
+  tokenDecoded.value = decodedToken();
+  const userOid = tokenDecoded.value.oid;
   try {
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}`,
@@ -56,8 +58,51 @@ const boardDetail = async () => {
     console.error("Error fetching boards:", error);
   }
 };
+const fetchBoardColaborators = async () => {
+  let token = getToken();
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
+
+  try {
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/collabs/${
+        tokenDecoded.value.oid
+      }`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    const data = await response.json();
+    if (response.ok) {
+      collab.value = data;
+    } else if (response.status === 401) {
+      let token = getToken();
+      if (!token) {
+        await useRefreshToken();
+        token = getToken();
+      } else if (!token) {
+        removeTokens();
+        router.push({ name: "login" });
+      }
+    } else if (response.status === 403) {
+      router.push({ name: "denial" });
+    }
+  } catch (error) {
+    console.error("Error fetching boards:", error);
+  }
+};
 onMounted(async () => {
   await boardDetail();
+  await fetchBoardColaborators();
+  if (tokenDecoded.value.oid !== collab.value.oid) {
+    router.push({ name: "denial" });
+  }
+  console.log(collab.value.oid);
 });
 
 const handleAccept = async () => {
@@ -150,7 +195,7 @@ const handleDecline = async () => {
   <div>
     <span class="font-semibold">{{ owner.name }}</span> has invited you to
     collaborate with
-    <span class="font-semibold"> {accessRight}</span>
+    <span class="font-semibold"> {{ collab.assignedAccessRight }}</span>
     access right on
     <span class="font-semibold">{{ boardCollaborators.name }}</span>
   </div>
