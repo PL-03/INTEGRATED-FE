@@ -12,13 +12,13 @@ const routes = [
     path: "/board",
     name: "boardslist",
     component: BoardManager,
-    beforeEnter: () => {
+    beforeEnter: (to) => {
       if (
         !localStorage.getItem("jwtToken") &&
         !localStorage.getItem("refreshToken")
       ) {
         alert("Please login first");
-        return { name: "login" };
+        return { name: "login", query: { redirect: to.fullPath } }; // Redirect with the current path
       }
     },
   },
@@ -26,13 +26,13 @@ const routes = [
     path: "/board/:boardId",
     name: "tasklist",
     component: TaskManager,
-    beforeEnter: () => {
+    beforeEnter: (to) => {
       if (
         !localStorage.getItem("jwtToken") &&
         !localStorage.getItem("refreshToken")
       ) {
         alert("Please login first");
-        return { name: "login" };
+        return { name: "login", query: { redirect: to.fullPath } };
       }
     },
   },
@@ -40,13 +40,13 @@ const routes = [
     path: "/board/add",
     name: "boardadd",
     component: BoardManager,
-    beforeEnter: () => {
+    beforeEnter: (to) => {
       if (
         !localStorage.getItem("jwtToken") &&
         !localStorage.getItem("refreshToken")
       ) {
         alert("Please login first");
-        return { name: "login" };
+        return { name: "login", query: { redirect: to.fullPath } };
       }
     },
   },
@@ -54,13 +54,13 @@ const routes = [
     path: "/board/:boardId/task/add",
     name: "taskadd",
     component: TaskManager,
-    beforeEnter: () => {
+    beforeEnter: (to) => {
       if (
         !localStorage.getItem("jwtToken") &&
         !localStorage.getItem("refreshToken")
       ) {
         alert("Please login first");
-        return { name: "login" };
+        return { name: "login", query: { redirect: to.fullPath } };
       }
     },
   },
@@ -74,7 +74,7 @@ const routes = [
         !localStorage.getItem("refreshToken")
       ) {
         alert("Please login first");
-        return { name: "login" };
+        return { name: "login", query: { redirect: to.fullPath } };
       } else if (!parseInt(to.params.taskId)) {
         alert("Page Not Found");
         next({ name: "boardslist" });
@@ -87,13 +87,13 @@ const routes = [
     path: "/board/:boardId/task/:taskId/edit",
     name: "taskedit",
     component: TaskManager,
-    beforeEnter: () => {
+    beforeEnter: (to) => {
       if (
         !localStorage.getItem("jwtToken") &&
         !localStorage.getItem("refreshToken")
       ) {
         alert("Please login first");
-        return { name: "login" };
+        return { name: "login", query: { redirect: to.fullPath } };
       }
     },
   },
@@ -101,13 +101,13 @@ const routes = [
     path: "/board/:boardId/status",
     name: "statusList",
     component: StatusManager,
-    beforeEnter: () => {
+    beforeEnter: (to) => {
       if (
         !localStorage.getItem("jwtToken") &&
         !localStorage.getItem("refreshToken")
       ) {
         alert("Please login first");
-        return { name: "login" };
+        return { name: "login", query: { redirect: to.fullPath } };
       }
     },
   },
@@ -115,13 +115,13 @@ const routes = [
     path: "/board/:boardId/status/add",
     name: "statusadd",
     component: StatusManager,
-    beforeEnter: () => {
+    beforeEnter: (to) => {
       if (
         !localStorage.getItem("jwtToken") &&
         !localStorage.getItem("refreshToken")
       ) {
         alert("Please login first");
-        return { name: "login" };
+        return { name: "login", query: { redirect: to.fullPath } };
       }
     },
   },
@@ -154,13 +154,13 @@ const routes = [
     path: "/board/:boardId/collab",
     name: "collaboratorlist",
     component: CollabManager,
-    beforeEnter: () => {
+    beforeEnter: (to) => {
       if (
         !localStorage.getItem("jwtToken") &&
         !localStorage.getItem("refreshToken")
       ) {
         alert("Please login first");
-        return { name: "login" };
+        return { name: "login", query: { redirect: to.fullPath } };
       }
     },
   },
@@ -172,6 +172,16 @@ const routes = [
     path: "/board/:boardId/collab/invitations",
     name: "invite",
     component: InviteConfirmation,
+    beforeEnter: (to) => {
+      const isLoggedIn =
+        localStorage.getItem("jwtToken") &&
+        localStorage.getItem("refreshToken");
+
+      if (!isLoggedIn) {
+        // Redirect to login with the current path as a query parameter
+        return { name: "login", query: { redirect: to.fullPath } };
+      }
+    },
   },
   {
     path: "/:catchNotMatchPath(.*)*",

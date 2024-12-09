@@ -35,7 +35,14 @@ const handleSignIn = async () => {
       const refreshToken = data.refresh_token;
       storeToken(token, refreshToken);
 
-      router.push({ name: "boardslist" });
+      // Check for redirect query parameter in the current route
+      const redirectTo = router.currentRoute.value.query.redirect || {
+        name: "boardslist",
+      };
+
+      // Redirect to the previous page or boardslist
+      router.push(redirectTo);
+
       showToast("Successfully signed in!", "success-login");
     } else if (response.status === 401) {
       const data = await response.json();

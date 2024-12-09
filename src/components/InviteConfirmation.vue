@@ -58,6 +58,7 @@ const boardDetail = async () => {
 };
 onMounted(async () => {
   await boardDetail();
+  console.log(boardCollaborators.value);
 });
 
 const handleAccept = async () => {
@@ -149,8 +150,10 @@ const handleDecline = async () => {
 <template>
   <div>
     <span class="font-semibold">{{ owner.name }}</span> has invited you to
-    collaborate with <span class="font-semibold"> {accessRight}</span> access
-    right on <span class="font-semibold">{{ boardCollaborators.name }}</span>
+    collaborate with
+    <span class="font-semibold"> {accessRight}</span>
+    access right on
+    <span class="font-semibold">{{ boardCollaborators.name }}</span>
   </div>
   <div>
     <button
