@@ -71,6 +71,7 @@ const fetchBoard = async () => {
 
 onMounted(async () => {
   console.log(boards.value);
+  console.log(isOwner.value);
 
   await fetchBoard();
   tokenDecoded.value = decodedToken();
@@ -254,6 +255,7 @@ const logout = () => {
             </td>
             <td>
               <select
+                :disabled="!isOwner"
                 v-if="board.accessRight === 'PENDING'"
                 v-model="board.assignedAccessRight"
                 id="options"
@@ -278,6 +280,7 @@ const logout = () => {
               </select>
               <!-- Access Right -->
               <select
+                :disabled="!isOwner"
                 v-else
                 v-model="board.accessRight"
                 id="options"
