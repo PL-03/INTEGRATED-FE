@@ -58,7 +58,6 @@ const boardDetail = async () => {
 };
 onMounted(async () => {
   await boardDetail();
-  console.log(boardCollaborators.value);
 });
 
 const handleAccept = async () => {
