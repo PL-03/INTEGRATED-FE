@@ -28,27 +28,28 @@ const close = () => {
     @click="close"
   >
     <div class="itbkk-modal-alert bg-white rounded-lg shadow-2xl p-4 w-1/3">
-      <h3 class="text-xl mb-4 text-start pl-2">Change Board Visibility</h3>
+      <h3 class="text-xl mb-4 text-center text-[#674d3f] pl-2">Change Board Visibility</h3>
+      <hr class="divider" />
       <p
         v-if="boardVisible === 'PRIVATE'"
         class="itbkk-message mb-6 text-gray-700 text-start p-2"
       >
         In public, anyone can view the board, task list and task detail of tasks
-        in the board. Do you want to change the visibility to Public?
+        in the board. Do you want to change the visibility to <span class="font-bold text-[#2d3fb0] tracking-wider">Public</span>?
       </p>
       <p v-else class="itbkk-message mb-6 text-gray-700 text-start p-2">
         In private, only board owner can access/control board, task list. Do you
-        want to change the visibility to Private?
+        want to change the visibility to <span class="font-bold text-[#2d3fb0] tracking-wider">Private</span>?
       </p>
       <div class="flex justify-end space-x-2">
         <button
-          class="itbkk-button-confirm bg-green-500 text-white py-2 px-4 rounded"
+          class="itbkk-button-confirm bg-green-600 hover:bg-green-500 text-white py-2 px-4 rounded"
           @click="confirm"
         >
           Confirm
         </button>
         <button
-          class="itbkk-button-cancel bg-red-500 text-white py-2 px-4 rounded"
+          class="itbkk-button-cancel bg-red-600 hover:bg-red-500 text-white py-2 px-4 rounded"
           @click="close"
         >
           Cancel
@@ -75,5 +76,11 @@ const close = () => {
   padding: 20px;
   max-height: 80vh;
   overflow-y: auto;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid #ddd;
+  margin: 10px 0;
 }
 </style>

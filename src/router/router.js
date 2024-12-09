@@ -215,6 +215,15 @@ const routes = [
     path: "/denial",
     name: "denial",
     component: AccessDenied,
+    // beforeEnter: (to) => {
+    //   if (
+    //     !localStorage.getItem("jwtToken") &&
+    //     !localStorage.getItem("refreshToken")
+    //   ) {
+    //     alert("Please login first");
+    //     return { name: "login", query: { redirect: to.fullPath } };
+    //   }
+    // },
   },
 ];
 

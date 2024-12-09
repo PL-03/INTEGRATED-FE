@@ -628,7 +628,7 @@ const triggerFileInput = () => {
       <div class="flex justify-end">
         <div class="m-2">
           <button
-            class="save bg-green-500 text-white py-2 px-6 rounded itbkk-button-confirm disabled"
+            class="save bg-green-600 hover:bg-green-500 text-white py-2 px-6 rounded itbkk-button-confirm disabled"
             @click="handleSubmit"
             :disabled="isAddingTitleEmpty || (!isAddMode && !isFormModified)"
           >
@@ -637,7 +637,7 @@ const triggerFileInput = () => {
         </div>
         <div class="m-2">
           <button
-            class="bg-red-700 text-white py-2 px-4 rounded itbkk-button-cancel"
+            class="bg-red-700 hover:bg-red-600 text-white py-2 px-4 rounded itbkk-button-cancel"
             @click="closeModal"
           >
             Cancel

@@ -138,7 +138,7 @@ const showToast = (message, type) => {
   <div v-if="showModal" class="modal">
     <div class="itbkk-modal-alert modal-content font-lilita">
       <!-- Modal Header -->
-      <p class="text-xl">Add Collaborator</p>
+      <p class="text-xl text-[#674d3f]">Add Collaborator</p>
       <hr class="divider" />
       <div class="flex mt-4 mx-4 justify-center items-center">
         <div class="mr-2">
@@ -155,10 +155,6 @@ const showToast = (message, type) => {
             placeholder="eg. itbkk.name@ad.sit.kmutt.ac.th"
           />
         </div>
-        <!-- Error message if the email is invalid -->
-        <p v-if="!isEmailValid && textInput.length > 0" style="color: red">
-          Please enter a valid email address.
-        </p>
 
         <div>
           <!-- Dropdown -->
@@ -180,18 +176,23 @@ const showToast = (message, type) => {
       >
         You can't add yourself as a collaborator.
       </p>
+
+      <!-- Error message if the email is invalid -->
+        <p v-if="!isEmailValid && textInput.length > 0" style="color: red" class="text-left mt-1 ml-2">
+          Please enter a valid email address.
+        </p>
       <!-- Submit Button -->
       <div class="button flex justify-end mt-4">
         <button
           @click="handleSubmit"
-          :disabled="!isEmailValid || isOwner"
-          class="text-white bg-green-600 hover:bg-green-800 w-16 h-8 mr-2"
+          :disabled ="!isEmailValid || isOwner"
+          class="addBtn text-white bg-green-600 hover:bg-green-500 w-16 h-8 mr-2"
         >
           Add
         </button>
         <button
           @click="handleClose"
-          class="text-white bg-red-600 hover:bg-red-800 h-8 w-16"
+          class="text-white bg-red-600 hover:bg-red-500 h-8 w-16"
         >
           Cancel
         </button>
@@ -238,7 +239,7 @@ button {
   border-radius: 4px;
 }
 .addBtn:disabled {
-  background-color: #665f5f;
+  background-color: #7c7f81;
   cursor: not-allowed;
 }
 .divider {

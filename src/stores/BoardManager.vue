@@ -271,9 +271,4 @@ const closeModal = () => {
     @close="closeModal"
     @confirm="confirmDeleteCollaborator"
   />
-  <InviteConfirmation
-    :details="boards"
-    @accept="handleAcceptCollab"
-    @decline="handleDeclineCollab"
-  />
 </template>

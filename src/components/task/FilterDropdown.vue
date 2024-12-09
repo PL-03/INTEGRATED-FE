@@ -98,7 +98,7 @@ const filter = () => {
       <!-- ปุ่ม Filter Status -->
       <div class="relative">
         <button
-          class="h-9 px-2 mr-2 bg-[#2c62ea] text-sm text-white rounded-lg hover:bg-[#345aba]"
+          class="h-9 px-2 mr-2 bg-[#345aba] text-sm text-white rounded-md hover:bg-[#2c62ea]"
           @click="toggleDropdown"
         >
           Filter Status
@@ -130,7 +130,7 @@ const filter = () => {
         <div
           v-for="(option, index) in selectedOptions"
           :key="index"
-          class="flex items-center text-sm bg-[#bfc0c2] rounded-full px-3 h-7 text-sm mx-1"
+          class="flex items-center bg-[#bfc0c2] rounded-full px-3 h-7 text-sm mx-1"
         >
           <span>{{ option }}</span>
           <button
