@@ -1,18 +1,18 @@
 <script setup>
-import { ref, watch, watchEffect, computed, onMounted } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import { useToast, POSITION } from "vue-toastification";
+import { ref, watch, watchEffect, computed, onMounted } from "vue"
+import { useRouter, useRoute } from "vue-router"
+import { useToast, POSITION } from "vue-toastification"
 import {
   getToken,
   useRefreshToken,
   removeTokens,
-} from "@/services/tokenService";
+} from "@/services/tokenService"
 
 const props = defineProps({
   show: { type: Boolean, required: true },
   task: { type: Object, required: true },
   statuses: { type: Array, required: true },
-});
+})
 const mimeTypes = {
   ".zip": "application/x-zip-compressed",
   ".pdf": "application/pdf",
@@ -22,25 +22,25 @@ const mimeTypes = {
   ".txt": "text/plain",
   ".json": "application/json",
   // Add more extensions as needed
-};
-function getMimeType(fileName) {
-  const ext = fileName.slice(fileName.lastIndexOf("."));
-  return mimeTypes[ext] || "application/octet-stream";
 }
-const emit = defineEmits(["update:show", "task-added", "task-updated"]);
-const route = useRoute();
-const boardId = route.params.boardId;
-const router = useRouter();
-const toast = useToast(); // Moved here
-const files = ref([]);
-const filesData = ref([]);
+function getMimeType(fileName) {
+  const ext = fileName.slice(fileName.lastIndexOf("."))
+  return mimeTypes[ext] || "application/octet-stream"
+}
+const emit = defineEmits(["update:show", "task-added", "task-updated"])
+const route = useRoute()
+const boardId = route.params.boardId
+const router = useRouter()
+const toast = useToast() // Moved here
+const files = ref([])
+const filesData = ref([])
 const handleFileInput = (event) => {
-  const newFiles = Array.from(event.target.files);
+  const newFiles = Array.from(event.target.files)
   files.value.forEach(async (f) => {
-    let token = getToken();
+    let token = getToken()
     if (!token) {
-      await useRefreshToken();
-      token = getToken();
+      await useRefreshToken()
+      token = getToken()
     }
     try {
       const response = await fetch(
@@ -53,36 +53,36 @@ const handleFileInput = (event) => {
             Authorization: `Bearer ${token}`,
           },
         }
-      );
-      const dt = await response.blob();
+      )
+      const dt = await response.blob()
 
       const file = new File([dt], f.name, {
         type: f.type,
         lastModified: f.lastModifiedDate,
-      });
-      filesData.value.push(file);
-      console.log(filesData.value);
-      console.log(newFiles);
+      })
+      filesData.value.push(file)
+      console.log(filesData.value)
+      console.log(newFiles)
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
-  });
-  files.value = [...files.value, ...newFiles, ...filesData.value];
-};
+  })
+  files.value = [...files.value, ...newFiles, ...filesData.value]
+}
 const removeFile = (index) => {
-  files.value.splice(index, 1);
-};
-const selectedStatus = ref(props.task.status || null);
+  files.value.splice(index, 1)
+}
+const selectedStatus = ref(props.task.status || null)
 const formFields = ref({
   title: "",
   description: "",
   assignees: "",
   status: null,
-});
-const isAddMode = computed(() => !props.task.id);
+})
+const isAddMode = computed(() => !props.task.id)
 const isAddingTitleEmpty = computed(() => {
-  return isAddMode.value && !formFields.value.title.trim();
-});
+  return isAddMode.value && !formFields.value.title.trim()
+})
 
 onMounted(() => {
   if (props.task.id) {
@@ -91,16 +91,16 @@ onMounted(() => {
       description: props.task.description || "",
       assignees: props.task.assignees || "",
       status: props.task.status || null,
-    };
-    selectedStatus.value = props.task.status || null;
+    }
+    selectedStatus.value = props.task.status || null
   }
-});
+})
 watch(
   () => props.task.attachments,
   (newAttachments) => {
-    files.value = [...(newAttachments || []), ...files.value];
+    files.value = [...(newAttachments || []), ...files.value]
   }
-);
+)
 watchEffect(() => {
   if (props.show) {
     formFields.value = {
@@ -108,41 +108,41 @@ watchEffect(() => {
       description: props.task.description || "",
       assignees: props.task.assignees || "",
       status: props.task.status || null,
-    };
-    selectedStatus.value = props.task.status || null;
+    }
+    selectedStatus.value = props.task.status || null
   }
-});
+})
 
 const closeModal = () => {
-  emit("update:show", false);
-  router.push({ name: "tasklist" });
-};
+  emit("update:show", false)
+  router.push({ name: "tasklist" })
+}
 
 const isFormModified = computed(() => {
   if (isAddMode.value) {
-    return true; // Always allow modifications in add mode
+    return true // Always allow modifications in add mode
   }
-  const { title, description, assignees, status } = props.task;
+  const { title, description, assignees, status } = props.task
   const statusChanged =
     selectedStatus.value?.id !== props.task.status?.id ||
-    selectedStatus.value !== props.task.status;
+    selectedStatus.value !== props.task.status
   const otherFieldsChanged =
     formFields.value.title !== (title || "") ||
     formFields.value.description !== (description || "") ||
-    formFields.value.assignees !== (assignees || "");
+    formFields.value.assignees !== (assignees || "")
 
-  return statusChanged || otherFieldsChanged;
-});
+  return statusChanged || otherFieldsChanged
+})
 
 const filteredStatuses = computed(() =>
   props.statuses.filter((status) => status.id !== props.task.status?.id)
-);
+)
 const downloadAttachment = async (fileName) => {
   try {
-    let token = getToken();
+    let token = getToken()
     if (!token) {
-      await useRefreshToken();
-      token = getToken();
+      await useRefreshToken()
+      token = getToken()
     }
 
     const response = await fetch(
@@ -155,34 +155,34 @@ const downloadAttachment = async (fileName) => {
           Authorization: `Bearer ${token}`,
         },
       }
-    );
+    )
 
     if (!response.ok) {
-      throw new Error("Failed to download file");
+      throw new Error("Failed to download file")
     }
 
-    const blob = await response.blob();
-    const downloadUrl = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = downloadUrl;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.URL.revokeObjectURL(downloadUrl);
+    const blob = await response.blob()
+    const downloadUrl = window.URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.href = downloadUrl
+    link.download = fileName
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    window.URL.revokeObjectURL(downloadUrl)
   } catch (error) {
-    console.error("Download error:", error);
-    showToast("Failed to download file", "error");
+    console.error("Download error:", error)
+    showToast("Failed to download file", "error")
   }
-};
+}
 
 // Method to preview a file attachment
 const previewAttachment = async (fileName) => {
   try {
-    let token = getToken();
+    let token = getToken()
     if (!token) {
-      await useRefreshToken();
-      token = getToken();
+      await useRefreshToken()
+      token = getToken()
     }
 
     const response = await fetch(
@@ -195,174 +195,203 @@ const previewAttachment = async (fileName) => {
           Authorization: `Bearer ${token}`,
         },
       }
-    );
+    )
 
     if (!response.ok) {
-      throw new Error("Failed to preview file");
+      throw new Error("Failed to preview file")
     }
 
-    const blob = await response.blob();
-    const mimeType = getMimeType(fileName);
+    const blob = await response.blob()
+    const mimeType = getMimeType(fileName)
 
     // Open in new tab or window based on file type
     if (mimeType.startsWith("image/")) {
       // For images, create an image preview
-      const imageUrl = URL.createObjectURL(blob);
-      window.open(imageUrl, "_blank");
+      const imageUrl = URL.createObjectURL(blob)
+      window.open(imageUrl, "_blank")
     } else if (mimeType === "application/pdf") {
       // For PDFs, open in browser
-      const pdfUrl = URL.createObjectURL(blob);
-      window.open(pdfUrl, "_blank");
+      const pdfUrl = URL.createObjectURL(blob)
+      window.open(pdfUrl, "_blank")
     } else {
       // For other file types, trigger download
-      downloadAttachment(fileName);
+      downloadAttachment(fileName)
     }
   } catch (error) {
-    console.error("Preview error:", error);
-    showToast("Failed to preview file", "error");
+    console.error("Preview error:", error)
+    showToast("Failed to preview file", "error")
   }
-};
+}
 const handleSubmit = async () => {
-  let token = getToken();
+  let token = getToken()
   if (!token) {
-    await useRefreshToken();
-    token = getToken();
+    await useRefreshToken()
+    token = getToken()
   }
-  // try {
-  const data = new FormData();
-  let fileData = ref([]);
-  const requestData = {
-    title: formFields.value.title.trim(),
-    description: formFields.value.description.trim() || null,
-    assignees: formFields.value.assignees.trim() || null,
-    status: selectedStatus.value ? selectedStatus.value.id : null,
-  };
-  data.append("task", JSON.stringify(requestData));
-  // Validate lengths
-  if (
-    requestData.title.length > 100 ||
-    (requestData.assignees && requestData.assignees.length > 30) ||
-    (requestData.description && requestData.description.length > 500)
-  ) {
+  try {
+    const data = new FormData()
+    const preparedFiles = ref([])
+
+    // Prepare task data
+    const requestData = {
+      title: formFields.value.title.trim(),
+      description: formFields.value.description.trim() || null,
+      assignees: formFields.value.assignees.trim() || null,
+      status: selectedStatus.value ? selectedStatus.value.id : null,
+    }
+
+    // Validate lengths
+    if (
+      requestData.title.length > 100 ||
+      (requestData.assignees && requestData.assignees.length > 30) ||
+      (requestData.description && requestData.description.length > 500)
+    ) {
+      showToast(
+        "The task name, assignees, and description should be less than 100, 30, and 500 characters respectively.",
+        "error"
+      )
+      return
+    }
+
+    // If editing an existing task, fetch existing attachments
+    if (
+      !isAddMode.value &&
+      props.task.attachments &&
+      props.task.attachments.length > 0
+    ) {
+      // Fetch existing attachments
+      for (const attachment of props.task.attachments) {
+        try {
+          const response = await fetch(
+            `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/tasks/${
+              props.task.id
+            }/attachments/${attachment.name}`,
+            {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          )
+
+          if (!response.ok) {
+            throw new Error(`Failed to fetch attachment: ${attachment.name}`)
+          }
+
+          const blob = await response.blob()
+          const file = new File([blob], attachment.name, {
+            type: attachment.type || getMimeType(attachment.name),
+          })
+
+          preparedFiles.value.push(file)
+        } catch (error) {
+          console.error(`Error fetching attachment ${attachment.name}:`, error)
+          showToast(`Failed to fetch attachment ${attachment.name}`, "error")
+        }
+      }
+    }
+
+    // Add newly added files
+    files.value.forEach((file) => {
+      if (
+        !preparedFiles.value.some(
+          (existingFile) => existingFile.name === file.name
+        )
+      ) {
+        preparedFiles.value.push(file)
+      }
+    })
+
+    // Append task data
+    data.append("task", JSON.stringify(requestData))
+
+    // Append files
+    preparedFiles.value.forEach((file) => {
+      data.append("files", file)
+    })
+
+    // Submit the task
+    const response = isAddMode.value
+      ? await fetch(
+          `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/tasks`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestData),
+          }
+        )
+      : await fetch(
+          `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/tasks/${
+            props.task.id
+          }`,
+          {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            body: data,
+          }
+        )
+
+    if (response.ok) {
+      emit("update:show", false)
+      router.push({ name: "tasklist" })
+      emit(isAddMode.value ? "task-added" : "task-updated")
+      showToast(
+        `The task "${formFields.value.title}" has been successfully ${
+          isAddMode.value ? "added" : "updated"
+        }.`,
+        isAddMode.value ? "success-add" : "success-update"
+      )
+    } else if (response.status === 401) {
+      await handleUnauthorized()
+    } else if (response.status === 403) {
+      showToast("You don't have permission to modify this task.", "error")
+    } else {
+      showToast("An error occurred while submitting the task.", "error")
+    }
+  } catch (error) {
+    console.error(
+      `Error ${isAddMode.value ? "adding" : "updating"} task:`,
+      error
+    )
     showToast(
-      "The task name, assignees, and description should be less than 100, 30, and 500 characters respectively.",
+      `An error occurred ${
+        isAddMode.value ? "adding" : "updating"
+      } the task. Please try again.`,
       "error"
-    );
-    return;
+    )
   }
-  files.value.forEach(async (f) => {
-    // let blob = new Blob(JSON.stringify(f), { type: f.type });
-    // try {
-    //   const response = await fetch(
-    //     `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/tasks/${
-    //       props.task.id
-    //     }/attachments/${f.name}`,
-    //     {
-    //       method: "GET",
-    //       headers: {
-    //         Authorization: `Bearer ${token}`,
-    //       },
-    //     }
-    //   );
-    //   const dt = await response.blob();
-    //   const mimeType = getMimeType(f.name);
-
-    //   const file = new File([dt], f.name, {
-    //     type: getMimeType(f.name),
-    //     lastModified: f.lastModifiedDate,
-    //   });
-    //   fileData.value.push(file);
-    //   console.log(fileData.value);
-
-    data.append(`files`, f || null);
-    console.log(data.getAll("files"));
-    // } catch (error) {
-    //   console.error(error);
-    // }
-  });
-  console.log(data.getAll("task"));
-  console.log(data.getAll("files"));
-
-  //   const response = isAddMode.value
-  //     ? await fetch(
-  //         `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/tasks`,
-  //         {
-  //           method: "POST",
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //             "Content-Type": "application/json",
-  //           },
-  //           body: JSON.stringify(requestData),
-  //         }
-  //       )
-  //     : await fetch(
-  //         `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/tasks/${
-  //           props.task.id
-  //         }`,
-  //         {
-  //           method: "PUT",
-  //           headers: {
-  //             Authorization: `Bearer ${token}`,
-  //           },
-  //           body: data,
-  //         }
-  //       );
-  //   if (response.ok) {
-  //     emit("update:show", false);
-  //     router.push({ name: "tasklist" });
-  //     emit(isAddMode.value ? "task-added" : "task-updated");
-  //     showToast(
-  //       `The task "${formFields.value.title}" has been successfully ${
-  //         isAddMode.value ? "added" : "updated"
-  //       }.`,
-  //       isAddMode.value ? "success-add" : "success-update"
-  //     );
-  //   } else if (response.status === 401) {
-  //     await handleUnauthorized();
-  //   } else if (response.status === 403) {
-  //     showToast("You don't have permission to modify this task.", "error");
-  //   } else {
-  //     showToast("An error occurred while submitting the task.", "error");
-  //   }
-  // } catch (error) {
-  //   console.error(
-  //     `Error ${isAddMode.value ? "adding" : "updating"} task:`,
-  //     error
-  //   );
-  //   showToast(
-  //     `An error occurred ${
-  //       isAddMode.value ? "adding" : "updating"
-  //     } the task. Please try again.`,
-  //     "error"
-  //   );
-  // }
-};
+}
 
 const showToast = (message, type) => {
   switch (type) {
     case "success-add":
     case "success-update":
-      toast.success(message, { position: POSITION.TOP_CENTER, timeout: 3000 });
-      break;
+      toast.success(message, { position: POSITION.TOP_CENTER, timeout: 3000 })
+      break
     case "error":
-      toast.error(message, { position: POSITION.TOP_CENTER, timeout: 3000 });
-      break;
+      toast.error(message, { position: POSITION.TOP_CENTER, timeout: 3000 })
+      break
     default:
-      toast(message);
+      toast(message)
   }
-};
+}
 
 // Handle drag and drop
 const handleFileDrop = (event) => {
-  const droppedFiles = Array.from(event.dataTransfer.files);
-  files.value = [...files.value, ...droppedFiles];
-};
+  const droppedFiles = Array.from(event.dataTransfer.files)
+  files.value = [...files.value, ...droppedFiles]
+}
 
 // Trigger file input
 const triggerFileInput = () => {
-  const fileInput = document.querySelector('input[type="file"]');
-  fileInput.click();
-};
+  const fileInput = document.querySelector('input[type="file"]')
+  fileInput.click()
+}
 </script>
 
 <template>
