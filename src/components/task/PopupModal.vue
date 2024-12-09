@@ -1,15 +1,34 @@
 <script setup>
-import router from "@/router/router"
-
+import { ref, onMounted } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { getToken, useRefreshToken } from "@/services/tokenService";
+import { useToast, POSITION } from "vue-toastification";
 const props = defineProps({
   selectedTaskId: {
     type: Object,
     required: true,
   },
-})
-
+});
+const route = useRoute();
+const router = useRouter();
+const toast = useToast();
+const boardId = route.params.boardId;
+const mimeTypes = {
+  ".zip": "application/x-zip-compressed",
+  ".pdf": "application/pdf",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".txt": "text/plain",
+  ".json": "application/json",
+  // Add more extensions as needed
+};
+function getMimeType(fileName) {
+  const ext = fileName.slice(fileName.lastIndexOf("."));
+  return mimeTypes[ext] || "application/octet-stream";
+}
 const formatDate = (dateString) => {
-  if (!dateString) return "Date is undefined"
+  if (!dateString) return "Date is undefined";
 
   const options = {
     day: "2-digit",
@@ -20,16 +39,114 @@ const formatDate = (dateString) => {
     second: "2-digit",
     timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     hourCycle: "h24",
-  }
-  const utcDate = new Date(dateString)
-  const formatter = new Intl.DateTimeFormat("en-GB", options)
-  const formattedDate = formatter.format(utcDate)
-  return formattedDate
-}
+  };
+  const utcDate = new Date(dateString);
+  const formatter = new Intl.DateTimeFormat("en-GB", options);
+  const formattedDate = formatter.format(utcDate);
+  return formattedDate;
+};
 
 const closeModal = () => {
-  router.push({ name: "tasklist" })
-}
+  router.push({ name: "tasklist", params: { boardId: route.params.boardId } });
+};
+const downloadAttachment = async (fileName) => {
+  try {
+    let token = getToken();
+    if (!token) {
+      await useRefreshToken();
+      token = getToken();
+    }
+
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/tasks/${
+        props.selectedTaskId.id
+      }/attachments/${fileName}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to download file");
+    }
+
+    const blob = await response.blob();
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(downloadUrl);
+  } catch (error) {
+    console.error("Download error:", error);
+    showToast("Failed to download file", "error");
+  }
+};
+
+// Method to preview a file attachment
+const previewAttachment = async (fileName) => {
+  try {
+    let token = getToken();
+    if (!token) {
+      await useRefreshToken();
+      token = getToken();
+    }
+
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/tasks/${
+        props.selectedTaskId.id
+      }/attachments/${fileName}/preview`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to preview file");
+    }
+
+    const blob = await response.blob();
+    const mimeType = getMimeType(fileName);
+
+    // Open in new tab or window based on file type
+    if (mimeType.startsWith("image/")) {
+      // For images, create an image preview
+      const imageUrl = URL.createObjectURL(blob);
+      window.open(imageUrl, "_blank");
+    } else if (mimeType === "application/pdf") {
+      // For PDFs, open in browser
+      const pdfUrl = URL.createObjectURL(blob);
+      window.open(pdfUrl, "_blank");
+    } else {
+      // For other file types, trigger download
+      downloadAttachment(fileName);
+    }
+  } catch (error) {
+    console.error("Preview error:", error);
+    showToast("Failed to preview file", "error");
+  }
+};
+const showToast = (message, type) => {
+  switch (type) {
+    case "success-add":
+    case "success-update":
+      toast.success(message, { position: POSITION.TOP_CENTER, timeout: 3000 });
+      break;
+    case "error":
+      toast.error(message, { position: POSITION.TOP_CENTER, timeout: 3000 });
+      break;
+    default:
+      toast(message);
+  }
+};
 </script>
 
 <template>
@@ -114,32 +231,103 @@ const closeModal = () => {
         <span
           class="flex justify-center text-md w-80 mt-2 mr-8 bg-white shadow-lg text-black rounded-md font-lilita p-4 tracking-wide"
         >
-          <ul class="max-h-80 overflow-y-scroll mx-2 my-4">
-            <!-- <li
-              class="file bg-[#3b476d] w-56 h-14 m-2 rounded-md text-white flex justify-center items-center tracking-wider"
-            >
-              <img src="../../assets/filePic.png" class="w-8 h-8 mr-2" />
-              filename1.pdf
-            </li> -->
-            <li>
-              <div class="flex flex-wrap gap-4 justify-center p-4">
-                <div
-                  class="relative w-40 h-40 bg-gray-100 shadow-md rounded-md overflow-hidden"
-                >
-                  <img
-                    src="https://via.placeholder.com/150"
-                    alt="Thumbnail Image"
-                    class="object-cover w-full h-full"
-                  />
-                  <div
-                    class="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-sm text-center py-1"
-                  >
-                    filename.pdf
+          <div class="w-full">
+            <h3 class="text-lg font-semibold mb-3 text-gray-700 border-b pb-2">
+              Attachments
+            </h3>
+            <ul class="max-h-80 overflow-y-auto space-y-2">
+              <li
+                v-if="
+                  !props.selectedTaskId.attachments ||
+                  props.selectedTaskId.attachments.length === 0
+                "
+                class="text-gray-500 italic text-center py-4"
+              >
+                No attachments
+              </li>
+              <li
+                v-for="(file, index) in props.selectedTaskId.attachments"
+                :key="index"
+                class="group flex items-center justify-between bg-gray-100 hover:bg-gray-200 transition-colors duration-200 rounded-lg p-3 relative"
+              >
+                <div class="flex items-center space-x-3 min-w-0">
+                  <!-- File Type Icon -->
+                  <div class="flex-shrink-0">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-8 w-8 text-blue-500"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0013.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </div>
+
+                  <!-- File Name with Tooltip -->
+                  <div class="flex-grow min-w-0">
+                    <p
+                      class="text-sm font-medium text-gray-700 truncate max-w-[150px]"
+                      :title="file.name"
+                    >
+                      {{ file.name }}
+                    </p>
                   </div>
                 </div>
-              </div>
-            </li>
-          </ul>
+
+                <!-- Action Buttons -->
+                <div
+                  class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                >
+                  <!-- Download Button -->
+                  <button
+                    @click="downloadAttachment(file.name)"
+                    class="text-blue-600 hover:text-blue-800 transition-colors"
+                    title="Download"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-9.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </button>
+
+                  <!-- Preview Button -->
+                  <button
+                    @click="previewAttachment(file.name)"
+                    class="text-green-600 hover:text-green-800 transition-colors"
+                    title="Preview"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-5 w-5"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                      <path
+                        fill-rule="evenodd"
+                        d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </li>
+            </ul>
+          </div>
         </span>
       </div>
     </div>
@@ -219,5 +407,19 @@ ul::-webkit-scrollbar-thumb:hover {
 .task-details-right {
   width: 35%;
   /* Adjust as needed */
+}
+ul::-webkit-scrollbar {
+  width: 8px;
+}
+ul::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 8px;
+}
+ul::-webkit-scrollbar-thumb {
+  background: #2c62ea;
+  border-radius: 8px;
+}
+ul::-webkit-scrollbar-thumb:hover {
+  background: #1c4ab8;
 }
 </style>
