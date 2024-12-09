@@ -178,7 +178,6 @@ const routes = [
         localStorage.getItem("refreshToken");
 
       if (!isLoggedIn) {
-        // Redirect to login with the current path as a query parameter
         return { name: "login", query: { redirect: to.fullPath } };
       }
     },

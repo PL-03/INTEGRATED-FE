@@ -7,7 +7,6 @@ import {
   useRefreshToken,
   removeTokens,
 } from "@/services/tokenService";
-
 const props = defineProps({
   show: { type: Boolean, required: true },
   task: { type: Object, required: true },
@@ -36,6 +35,10 @@ const toast = useToast(); // Moved here
 const files = ref([]);
 const preparedFiles = ref([]);
 const removedFile = ref({});
+const countRemoved = ref(0);
+const filteredStatuses = computed(() =>
+  props.statuses.filter((status) => status.name !== props.task.status)
+);
 const handleFileInput = (event) => {
   const newFiles = Array.from(event.target.files);
 
@@ -84,9 +87,10 @@ const removeFile = (index) => {
       (attachment) => attachment.name !== removedFile.value.name
     );
   }
-  removedFile.value = {};
+  countRemoved.value++;
+  removedFile.value = null;
 };
-const selectedStatus = ref(props.task.status || null);
+const selectedStatus = ref("");
 const formFields = ref({
   title: "",
   description: "",
@@ -99,6 +103,7 @@ const isAddingTitleEmpty = computed(() => {
 });
 
 onMounted(() => {
+  selectedStatus.value = props.task.status || null;
   if (props.task.id) {
     formFields.value = {
       title: props.task.title || "",
@@ -158,14 +163,12 @@ const isFormModified = computed(() => {
     files.value.length !== (attachments?.length || 0) ||
     (attachments || []).some(
       (attachment) => !files.value.some((file) => file.name === attachment.name)
-    );
+    ) ||
+    countRemoved.value > 0;
 
   return statusChanged || otherFieldsChanged || hasFilesChanged;
 });
 
-const filteredStatuses = computed(() =>
-  props.statuses.filter((status) => status.id !== props.task.status?.id)
-);
 const downloadAttachment = async (fileName) => {
   try {
     let token = getToken();
@@ -497,11 +500,10 @@ const triggerFileInput = () => {
             <p class="text-gray-500 text-sm ml-4">Status</p>
 
             <select
-              @click="check(props.task.status)"
               v-model="selectedStatus"
               class="itbkk-status shadow-md bg-blue-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             >
-              <option :value="props.task.status" selected>
+              <option :value="props.task.status">
                 {{ props.task.status }}
               </option>
               <option

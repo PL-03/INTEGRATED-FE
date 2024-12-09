@@ -55,9 +55,8 @@ const boardDetail = async () => {
   }
 }
 onMounted(async () => {
-  await boardDetail()
-  console.log(boardCollaborators.value)
-})
+  await boardDetail();
+});
 
 const handleAccept = async () => {
   let token = getToken()

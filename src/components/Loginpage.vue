@@ -29,19 +29,18 @@ const handleSignIn = async () => {
       },
       body: JSON.stringify(loginInfo.value),
     });
+
     if (response.ok) {
       const data = await response.json();
       const token = data.access_token;
       const refreshToken = data.refresh_token;
       storeToken(token, refreshToken);
 
-      // Check for redirect query parameter in the current route
-      const redirectTo = router.currentRoute.value.query.redirect || {
+      // Check if a redirect path exists
+      const redirectPath = router.currentRoute.value.query.redirect || {
         name: "boardslist",
       };
-
-      // Redirect to the previous page or boardslist
-      router.push(redirectTo);
+      router.push(redirectPath);
 
       showToast("Successfully signed in!", "success-login");
     } else if (response.status === 401) {
