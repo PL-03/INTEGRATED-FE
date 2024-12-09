@@ -20,7 +20,12 @@ const goBack = () => {
     <h1 class="text-xl text-white">
       Access Denied, you don't have permission to view this page.
     </h1>
-    <button @click="goBack">Go Back</button>
+    <button
+      @click="goBack"
+      class="bg-[#4ae77c] hover:bg-[#4cdb79] text-black w-32 h-10 rounded"
+    >
+      Go Back
+    </button>
   </div>
 </template>
 
