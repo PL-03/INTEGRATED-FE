@@ -56,7 +56,7 @@ const handleSubmit = async () => {
     const requestData = {
       name: boardName.value.name,
     };
-    const token = getToken();
+    let token = getToken();
     if (!token) {
       await useRefreshToken();
       token = getToken();

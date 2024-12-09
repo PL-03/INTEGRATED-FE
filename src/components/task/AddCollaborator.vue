@@ -1,61 +1,61 @@
 <script setup>
-import { ref, watch } from "vue"
-import { useRoute, useRouter } from "vue-router"
-import { useToast, POSITION } from "vue-toastification"
+import { ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { useToast, POSITION } from "vue-toastification";
 import {
   getToken,
   useRefreshToken,
   decodedToken,
   removeTokens,
-} from "@/services/tokenService"
+} from "@/services/tokenService";
 
 // Define props to control modal visibility
-const props = defineProps({ showModal: { type: Boolean, required: true } })
-const emits = defineEmits(["update:showModal", "collaborator-added"])
-const route = useRoute()
-const textInput = ref("")
-const selectedOption = ref("READ")
-const boardId = route.params.boardId
-const isEmailValid = ref(false)
-const isOwner = ref(false)
-const tokenDecoded = decodedToken()
-const currentEmail = tokenDecoded.email
+const props = defineProps({ showModal: { type: Boolean, required: true } });
+const emits = defineEmits(["update:showModal", "collaborator-added"]);
+const route = useRoute();
+const textInput = ref("");
+const selectedOption = ref("READ");
+const boardId = route.params.boardId;
+const isEmailValid = ref(false);
+const isOwner = ref(false);
+const tokenDecoded = decodedToken();
+const currentEmail = tokenDecoded.email;
 // Define the regular expression for the email format
-const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
 watch(textInput, (newVal) => {
-  isEmailValid.value = emailRegex.test(newVal)
-  isOwner.value = newVal === currentEmail
-})
+  isEmailValid.value = emailRegex.test(newVal);
+  isOwner.value = newVal === currentEmail;
+});
 
 // const formData = ref({
 //   textInput: "",
 //   selectedOption: "READ",
 // });
-const router = useRouter()
+const router = useRouter();
 
 // Handle form submission
 const handleSubmit = async () => {
-  let token = getToken()
+  let token = getToken();
   if (!token) {
-    await useRefreshToken()
-    token = getToken()
+    await useRefreshToken();
+    token = getToken();
   }
 
-  const sendingToastId = showToast("Sending request, please wait", "info") // Capture the toast ID
-  const currentEmail = tokenDecoded.email
+  const sendingToastId = showToast("Sending request, please wait", "info"); // Capture the toast ID
+  const currentEmail = tokenDecoded.email;
 
   if (currentEmail === textInput.value) {
-    useToast().dismiss(sendingToastId) // Dismiss the toast
-    showToast("You cannot add yourself as a collaborator", "error")
-    return
+    useToast().dismiss(sendingToastId); // Dismiss the toast
+    showToast("You cannot add yourself as a collaborator", "error");
+    return;
   }
 
   try {
     const requestData = {
       email: textInput.value,
       accessRight: selectedOption.value,
-    }
+    };
 
     const response = await fetch(
       `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/collabs`,
@@ -67,42 +67,42 @@ const handleSubmit = async () => {
         },
         body: JSON.stringify(requestData),
       }
-    )
+    );
 
-    useToast().dismiss(sendingToastId) // Dismiss the toast after receiving a response
+    useToast().dismiss(sendingToastId);
 
     if (response.ok) {
-      emits("update:showModal", false)
-      emits("collaborator-added")
-      showToast("Collaborator successfully added", "success-add")
+      emits("update:showModal", false);
+      emits("collaborator-added");
+      showToast("Collaborator successfully added", "success-add");
     } else if (response.status === 401) {
       if (!token) {
-        await useRefreshToken()
-        token = getToken()
+        await useRefreshToken();
+        token = getToken();
       } else {
-        removeTokens()
-        router.push({ name: "login" })
+        removeTokens();
+        router.push({ name: "login" });
       }
     } else if (response.status === 403) {
-      showToast("You don't have permission to add collaborators", "error")
+      showToast("You don't have permission to add collaborators", "error");
     } else if (response.status === 404) {
-      showToast("Your email is not valid", "error")
+      showToast("Your email is not valid", "error");
     } else {
-      showToast("An error occurred while adding the collaborator", "error")
+      showToast("An error occurred while adding the collaborator", "error");
     }
   } catch (error) {
-    console.error(error)
-    useToast().dismiss(sendingToastId) // Ensure toast is dismissed on error
-    showToast("An unexpected error occurred", "error")
+    console.error(error);
+    useToast().dismiss(sendingToastId); // Ensure toast is dismissed on error
+    showToast("An unexpected error occurred", "error");
   }
-}
+};
 
 const handleClose = () => {
-  emits("update:showModal", false)
-}
+  emits("update:showModal", false);
+};
 const showToast = (message, type) => {
-  const toast = useToast()
-  let toastId
+  const toast = useToast();
+  let toastId;
 
   switch (type) {
     case "info":
@@ -110,28 +110,28 @@ const showToast = (message, type) => {
         position: POSITION.TOP_CENTER,
         timeout: false, // Prevent auto-dismiss for info type
         hideProgressBar: false,
-      })
-      break
+      });
+      break;
     case "success-add":
     case "success-update":
     case "success-delete":
       toast.success(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      })
-      break
+      });
+      break;
     case "error":
       toast.error(message, {
         position: POSITION.TOP_CENTER,
         timeout: 3000,
-      })
-      break
+      });
+      break;
     default:
-      toast(message)
+      toast(message);
   }
 
-  return toastId // Return the toast instance or ID
-}
+  return toastId; // Return the toast instance or ID
+};
 </script>
 
 <template>

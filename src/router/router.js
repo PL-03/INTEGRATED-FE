@@ -169,6 +169,11 @@ const routes = [
     redirect: "/login",
   },
   {
+    path: "/board/:boardId/collab/invitations",
+    name: "invite",
+    component: InviteConfirmation,
+  },
+  {
     path: "/:catchNotMatchPath(.*)*",
     name: "notFound",
     beforeEnter: () => {

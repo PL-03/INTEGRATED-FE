@@ -92,7 +92,7 @@ const handleSubmit = async () => {
       );
       return;
     }
-    const token = getToken();
+    let token = getToken();
     if (!token) {
       await useRefreshToken();
       token = getToken();

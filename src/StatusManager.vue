@@ -21,7 +21,7 @@ const statuses = ref([]);
 const boardId = route.params.boardId;
 
 const fetchStatus = async () => {
-  const token = getToken();
+  let token = getToken();
   if (!token) {
     await useRefreshToken();
     token = getToken();
@@ -43,7 +43,7 @@ const fetchStatus = async () => {
 };
 
 const fetchStatusDetails = async (statusId) => {
-  const token = getToken();
+  let token = getToken();
   if (!token) {
     await useRefreshToken();
     token = getToken();

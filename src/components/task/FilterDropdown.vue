@@ -12,7 +12,7 @@ const router = useRouter();
 const boardId = route.params.boardId;
 
 const fetchStatus = async () => {
-  const token = getToken();
+  let token = getToken();
   if (!token) {
     await useRefreshToken();
     token = getToken();

@@ -13,16 +13,61 @@ const props = defineProps({
   task: { type: Object, required: true },
   statuses: { type: Array, required: true },
 });
-
+const mimeTypes = {
+  ".zip": "application/x-zip-compressed",
+  ".pdf": "application/pdf",
+  ".png": "image/png",
+  ".jpg": "image/jpeg",
+  ".jpeg": "image/jpeg",
+  ".txt": "text/plain",
+  ".json": "application/json",
+  // Add more extensions as needed
+};
+function getMimeType(fileName) {
+  const ext = fileName.slice(fileName.lastIndexOf("."));
+  return mimeTypes[ext] || "application/octet-stream";
+}
 const emit = defineEmits(["update:show", "task-added", "task-updated"]);
 const route = useRoute();
 const boardId = route.params.boardId;
 const router = useRouter();
 const toast = useToast(); // Moved here
 const files = ref([]);
+const filesData = ref([]);
 const handleFileInput = (event) => {
   const newFiles = Array.from(event.target.files);
-  files.value = [...files.value, ...newFiles];
+  files.value.forEach(async (f) => {
+    let token = getToken();
+    if (!token) {
+      await useRefreshToken();
+      token = getToken();
+    }
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/tasks/${
+          props.task.id
+        }/attachments/${f.name}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const dt = await response.blob();
+
+      const file = new File([dt], f.name, {
+        type: f.type,
+        lastModified: f.lastModifiedDate,
+      });
+      filesData.value.push(file);
+      console.log(filesData.value);
+      console.log(newFiles);
+    } catch (error) {
+      console.error(error);
+    }
+  });
+  files.value = [...files.value, ...newFiles, ...filesData.value];
 };
 const removeFile = (index) => {
   files.value.splice(index, 1);
@@ -34,7 +79,6 @@ const formFields = ref({
   assignees: "",
   status: null,
 });
-
 const isAddMode = computed(() => !props.task.id);
 const isAddingTitleEmpty = computed(() => {
   return isAddMode.value && !formFields.value.title.trim();
@@ -50,12 +94,11 @@ onMounted(() => {
     };
     selectedStatus.value = props.task.status || null;
   }
-  console.log(props.task);
 });
 watch(
   () => props.task.attachments,
   (newAttachments) => {
-    files.value = newAttachments || [];
+    files.value = [...(newAttachments || []), ...files.value];
   }
 );
 watchEffect(() => {
@@ -87,110 +130,212 @@ const isFormModified = computed(() => {
     formFields.value.title !== (title || "") ||
     formFields.value.description !== (description || "") ||
     formFields.value.assignees !== (assignees || "");
-  const filesChanged = files.value.length !== props.task.attachments.length;
 
-  return statusChanged || otherFieldsChanged || filesChanged;
+  return statusChanged || otherFieldsChanged;
 });
 
 const filteredStatuses = computed(() =>
   props.statuses.filter((status) => status.id !== props.task.status?.id)
 );
-
-const handleSubmit = async () => {
+const downloadAttachment = async (fileName) => {
   try {
-    const data = new FormData();
-
-    // data.append("title", formFields.value.title.trim());
-    // data.append("description", formFields.value.description.trim() || null);
-    // data.append("assignees", formFields.value.assignees.trim() || null);
-    // data.append(
-    //   "status",
-    //   selectedStatus.value ? selectedStatus.value.id : null
-    // );
-
-    files.value.forEach((file) => {
-      data.append(`files`, file || null);
-    });
-    const requestData = {
-      title: formFields.value.title.trim(),
-      description: formFields.value.description.trim() || null,
-      assignees: formFields.value.assignees.trim() || null,
-      status: selectedStatus.value ? selectedStatus.value.id : null,
-    };
-    data.append("task", JSON.stringify(requestData));
-    // Validate lengths
-    if (
-      requestData.title.length > 100 ||
-      (requestData.assignees && requestData.assignees.length > 30) ||
-      (requestData.description && requestData.description.length > 500)
-    ) {
-      showToast(
-        "The task name, assignees, and description should be less than 100, 30, and 500 characters respectively.",
-        "error"
-      );
-      return;
-    }
-    console.log(data.getAll("task"));
-
     let token = getToken();
     if (!token) {
       await useRefreshToken();
       token = getToken();
     }
 
-    const response = isAddMode.value
-      ? await fetch(
-          `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/tasks`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(requestData),
-          }
-        )
-      : await fetch(
-          `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/tasks/${
-            props.task.id
-          }`,
-          {
-            method: "PUT",
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-            body: data,
-          }
-        );
-    if (response.ok) {
-      emit("update:show", false);
-      router.push({ name: "tasklist" });
-      emit(isAddMode.value ? "task-added" : "task-updated");
-      showToast(
-        `The task "${formFields.value.title}" has been successfully ${
-          isAddMode.value ? "added" : "updated"
-        }.`,
-        isAddMode.value ? "success-add" : "success-update"
-      );
-    } else if (response.status === 401) {
-      await handleUnauthorized();
-    } else if (response.status === 403) {
-      showToast("You don't have permission to modify this task.", "error");
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/tasks/${
+        props.task.id
+      }/attachments/${fileName}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to download file");
+    }
+
+    const blob = await response.blob();
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = downloadUrl;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(downloadUrl);
+  } catch (error) {
+    console.error("Download error:", error);
+    showToast("Failed to download file", "error");
+  }
+};
+
+// Method to preview a file attachment
+const previewAttachment = async (fileName) => {
+  try {
+    let token = getToken();
+    if (!token) {
+      await useRefreshToken();
+      token = getToken();
+    }
+
+    const response = await fetch(
+      `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/tasks/${
+        props.task.id
+      }/attachments/${fileName}/preview`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to preview file");
+    }
+
+    const blob = await response.blob();
+    const mimeType = getMimeType(fileName);
+
+    // Open in new tab or window based on file type
+    if (mimeType.startsWith("image/")) {
+      // For images, create an image preview
+      const imageUrl = URL.createObjectURL(blob);
+      window.open(imageUrl, "_blank");
+    } else if (mimeType === "application/pdf") {
+      // For PDFs, open in browser
+      const pdfUrl = URL.createObjectURL(blob);
+      window.open(pdfUrl, "_blank");
     } else {
-      showToast("An error occurred while submitting the task.", "error");
+      // For other file types, trigger download
+      downloadAttachment(fileName);
     }
   } catch (error) {
-    console.error(
-      `Error ${isAddMode.value ? "adding" : "updating"} task:`,
-      error
-    );
+    console.error("Preview error:", error);
+    showToast("Failed to preview file", "error");
+  }
+};
+const handleSubmit = async () => {
+  let token = getToken();
+  if (!token) {
+    await useRefreshToken();
+    token = getToken();
+  }
+  // try {
+  const data = new FormData();
+  let fileData = ref([]);
+  const requestData = {
+    title: formFields.value.title.trim(),
+    description: formFields.value.description.trim() || null,
+    assignees: formFields.value.assignees.trim() || null,
+    status: selectedStatus.value ? selectedStatus.value.id : null,
+  };
+  data.append("task", JSON.stringify(requestData));
+  // Validate lengths
+  if (
+    requestData.title.length > 100 ||
+    (requestData.assignees && requestData.assignees.length > 30) ||
+    (requestData.description && requestData.description.length > 500)
+  ) {
     showToast(
-      `An error occurred ${
-        isAddMode.value ? "adding" : "updating"
-      } the task. Please try again.`,
+      "The task name, assignees, and description should be less than 100, 30, and 500 characters respectively.",
       "error"
     );
+    return;
   }
+  files.value.forEach(async (f) => {
+    // let blob = new Blob(JSON.stringify(f), { type: f.type });
+    // try {
+    //   const response = await fetch(
+    //     `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/tasks/${
+    //       props.task.id
+    //     }/attachments/${f.name}`,
+    //     {
+    //       method: "GET",
+    //       headers: {
+    //         Authorization: `Bearer ${token}`,
+    //       },
+    //     }
+    //   );
+    //   const dt = await response.blob();
+    //   const mimeType = getMimeType(f.name);
+
+    //   const file = new File([dt], f.name, {
+    //     type: getMimeType(f.name),
+    //     lastModified: f.lastModifiedDate,
+    //   });
+    //   fileData.value.push(file);
+    //   console.log(fileData.value);
+
+    data.append(`files`, f || null);
+    console.log(data.getAll("files"));
+    // } catch (error) {
+    //   console.error(error);
+    // }
+  });
+  console.log(data.getAll("task"));
+  console.log(data.getAll("files"));
+
+  //   const response = isAddMode.value
+  //     ? await fetch(
+  //         `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/tasks`,
+  //         {
+  //           method: "POST",
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //             "Content-Type": "application/json",
+  //           },
+  //           body: JSON.stringify(requestData),
+  //         }
+  //       )
+  //     : await fetch(
+  //         `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/tasks/${
+  //           props.task.id
+  //         }`,
+  //         {
+  //           method: "PUT",
+  //           headers: {
+  //             Authorization: `Bearer ${token}`,
+  //           },
+  //           body: data,
+  //         }
+  //       );
+  //   if (response.ok) {
+  //     emit("update:show", false);
+  //     router.push({ name: "tasklist" });
+  //     emit(isAddMode.value ? "task-added" : "task-updated");
+  //     showToast(
+  //       `The task "${formFields.value.title}" has been successfully ${
+  //         isAddMode.value ? "added" : "updated"
+  //       }.`,
+  //       isAddMode.value ? "success-add" : "success-update"
+  //     );
+  //   } else if (response.status === 401) {
+  //     await handleUnauthorized();
+  //   } else if (response.status === 403) {
+  //     showToast("You don't have permission to modify this task.", "error");
+  //   } else {
+  //     showToast("An error occurred while submitting the task.", "error");
+  //   }
+  // } catch (error) {
+  //   console.error(
+  //     `Error ${isAddMode.value ? "adding" : "updating"} task:`,
+  //     error
+  //   );
+  //   showToast(
+  //     `An error occurred ${
+  //       isAddMode.value ? "adding" : "updating"
+  //     } the task. Please try again.`,
+  //     "error"
+  //   );
+  // }
 };
 
 const showToast = (message, type) => {
@@ -344,12 +489,56 @@ const triggerFileInput = () => {
               Remove
             </button>
 
+            <!-- File Action Buttons -->
+            <div class="flex items-center space-x-2">
+              <!-- Download Button -->
+              <button
+                @click="downloadAttachment(file.name)"
+                class="text-blue-600 hover:underline text-sm"
+                title="Download"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-9.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+
+              <!-- Preview Button -->
+              <button
+                @click="previewAttachment(file.name)"
+                class="text-green-600 hover:underline text-sm"
+                title="Preview"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                  <path
+                    fill-rule="evenodd"
+                    d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+
             <!-- File Icon -->
             <img src="../assets/filePic.png" class="w-8 h-8 m-2" />
 
             <!-- File Name -->
             <span
-              class="truncate text-ellipsis overflow-hidden"
+              class="truncate text-ellipsis overflow-hidden ml-2"
               style="max-width: calc(100% - 3rem)"
             >
               {{ file.name }}

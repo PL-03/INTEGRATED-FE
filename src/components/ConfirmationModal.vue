@@ -62,8 +62,17 @@ const confirmDelete = () => {
     emit("confirm");
   }
 };
-const confirmPermissionChange = () => {
-  emit("confirmPermissionChange");
+const editPermission = (e) => {
+  let kw;
+  if (e === "edit") {
+    kw = "edit";
+    emit("confirmPermissionChange", kw);
+    kw = "";
+  } else {
+    kw = "editPending";
+    emit("confirmPermissionChange", kw);
+    kw = "";
+  }
 };
 const modalTitle = computed(() => {
   return props.tasksAssociated
@@ -144,7 +153,13 @@ const filteredStatuses = computed(() => {
       </button> -->
       <h2 class="text-xl text-yellow-900">Remove Collaborator</h2>
       <hr class="divider" />
-      <p class="itbkk-message text-left">
+      <p
+        v-if="collabDetail.accessRight === 'PENDING'"
+        class="itbkk-message text-left"
+      >
+        Do you want to cancel invitation to " {{ collabDetail.name }} "?
+      </p>
+      <p v-else class="itbkk-message text-left">
         Do you want to remove " {{ collabDetail.name }} " from the board?
       </p>
       <div class="flex flex-row justify-end itbkk-button-action mt-4">
@@ -167,7 +182,10 @@ const filteredStatuses = computed(() => {
       </div>
     </div>
   </div>
-  <div v-if="showChangePermission" class="modal-overlay">
+  <div
+    v-if="showChangePermission && collabDetail.accessRight !== 'PENDING'"
+    class="modal-overlay"
+  >
     <div class="modal-content font-lilita">
       <!-- <button class="close hover:text-red-500" @click="closeModal">
         &times;
@@ -182,7 +200,41 @@ const filteredStatuses = computed(() => {
         <div class="mt-2 mr-2">
           <button
             class="bg-[#3cc55e] hover:bg-[#319c5e] text-white w-20 h-10 rounded itbkk-button-confirm"
-            @click="confirmPermissionChange"
+            @click="editPermission('edit')"
+          >
+            Confirm
+          </button>
+        </div>
+        <div class="mt-2">
+          <button
+            class="bg-red-500 hover:bg-[#c03a3a] text-white w-20 h-10 rounded itbkk-button-cancel"
+            @click="closeModal"
+          >
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div
+    v-if="showChangePermission && collabDetail.accessRight === 'PENDING'"
+    class="modal-overlay"
+  >
+    <div class="modal-content font-lilita">
+      <h2 class="text-xl text-yellow-900">
+        Change Access Right (For "PENDING" user)
+      </h2>
+      <hr class="divider" />
+      <p class="itbkk-message text-left">
+        Do you want to change access right " {{ collabDetail.name }} " to "
+        {{ permissionToChange }} " ?
+      </p>
+      <div class="flex flex-row justify-end itbkk-button-action mt-4">
+        <div class="mt-2 mr-2">
+          <button
+            class="bg-[#3cc55e] hover:bg-[#319c5e] text-white w-20 h-10 rounded itbkk-button-confirm"
+            @click="editPermission('editPending')"
           >
             Confirm
           </button>

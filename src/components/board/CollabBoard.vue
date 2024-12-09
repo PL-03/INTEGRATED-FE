@@ -31,7 +31,7 @@ const toggleDropdown = () => {
   showDropdown.value = !showDropdown.value;
 };
 const fetchBoard = async () => {
-  const token = getToken();
+  let token = getToken();
   if (!token) {
     await useRefreshToken();
     token = getToken();

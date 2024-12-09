@@ -23,7 +23,7 @@ const oidToDelete = ref("");
 const boardId = route.params.boardId;
 
 const fetchBoardColaborators = async () => {
-  const token = getToken();
+  let token = getToken();
   if (!token) {
     await useRefreshToken();
     token = getToken();
@@ -62,7 +62,7 @@ const fetchBoardColaborators = async () => {
   }
 };
 const fetchBoards = async () => {
-  const token = getToken();
+  let token = getToken();
   if (!token) {
     await useRefreshToken();
     token = getToken();
@@ -100,7 +100,7 @@ const fetchBoards = async () => {
   }
 };
 const confirmDeleteCollaborator = async () => {
-  const token = getToken();
+  let token = getToken();
   if (!token) {
     await useRefreshToken();
     token = getToken();
@@ -183,6 +183,7 @@ const handleAcceptCollab = async (board, collaborator) => {
     );
     if (response.ok) {
       fetchBoards();
+      router.push({ name: "tasklist", params: { boardId: board.id } });
     } else if (response.status === 404) {
       alert("The requested board does not exist");
       router.push({ name: "boardslist" });
@@ -270,5 +271,9 @@ const closeModal = () => {
     @close="closeModal"
     @confirm="confirmDeleteCollaborator"
   />
-  <InviteConfirmation :details="boards" />
+  <InviteConfirmation
+    :details="boards"
+    @accept="handleAcceptCollab"
+    @decline="handleDeclineCollab"
+  />
 </template>

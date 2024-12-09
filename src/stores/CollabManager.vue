@@ -62,7 +62,7 @@ const fetchBoardColaborators = async () => {
   }
 };
 const confirmDeleteCollaborator = async () => {
-  const token = getToken();
+  let token = getToken();
   if (!token) {
     await useRefreshToken();
     token = getToken();
@@ -102,26 +102,31 @@ const confirmDeleteCollaborator = async () => {
     console.log(error);
   }
 };
-const confirmPermissionChange = async () => {
-  const token = getToken();
+const confirmPermissionChange = async (e) => {
+  let url =
+    e === "edit"
+      ? `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/collabs/${
+          collabDetail.value.oid
+        }`
+      : `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/collabs/${
+          collabDetail.value.oid
+        }/pending`;
+  console.log(url);
+
+  let token = getToken();
   if (!token) {
     await useRefreshToken();
     token = getToken();
   }
   try {
-    const response = await fetch(
-      `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/collabs/${
-        collabDetail.value.oid
-      }`,
-      {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ accessRight: permissionTochange.value }),
-      }
-    );
+    const response = await fetch(url, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ accessRight: permissionTochange.value }),
+    });
     if (response.ok) {
       fetchBoardColaborators();
       showChangePermission.value = false;

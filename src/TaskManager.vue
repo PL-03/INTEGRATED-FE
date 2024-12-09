@@ -27,7 +27,7 @@ const boardDetail = ref({});
 const collabModal = ref(false);
 
 const fetchBoardsById = async () => {
-  const token = getToken();
+  let token = getToken();
   if (!token) {
     await useRefreshToken();
     token = getToken();
@@ -66,7 +66,7 @@ const fetchBoardsById = async () => {
   }
 };
 const fetchTasks = async () => {
-  const token = getToken();
+  let token = getToken();
   if (!token) {
     await useRefreshToken();
     token = getToken();
@@ -102,7 +102,7 @@ const fetchTasks = async () => {
 };
 
 const fetchTaskDetails = async (id) => {
-  const token = getToken();
+  let token = getToken();
   if (!token) {
     await useRefreshToken();
     token = getToken();
@@ -136,7 +136,7 @@ const fetchTaskDetails = async (id) => {
 };
 
 const fetchStatuses = async () => {
-  const token = getToken();
+  let token = getToken();
   if (!token) {
     await useRefreshToken();
     token = getToken();

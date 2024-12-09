@@ -15,7 +15,7 @@ const props = defineProps({
 });
 const showDropdown = ref(false);
 const router = useRouter();
-// const token = getToken();
+// let token = getToken();
 const username = ref("");
 const oid = ref("");
 const emit = defineEmits([
