@@ -30,6 +30,7 @@ const tokenDecoded = ref({});
 const board = ref([...props.boards]);
 const collabBoard = ref([...props.boards]);
 const boardCollaborators = ref([]);
+const boardCollabId = ref([]);
 const haveBoard = ref(false);
 const checkToken = async () => {
   let token = getToken();
@@ -39,7 +40,30 @@ const checkToken = async () => {
     token = getToken();
   }
 };
-
+const fetchBoardColaborators = async () => {
+  await checkToken();
+  boardCollabId.value.forEach(async (boardId) => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_BASE_URL}/v3/boards/${boardId}/collabs/${
+          oid.value
+        }`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      const data = await response.json();
+      if (response.ok) {
+        boardCollaborators.value.push(data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  });
+};
 onMounted(async () => {
   console.log(props.boardCollaborators);
 
@@ -53,7 +77,9 @@ onMounted(async () => {
   collabBoard.value = props.boards.filter((board) =>
     board.collaborators.some((collaborator) => collaborator.oid === oid.value)
   );
-  console.log(collabBoard.value);
+  collabBoard.value.forEach((board) => {
+    boardCollabId.value.push(board.id);
+  });
 });
 onUpdated(() => {
   checkToken();
@@ -281,7 +307,11 @@ const toggleDropdown = () => {
                     >{{
                       board.collaborators.find(
                         (collaborator) => collaborator.oid === oid
-                      )?.accessRight || "N/A"
+                      )?.assignedAccessRight ||
+                      board.collaborators.find(
+                        (collaborator) => collaborator.oid === oid
+                      )?.accessRight ||
+                      "N/A"
                     }}
                   </span>
                 </td>

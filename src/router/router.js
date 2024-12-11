@@ -27,7 +27,7 @@ const routes = [
     path: "/board/:boardId",
     name: "tasklist",
     component: TaskManager,
-    beforeEnter: (to) => {
+    beforeEnter: async (to) => {
       if (
         !localStorage.getItem("jwtToken") &&
         !localStorage.getItem("refreshToken")

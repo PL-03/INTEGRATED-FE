@@ -103,6 +103,8 @@ const isAddingTitleEmpty = computed(() => {
 });
 
 onMounted(() => {
+  console.log(props.statuses);
+
   selectedStatus.value = props.task.status || null;
   if (props.task.id) {
     formFields.value = {
@@ -496,12 +498,26 @@ const triggerFileInput = () => {
             <p class="text-gray-500 text-sm ml-4">Status</p>
 
             <select
+              v-if="!isAddMode"
               v-model="selectedStatus"
               class="itbkk-status shadow-md bg-blue-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
             >
               <option :value="props.task.status">
                 {{ props.task.status }}
               </option>
+              <option
+                v-for="status in filteredStatuses"
+                :key="status.id"
+                :value="status"
+              >
+                {{ status.name }}
+              </option>
+            </select>
+            <select
+              v-else
+              v-model="selectedStatus"
+              class="itbkk-status shadow-md bg-blue-200 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+            >
               <option
                 v-for="status in filteredStatuses"
                 :key="status.id"

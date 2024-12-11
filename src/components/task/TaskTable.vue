@@ -138,11 +138,11 @@ const fetchFilteredTasks = async () => {
     import.meta.env.VITE_BASE_URL
   }/v3/boards/${boardId}/tasks?sortBy=statusV3.name&filterStatuses=${selectedStatuses}`;
 
-  let token = getToken();
-  if (!token) {
-    await useRefreshToken();
-    token = getToken();
-  }
+  // let token = getToken();
+  // if (!token) {
+  //   await useRefreshToken();
+  //   token = getToken();
+  // }
   try {
     const response = await fetch(url, {
       headers: {
