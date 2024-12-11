@@ -230,23 +230,19 @@ const previewAttachment = async (fileName) => {
     );
 
     if (!response.ok) {
-      throw new Error("Failed to preview file");
+      throw new Error("Please upload the file first");
     }
 
     const blob = await response.blob();
     const mimeType = getMimeType(fileName);
 
-    // Open in new tab or window based on file type
     if (mimeType.startsWith("image/")) {
-      // For images, create an image preview
       const imageUrl = URL.createObjectURL(blob);
       window.open(imageUrl, "_blank");
     } else if (mimeType === "application/pdf") {
-      // For PDFs, open in browser
       const pdfUrl = URL.createObjectURL(blob);
       window.open(pdfUrl, "_blank");
     } else {
-      // For other file types, trigger download
       downloadAttachment(fileName);
     }
   } catch (error) {

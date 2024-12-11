@@ -53,7 +53,7 @@ const boardDetail = async () => {
         router.push({ name: "login" });
       }
     } else if (response.status === 403) {
-      router.push({ name: "denial" });
+      router.push({ name: "sorry" });
     }
   } catch (error) {
     console.error("Error fetching boards:", error);
@@ -91,7 +91,7 @@ const fetchBoardColaborators = async () => {
         router.push({ name: "login" });
       }
     } else if (response.status === 403) {
-      router.push({ name: "denial" });
+      router.push({ name: "sorry" });
     }
   } catch (error) {
     console.error("Error fetching boards:", error);
@@ -101,9 +101,8 @@ onMounted(async () => {
   await boardDetail();
   await fetchBoardColaborators();
   if (tokenDecoded.value.oid !== collab.value.oid) {
-    router.push({ name: "denial" });
+    router.push({ name: "sorry" });
   }
-  console.log(collab.value.oid);
 });
 
 const handleAccept = async () => {
@@ -145,6 +144,9 @@ const handleAccept = async () => {
       }
     } else if (response.status === 403) {
       router.push({ name: "denial" });
+    } else if (response.status === 409) {
+      showToast("You are already a collaborator", "error");
+      router.push({ name: "boardslist" });
     }
   } catch (error) {
     console.log(error);
@@ -187,6 +189,9 @@ const handleDecline = async () => {
       }
     } else if (response.status === 403) {
       router.push({ name: "denial" });
+    } else if (response.status === 409) {
+      showToast("You are already a collaborator", "error");
+      router.push({ name: "boardslist" });
     }
   } catch (error) {
     console.log(error);

@@ -304,7 +304,7 @@ const logout = () => {
               <button
                 class="itbkk-collab-remove bg-[#db2d2d] text-white text-sm py-1 px-2 rounded hover:bg-[#888a94]"
                 @click="handleRemoveCollaborator(board)"
-                :disabled="isDisabled"
+                :disabled="isDisabled || !isOwner"
               >
                 Remove
               </button>

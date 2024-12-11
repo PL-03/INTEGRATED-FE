@@ -14,9 +14,6 @@ const props = defineProps({
     type: Array,
     required: true,
   },
-  boardCollaborators: {
-    type: Array,
-  },
 });
 const showDropdown = ref(false);
 const router = useRouter();
@@ -32,15 +29,8 @@ const emit = defineEmits([
 const tokenDecoded = ref({});
 const board = ref([...props.boards]);
 const collabBoard = ref([...props.boards]);
+const boardCollaborators = ref([]);
 const haveBoard = ref(false);
-const checkPending = computed(() => {
-  return collabBoard.value.some((board) => {
-    const collaborator = board.collaborators.find(
-      (collaborator) => collaborator.oid === oid.value
-    );
-    return collaborator && collaborator.accessRight === "PENDING";
-  });
-});
 const checkToken = async () => {
   let token = getToken();
   if (!token) {
@@ -51,6 +41,8 @@ const checkToken = async () => {
 };
 
 onMounted(async () => {
+  console.log(props.boardCollaborators);
+
   await checkToken();
   tokenDecoded.value = decodedToken();
   username.value = tokenDecoded.value.name;
@@ -61,7 +53,7 @@ onMounted(async () => {
   collabBoard.value = props.boards.filter((board) =>
     board.collaborators.some((collaborator) => collaborator.oid === oid.value)
   );
-  console.log(board.value.length);
+  console.log(collabBoard.value);
 });
 onUpdated(() => {
   checkToken();
@@ -268,13 +260,25 @@ const toggleDropdown = () => {
                   >
                     {{ board.name }}
                   </button>
+                  <span
+                    v-if="
+                      board.collaborators.find(
+                        (collaborator) => collaborator.oid === oid
+                      )?.accessRight === 'PENDING'
+                    "
+                    >({{
+                      board.collaborators.find(
+                        (collaborator) => collaborator.oid === oid
+                      )?.accessRight || "N/A"
+                    }})</span
+                  >
                 </td>
                 <td>
                   <span class="itbkk-owner-name">{{ board.owner.name }}</span>
                 </td>
                 <td>
-                  <span class="itbkk-access-right">
-                    {{
+                  <span class="itbkk-access-right"
+                    >{{
                       board.collaborators.find(
                         (collaborator) => collaborator.oid === oid
                       )?.accessRight || "N/A"
@@ -282,7 +286,13 @@ const toggleDropdown = () => {
                   </span>
                 </td>
                 <td>
-                  <div v-if="checkPending">
+                  <div
+                    v-if="
+                      board.collaborators.find(
+                        (collaborator) => collaborator.oid === oid
+                      )?.accessRight === 'PENDING'
+                    "
+                  >
                     <button
                       class="bg-green-500 hover:bg-green-700 text-white text-sm py-1 px-2 rounded"
                       @click="handleAcceptance(board, oid, 'A')"

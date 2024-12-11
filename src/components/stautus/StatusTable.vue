@@ -3,13 +3,11 @@ import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useToast, POSITION } from "vue-toastification";
 import ConfirmationModal from "../ConfirmationModal.vue";
-import { isTokenExpired } from "@/services/tokenService";
 import {
   getToken,
   decodedToken,
   useRefreshToken,
 } from "@/services/tokenService";
-import VueJwtDecode from "vue-jwt-decode";
 const props = defineProps({
   statuses: {
     type: Array,
@@ -400,22 +398,18 @@ const showToast = (message, type) => {
         </button>
       </div>
     </div>
-    <div class="mt-4 flex justify-center items-center ">
+    <div class="mt-4 flex justify-center items-center">
       <table
-        class="table-auto w-8/12 m-2 rounded-md overflow-hidden shadow-md shadow-white/40 font-lilita "
+        class="table-auto w-8/12 m-2 rounded-md overflow-hidden shadow-md shadow-white/40 font-lilita"
       >
         <thead class="bg-yellow-950 border-b py-4 tracking-wide text-center">
           <tr>
-            <th class="text-md text-[#e9e8e8] px-4 py-2  border-r">
-              #
-            </th>
-            <th class="text-md text-[#e9e8e8] px-4 py-2  border-r">
-              Name
-            </th>
-            <th class="text-md text-[#e9e8e8] px-4 py-2  border-r">
+            <th class="text-md text-[#e9e8e8] px-4 py-2 border-r">#</th>
+            <th class="text-md text-[#e9e8e8] px-4 py-2 border-r">Name</th>
+            <th class="text-md text-[#e9e8e8] px-4 py-2 border-r">
               Description
             </th>
-            <th class="text-md text-[#e9e8e8] px-4 py-2 ">Actions</th>
+            <th class="text-md text-[#e9e8e8] px-4 py-2">Actions</th>
           </tr>
         </thead>
         <tbody>

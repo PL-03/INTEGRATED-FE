@@ -2,13 +2,9 @@
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useToast, POSITION } from "vue-toastification";
-import VueJwtDecode from "vue-jwt-decode";
 import { storeToken } from "@/services/tokenService";
 const router = useRouter();
 
-// password and username
-// const username = ref("");
-// const password = ref("");
 const loginInfo = ref({
   userName: "",
   password: "",

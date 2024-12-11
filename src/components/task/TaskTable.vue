@@ -206,9 +206,6 @@ onMounted(async () => {
   tokenDecoded.value = decodedToken();
   username.value = tokenDecoded.value.name;
   currentId.value = tokenDecoded.value.oid;
-
-  // boardVisibility.value = props.boardDetail.visibility;
-  // boardVisible.value = props.boardDetail.visibility;
   isOwner.value = board.value.owner.oid === currentId.value;
 
   const matchCurrentUser = board.value.collaborators.find(
@@ -222,8 +219,6 @@ onMounted(async () => {
       isDisabled.value = true;
     }
   }
-  console.log(isOwner.value === false && isWriteCollab.value === false);
-  console.log(isDisabled.value);
 
   isWriteCollab.value = console.log(board.value);
 });
@@ -382,10 +377,6 @@ const showToast = (message, type) => {
     default:
       toast(message);
   }
-};
-
-const boardList = () => {
-  router.push({ name: "boardslist" });
 };
 
 const handleToboardList = () => {

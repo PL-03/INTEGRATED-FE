@@ -6,6 +6,7 @@ import LoginManager from "@/stores/LoginManager.vue";
 import AccessDenied from "@/components/AccessDenied.vue";
 import CollabManager from "@/stores/CollabManager.vue";
 import InviteConfirmation from "@/components/InviteConfirmation.vue";
+import NonActiveInvitation from "@/components/NonActiveInvitation.vue";
 
 const routes = [
   {
@@ -18,7 +19,7 @@ const routes = [
         !localStorage.getItem("refreshToken")
       ) {
         alert("Please login first");
-        return { name: "login", query: { redirect: to.fullPath } }; // Redirect with the current path
+        return { name: "login", query: { redirect: to.fullPath } };
       }
     },
   },
@@ -224,6 +225,11 @@ const routes = [
     //     return { name: "login", query: { redirect: to.fullPath } };
     //   }
     // },
+  },
+  {
+    path: "/sorry",
+    name: "sorry",
+    component: NonActiveInvitation,
   },
 ];
 
