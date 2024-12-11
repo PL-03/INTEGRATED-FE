@@ -1,18 +1,18 @@
 <script setup>
-import { ref, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { getToken, useRefreshToken } from "@/services/tokenService";
-import { useToast, POSITION } from "vue-toastification";
+import { ref, onMounted } from "vue"
+import { useRoute, useRouter } from "vue-router"
+import { getToken, useRefreshToken } from "@/services/tokenService"
+import { useToast, POSITION } from "vue-toastification"
 const props = defineProps({
   selectedTaskId: {
     type: Object,
     required: true,
   },
-});
-const route = useRoute();
-const router = useRouter();
-const toast = useToast();
-const boardId = route.params.boardId;
+})
+const route = useRoute()
+const router = useRouter()
+const toast = useToast()
+const boardId = route.params.boardId
 const mimeTypes = {
   ".zip": "application/x-zip-compressed",
   ".pdf": "application/pdf",
@@ -22,13 +22,13 @@ const mimeTypes = {
   ".txt": "text/plain",
   ".json": "application/json",
   // Add more extensions as needed
-};
+}
 function getMimeType(fileName) {
-  const ext = fileName.slice(fileName.lastIndexOf("."));
-  return mimeTypes[ext] || "application/octet-stream";
+  const ext = fileName.slice(fileName.lastIndexOf("."))
+  return mimeTypes[ext] || "application/octet-stream"
 }
 const formatDate = (dateString) => {
-  if (!dateString) return "Date is undefined";
+  if (!dateString) return "Date is undefined"
 
   const options = {
     day: "2-digit",
@@ -39,22 +39,22 @@ const formatDate = (dateString) => {
     second: "2-digit",
     timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     hourCycle: "h24",
-  };
-  const utcDate = new Date(dateString);
-  const formatter = new Intl.DateTimeFormat("en-GB", options);
-  const formattedDate = formatter.format(utcDate);
-  return formattedDate;
-};
+  }
+  const utcDate = new Date(dateString)
+  const formatter = new Intl.DateTimeFormat("en-GB", options)
+  const formattedDate = formatter.format(utcDate)
+  return formattedDate
+}
 
 const closeModal = () => {
-  router.push({ name: "tasklist", params: { boardId: route.params.boardId } });
-};
+  router.push({ name: "tasklist", params: { boardId: route.params.boardId } })
+}
 const downloadAttachment = async (fileName) => {
   try {
-    let token = getToken();
+    let token = getToken()
     if (!token) {
-      await useRefreshToken();
-      token = getToken();
+      await useRefreshToken()
+      token = getToken()
     }
 
     const response = await fetch(
@@ -67,34 +67,34 @@ const downloadAttachment = async (fileName) => {
           Authorization: `Bearer ${token}`,
         },
       }
-    );
+    )
 
     if (!response.ok) {
-      throw new Error("Failed to download file");
+      throw new Error("Failed to download file")
     }
 
-    const blob = await response.blob();
-    const downloadUrl = window.URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = downloadUrl;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    window.URL.revokeObjectURL(downloadUrl);
+    const blob = await response.blob()
+    const downloadUrl = window.URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.href = downloadUrl
+    link.download = fileName
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    window.URL.revokeObjectURL(downloadUrl)
   } catch (error) {
-    console.error("Download error:", error);
-    showToast("Failed to download file", "error");
+    console.error("Download error:", error)
+    showToast("Failed to download file", "error")
   }
-};
+}
 
 // Method to preview a file attachment
 const previewAttachment = async (fileName) => {
   try {
-    let token = getToken();
+    let token = getToken()
     if (!token) {
-      await useRefreshToken();
-      token = getToken();
+      await useRefreshToken()
+      token = getToken()
     }
 
     const response = await fetch(
@@ -107,46 +107,46 @@ const previewAttachment = async (fileName) => {
           Authorization: `Bearer ${token}`,
         },
       }
-    );
+    )
 
     if (!response.ok) {
-      throw new Error("Failed to preview file");
+      throw new Error("Failed to preview file")
     }
 
-    const blob = await response.blob();
-    const mimeType = getMimeType(fileName);
+    const blob = await response.blob()
+    const mimeType = getMimeType(fileName)
 
     // Open in new tab or window based on file type
     if (mimeType.startsWith("image/")) {
       // For images, create an image preview
-      const imageUrl = URL.createObjectURL(blob);
-      window.open(imageUrl, "_blank");
+      const imageUrl = URL.createObjectURL(blob)
+      window.open(imageUrl, "_blank")
     } else if (mimeType === "application/pdf") {
       // For PDFs, open in browser
-      const pdfUrl = URL.createObjectURL(blob);
-      window.open(pdfUrl, "_blank");
+      const pdfUrl = URL.createObjectURL(blob)
+      window.open(pdfUrl, "_blank")
     } else {
       // For other file types, trigger download
-      downloadAttachment(fileName);
+      downloadAttachment(fileName)
     }
   } catch (error) {
-    console.error("Preview error:", error);
-    showToast("Failed to preview file", "error");
+    console.error("Preview error:", error)
+    showToast("Failed to preview file", "error")
   }
-};
+}
 const showToast = (message, type) => {
   switch (type) {
     case "success-add":
     case "success-update":
-      toast.success(message, { position: POSITION.TOP_CENTER, timeout: 3000 });
-      break;
+      toast.success(message, { position: POSITION.TOP_CENTER, timeout: 3000 })
+      break
     case "error":
-      toast.error(message, { position: POSITION.TOP_CENTER, timeout: 3000 });
-      break;
+      toast.error(message, { position: POSITION.TOP_CENTER, timeout: 3000 })
+      break
     default:
-      toast(message);
+      toast(message)
   }
-};
+}
 </script>
 
 <template>
@@ -248,82 +248,64 @@ const showToast = (message, type) => {
               <li
                 v-for="(file, index) in props.selectedTaskId.attachments"
                 :key="index"
-                class="group flex items-center justify-between bg-gray-100 hover:bg-gray-200 transition-colors duration-200 rounded-lg p-3 relative"
+                class="group flex items-center justify-center relative"
               >
-                <div class="flex items-center space-x-3 min-w-0">
-                  <!-- File Type Icon -->
-                  <div class="flex-shrink-0">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-8 w-8 text-blue-500"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0013.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                      />
-                    </svg>
-                  </div>
-
-                  <!-- File Name with Tooltip -->
-                  <div class="flex-grow min-w-0">
-                    <p
-                      class="text-sm font-medium text-gray-700 truncate max-w-[150px]"
-                      :title="file.name"
-                    >
-                      {{ file.name }}
-                    </p>
-                  </div>
-                </div>
-
-                <!-- Action Buttons -->
                 <div
-                  class="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                  class="relative w-48 h-36 bg-gray-100 hover:bg-gray-200 transition-colors duration-200 overflow-hidden"
                 >
-                  <!-- Download Button -->
-                  <button
-                    @click="downloadAttachment(file.name)"
-                    class="text-blue-600 hover:text-blue-800 transition-colors"
-                    title="Download"
+                  <img
+                    src="../../assets/filePic.png"
+                    class="object-cover w-20 h-20 absolute top-1/3 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                  />
+                  <div
+                    class="flex absolute bottom-0 left-0 right-0 bg-black/70 text-white text-center p-1"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-5 w-5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
+                    <button
+                      @click="previewAttachment(file.name)"
+                      class="text-[#ffffff] hover:text-[#d5dfde] transition-colors"
+                      title="Preview"
                     >
-                      <path
-                        fill-rule="evenodd"
-                        d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-9.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
-                  </button>
-
-                  <!-- Preview Button -->
-                  <button
-                    @click="previewAttachment(file.name)"
-                    class="text-green-600 hover:text-green-800 transition-colors"
-                    title="Preview"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="h-5 w-5"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                        <path
+                          fill-rule="evenodd"
+                          d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      @click="downloadAttachment(file.name)"
+                      class="text-[#37c6ff] hover:text-[#4353cc] transition-colors"
+                      title="Download"
                     >
-                      <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                      <path
-                        fill-rule="evenodd"
-                        d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
-                  </button>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fill-rule="evenodd"
+                          d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-9.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                          clip-rule="evenodd"
+                        />
+                      </svg>
+                    </button>
+                    <div class="flex-grow min-w-0">
+                      <p
+                        class="text-white truncate max-w-[150px]"
+                        :title="file.name"
+                      >
+                        {{ file.name }}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </li>
             </ul>
@@ -416,10 +398,59 @@ ul::-webkit-scrollbar-track {
   border-radius: 8px;
 }
 ul::-webkit-scrollbar-thumb {
-  background: #2c62ea;
+  background: #8a94a9;
   border-radius: 8px;
 }
 ul::-webkit-scrollbar-thumb:hover {
-  background: #1c4ab8;
+  background: #8a94a9;
+}
+@media screen and (min-width: 1024px) and (max-width: 1366px) {
+  .modal-content {
+    width: 80%; /* ลดขนาดของ modal ให้เล็กลง */
+    padding: 15px; /* ลด padding */
+  }
+
+  .itbkk-description span {
+    font-size: 0.9rem; /* ลดขนาดฟอนต์ใน modal */
+  }
+
+  .flex .itbkk-description {
+    flex-direction: column; /* เปลี่ยน layout เป็นแนวตั้งเมื่อพื้นที่แคบ */
+  }
+
+  .itbkk-status, .itbkk-assignees {
+    margin-bottom: 10px; /* เพิ่มช่องว่างระหว่าง block */
+  }
+
+  .flex .itbkk-timezone, .itbkk-created-on, .itbkk-updated-on {
+    margin-bottom: 10px;
+  }
+
+  ul::-webkit-scrollbar {
+    width: 6px; /* ลดความกว้าง scrollbar */
+  }
+}
+
+/* Ensure good appearance for smaller widths */
+@media screen and (max-width: 1024px) {
+  .modal-content {
+    width: 90%; /* ทำให้ modal กินพื้นที่มากขึ้นในหน้าจอเล็ก */
+    padding: 10px;
+  }
+
+  .task-details-container {
+    flex-direction: column; /* เปลี่ยน layout เป็นแนวตั้ง */
+  }
+
+  .task-details-left, .task-details-right {
+    width: 100%; /* ให้แต่ละส่วนใช้ความกว้างเต็ม */
+    margin-bottom: 15px;
+  }
+
+  .itbkk-timezone,
+  .itbkk-created-on,
+  .itbkk-updated-on {
+    font-size: 0.9rem; /* ลดขนาดฟอนต์ */
+  }
 }
 </style>
