@@ -2,7 +2,12 @@
 import { ref, onMounted, onUpdated, watch, computed } from "vue";
 import { useRouter } from "vue-router";
 import { useToast, POSITION } from "vue-toastification";
-import { getToken, decodedToken, removeTokens } from "@/services/tokenService";
+import {
+  getToken,
+  decodedToken,
+  removeTokens,
+  useRefreshToken,
+} from "@/services/tokenService";
 
 const props = defineProps({
   boards: {
@@ -39,6 +44,7 @@ const checkPending = computed(() => {
 const checkToken = async () => {
   let token = getToken();
   if (!token) {
+    alert("There is an error, please try again or refresh the page.");
     await useRefreshToken();
     token = getToken();
   }
@@ -187,7 +193,7 @@ const toggleDropdown = () => {
     <div></div>
     <!-- table personal board -->
     <div
-      v-if="board.length !== 0"
+      v-if="board.length !== 0 || collabBoard.length !== 0"
       class="flex flex-col justify-center items-center p-28"
     >
       <div class="text-3xl drop-shadow-lg p-4 itbkk-personal-board">

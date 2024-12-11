@@ -8,6 +8,7 @@ import {
   decodedToken,
   removeTokens,
 } from "@/services/tokenService";
+
 const router = useRouter();
 const route = useRoute();
 const boardId = route.params.boardId;
@@ -129,6 +130,7 @@ const handleAccept = async () => {
         name: "tasklist",
         params: { boardId: boardCollaborators.value.id },
       });
+      showToast("Invitation accepted", "success-add");
     } else if (response.status === 404) {
       alert("The requested board does not exist");
       router.push({ name: "boardslist" });
@@ -170,6 +172,7 @@ const handleDecline = async () => {
     );
     if (response.ok) {
       router.push({ name: "boardslist" });
+      showToast("Invitation declined", "info");
     } else if (response.status === 404) {
       alert("The requested board does not exist");
       router.push({ name: "boardslist" });
@@ -187,6 +190,28 @@ const handleDecline = async () => {
     }
   } catch (error) {
     console.log(error);
+  }
+};
+const showToast = (message, type) => {
+  const toast = useToast();
+
+  switch (type) {
+    case "success-add":
+    case "success-update":
+    case "success-delete":
+      toast.success(message, {
+        position: POSITION.TOP_CENTER,
+        timeout: 3000,
+      });
+      break;
+    case "error":
+      toast.error(message, {
+        position: POSITION.TOP_CENTER,
+        timeout: 3000,
+      });
+      break;
+    default:
+      toast(message);
   }
 };
 </script>

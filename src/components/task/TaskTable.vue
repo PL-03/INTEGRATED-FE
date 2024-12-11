@@ -5,7 +5,6 @@ import { useToast, POSITION } from "vue-toastification";
 import { getStatusText } from "@/libs/util";
 import FilterDropdown from "./FilterDropdown.vue";
 import ConfirmationModal from "../ConfirmationModal.vue";
-import VueJwtDecode from "vue-jwt-decode";
 import {
   getToken,
   decodedToken,
@@ -412,7 +411,6 @@ const handleToboardList = () => {
 
       <div class="flex m-4 items-center space-x-6">
         <button
-        
           @click="handleToboardList"
           class="itbkk-home flex text-nowrap text-xs md:text-base items-centerd text-black hover:text-blue-600 transition duration-300"
         >

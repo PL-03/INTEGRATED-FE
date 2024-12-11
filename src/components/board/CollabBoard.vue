@@ -2,7 +2,12 @@
 import { onMounted, onUpdated, ref, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useToast, POSITION } from "vue-toastification";
-import { getToken, decodedToken, removeTokens } from "@/services/tokenService";
+import {
+  getToken,
+  decodedToken,
+  removeTokens,
+  useRefreshToken,
+} from "@/services/tokenService";
 const props = defineProps({
   boardCollaborators: { type: Array, required: true },
   board: { type: Object, required: true },
@@ -68,11 +73,15 @@ const fetchBoard = async () => {
     console.error("Error fetching boards:", error);
   }
 };
-
+// const checkToken = async () => {
+//   let token = getToken();
+//   if (!token) {
+//     alert("There is an error, please try again or refresh the page.");
+//     await useRefreshToken();
+//     token = getToken();
+//   }
+// };
 onMounted(async () => {
-  console.log(boards.value);
-  console.log(isOwner.value);
-
   await fetchBoard();
   tokenDecoded.value = decodedToken();
   username.value = tokenDecoded.value.name;

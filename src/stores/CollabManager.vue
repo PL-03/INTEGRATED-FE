@@ -81,6 +81,10 @@ const confirmDeleteCollaborator = async () => {
       }
     );
     if (response.ok) {
+      showToast(
+        "The collaborator has been successfully deleted",
+        "success-delete"
+      );
       fetchBoardColaborators();
       showConfirmationModal.value = false;
     } else if (response.status === 404) {
@@ -128,6 +132,18 @@ const confirmPermissionChange = async (e) => {
       body: JSON.stringify({ accessRight: permissionTochange.value }),
     });
     if (response.ok) {
+      if (e === "editPending") {
+        showToast(
+          "The 'PENDING' collaborator access right has been successfully updated",
+          "success-update"
+        );
+      } else {
+        showToast(
+          "The collaborator access right has been successfully updated",
+          "success-update"
+        );
+      }
+
       fetchBoardColaborators();
       showChangePermission.value = false;
     } else if (response.status === 404) {

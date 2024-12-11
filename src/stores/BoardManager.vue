@@ -4,7 +4,7 @@ import { useRoute, useRouter } from "vue-router";
 import BoardList from "@/components/board/BoardList.vue";
 import AddBoard from "@/components/board/AddBoard.vue";
 import ConfirmationModal from "@/components/ConfirmationModal.vue";
-import InviteConfirmation from "@/components/InviteConfirmation.vue";
+import { useToast, POSITION } from "vue-toastification";
 import {
   getToken,
   decodedToken,
@@ -120,6 +120,7 @@ const confirmDeleteCollaborator = async () => {
     );
     if (response.ok) {
       fetchBoards();
+      showToast("You have left the collaboration", "info");
       showDeleteModal.value = false;
     } else if (response.status === 404) {
       alert("The requested board does not exist");
@@ -182,8 +183,9 @@ const handleAcceptCollab = async (board, collaborator) => {
       }
     );
     if (response.ok) {
-      fetchBoards();
+      // fetchBoards();
       router.push({ name: "tasklist", params: { boardId: board.id } });
+      showToast("Invitation accepted", "success-add");
     } else if (response.status === 404) {
       alert("The requested board does not exist");
       router.push({ name: "boardslist" });
@@ -223,6 +225,7 @@ const handleDeclineCollab = async (board, collaborator) => {
       }
     );
     if (response.ok) {
+      showToast("Invitation declined", "info");
       fetchBoards();
     } else if (response.status === 404) {
       alert("The requested board does not exist");
@@ -241,6 +244,28 @@ const handleDeclineCollab = async (board, collaborator) => {
     }
   } catch (error) {
     console.log(error);
+  }
+};
+const showToast = (message, type) => {
+  const toast = useToast();
+
+  switch (type) {
+    case "success-add":
+    case "success-update":
+    case "success-delete":
+      toast.success(message, {
+        position: POSITION.TOP_CENTER,
+        timeout: 3000,
+      });
+      break;
+    case "error":
+      toast.error(message, {
+        position: POSITION.TOP_CENTER,
+        timeout: 3000,
+      });
+      break;
+    default:
+      toast(message);
   }
 };
 const closeModal = () => {
