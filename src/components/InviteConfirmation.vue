@@ -254,7 +254,7 @@ const showToast = (message, type) => {
             Accept invitation
           </button>
           <button
-            class="bg-red-800 hover:bg-red-500 text-white p-2 rounded"
+            class="bg-[#f38836] hover:bg-[#f3a37d] text-white p-2 rounded"
             @click="handleDecline"
           >
             Decline
